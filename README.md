@@ -9,3 +9,7 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Open Folder command to show folder in file tree
 * Remove editor config, plugin, spell checker, language support
 * Update scintilla to 5.24
+
+Below is Screenshot :
+
+![image](https://user-images.githubusercontent.com/28701482/184499462-af0cbeff-1369-49ca-b020-04e8d7857559.png)
