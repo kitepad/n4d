@@ -24,4 +24,10 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 
 Below is Screenshot :
 
+Dark theme:
+
 ![image](https://user-images.githubusercontent.com/28701482/184499462-af0cbeff-1369-49ca-b020-04e8d7857559.png)
+
+Light theme:
+
+![image](https://user-images.githubusercontent.com/28701482/184500277-6fa317c9-9f14-4510-ac26-84ccae5d3ac8.png)
