@@ -20,6 +20,7 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Show all opened files when right click on tab scroll arrow, maybe changed to show as lexer selection dialog in the furtue.
 * Toggle all fold when clicked with VK_CONTROL in folding margin
 * Left parts of status bar are shown atrributs of current document, right parts are shown attributs of scintiall view.
+* config files : n4d.settings - options, n4d.shortcuts - keyboard shortcuts, n4d.styles - user defined lexer styles, n4d.snippets - auto complete for code snippet
 
 
 Below is Screenshot :
