@@ -20,7 +20,6 @@
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
 #include "PathUtils.h"
-#include "main.h"
 #include "AppUtils.h"
 #include "OnOutOfScope.h"
 #include "GDIHelpers.h"

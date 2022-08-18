@@ -72,9 +72,6 @@
     <ClInclude Include="..\ext\sktoolslib\FormatMessageWrapper.h">
       <Filter>sktoolslib</Filter>
     </ClInclude>
-    <ClInclude Include="..\ext\sktoolslib\hyperlink.h">
-      <Filter>sktoolslib</Filter>
-    </ClInclude>
     <ClInclude Include="ScintillaWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -279,7 +276,7 @@
     <ClInclude Include="KeyboardShortcutHandler.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="SettingsDlg.h">
+    <ClInclude Include="..\src\SettingsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -309,9 +306,6 @@
       <Filter>sktoolslib</Filter>
     </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\DebugOutput.cpp">
-      <Filter>sktoolslib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ext\sktoolslib\hyperlink.cpp">
       <Filter>sktoolslib</Filter>
     </ClCompile>
     <ClCompile Include="ScintillaWnd.cpp">

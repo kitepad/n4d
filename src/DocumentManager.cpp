@@ -16,7 +16,6 @@
 //
 
 #include "stdafx.h"
-#include "main.h"
 #include "DocumentManager.h"
 #include "SmartHandle.h"
 #include "UnicodeUtils.h"
@@ -356,7 +355,7 @@ void LoadSomeOther(Scintilla::ILoader& edit, int encoding, DWORD lenFile,
     }
 }
 
-bool AskToElevatePrivilege(HWND hWnd, const std::wstring& path, PCWSTR sElevate, PCWSTR sDontElevate)
+bool AskToElevatePrivilege(/*HWND hWnd,*/ const std::wstring& path, PCWSTR sElevate, PCWSTR sDontElevate)
 {
     // access to the file is denied, and we're not running with elevated privileges
     // offer to start BowPad with elevated privileges and open the file in that instance
@@ -374,7 +373,7 @@ bool AskToElevatePrivilege(HWND hWnd, const std::wstring& path, PCWSTR sElevate,
     tdc.cButtons                        = _countof(aCustomButtons);
     tdc.nDefaultButton                  = 101;
 
-    tdc.hwndParent                      = hWnd;
+    tdc.hwndParent                      = g_hMainWindow;
     tdc.hInstance                       = g_hRes;
     tdc.dwFlags                         = TDF_USE_COMMAND_LINKS | TDF_ENABLE_HYPERLINKS | TDF_POSITION_RELATIVE_TO_WINDOW | TDF_SIZE_TO_CONTENT | TDF_ALLOW_DIALOG_CANCELLATION;
     tdc.dwCommonButtons                 = TDCBF_CANCEL_BUTTON;
@@ -393,21 +392,21 @@ bool AskToElevatePrivilege(HWND hWnd, const std::wstring& path, PCWSTR sElevate,
     return bElevate;
 }
 
-bool AskToElevatePrivilegeForOpening(HWND hWnd, const std::wstring& path)
+bool AskToElevatePrivilegeForOpening(/*HWND hWnd,*/ const std::wstring& path)
 {
     // access to the file is denied, and we're not running with elevated privileges
     // offer to start BowPad with elevated privileges and open the file in that instance
     ResString rElevate(g_hRes, IDS_ELEVATEOPEN);
     ResString rDontElevate(g_hRes, IDS_DONTELEVATEOPEN);
-    return AskToElevatePrivilege(hWnd, path, rElevate, rDontElevate);
+    return AskToElevatePrivilege(/*hWnd,*/ path, rElevate, rDontElevate);
 }
 
-DWORD RunSelfElevated(HWND hWnd, const std::wstring& params, bool wait)
+DWORD RunSelfElevated(/*HWND hWnd,*/ const std::wstring& params, bool wait)
 {
     std::wstring     modPath    = CPathUtils::GetModulePath();
     SHELLEXECUTEINFO shExecInfo = {sizeof(SHELLEXECUTEINFO)};
 
-    shExecInfo.hwnd             = hWnd;
+    shExecInfo.hwnd             = g_hMainWindow;
     shExecInfo.fMask            = SEE_MASK_NOCLOSEPROCESS;
     shExecInfo.lpVerb           = L"runas";
     shExecInfo.lpFile           = modPath.c_str();
@@ -423,18 +422,18 @@ DWORD RunSelfElevated(HWND hWnd, const std::wstring& params, bool wait)
     return 0;
 }
 
-void ShowFileLoadError(HWND hWnd, const std::wstring& fileName, LPCWSTR msg)
+void ShowFileLoadError(/*HWND hWnd,*/ const std::wstring& fileName, LPCWSTR msg)
 {
     ResString rTitle(g_hRes, IDS_APP_TITLE);
     ResString rLoadErr(g_hRes, IDS_FAILEDTOLOADFILE);
-    MessageBox(hWnd, CStringUtils::Format(rLoadErr, fileName.c_str(), msg).c_str(), static_cast<LPCWSTR>(rTitle), MB_ICONERROR);
+    MessageBox(g_hMainWindow, CStringUtils::Format(rLoadErr, fileName.c_str(), msg).c_str(), static_cast<LPCWSTR>(rTitle), MB_ICONERROR);
 }
 
-void ShowFileSaveError(HWND hWnd, const std::wstring& fileName, LPCWSTR msg)
+void ShowFileSaveError(/*HWND hWnd,*/ const std::wstring& fileName, LPCWSTR msg)
 {
     ResString rTitle(g_hRes, IDS_APP_TITLE);
     ResString rSaveErr(g_hRes, IDS_FAILEDTOSAVEFILE);
-    MessageBox(hWnd, CStringUtils::Format(rSaveErr, fileName.c_str(), msg).c_str(), static_cast<LPCWSTR>(rTitle), MB_ICONERROR);
+    MessageBox(g_hMainWindow, CStringUtils::Format(rSaveErr, fileName.c_str(), msg).c_str(), static_cast<LPCWSTR>(rTitle), MB_ICONERROR);
 }
 
 void SetEOLType(const CScintillaWnd& edit, const CDocument& doc)
@@ -512,7 +511,7 @@ void CDocumentManager::AddDocumentAtEnd(const CDocument& doc, DocID id)
     m_documents[id] = doc;
 }
 
-CDocument CDocumentManager::LoadFile(HWND hWnd, const std::wstring& path, int encoding, bool createIfMissing)
+CDocument CDocumentManager::LoadFile(/*HWND hWnd,*/ const std::wstring& path, int encoding, bool createIfMissing)
 {
     CDocument doc;
     doc.m_format    = EOLFormat::Unknown_Format;
@@ -525,13 +524,13 @@ CDocument CDocumentManager::LoadFile(HWND hWnd, const std::wstring& path, int en
         CFormatMessageWrapper errMsg(err);
         if ((err == ERROR_ACCESS_DENIED || err == ERROR_WRITE_PROTECT) && (!SysInfo::Instance().IsElevated()))
         {
-            if (!PathIsDirectory(path.c_str()) && AskToElevatePrivilegeForOpening(hWnd, path))
+            if (!PathIsDirectory(path.c_str()) && AskToElevatePrivilegeForOpening(/*hWnd,*/ path))
             {
                 // 1223 - operation canceled by user.
                 std::wstring params = L"\"";
                 params += path;
                 params += L"\"";
-                DWORD elevationError = RunSelfElevated(hWnd, params, false);
+                DWORD elevationError = RunSelfElevated(/*hWnd,*/ params, false);
                 // If we get no error attempting to running another instance elevated,
                 // assume any further errors that might occur completing the operation
                 // will be issued by that instance, so return now.
@@ -543,7 +542,7 @@ CDocument CDocumentManager::LoadFile(HWND hWnd, const std::wstring& path, int en
                 if (elevationError != ERROR_CANCELLED)
                 {
                     CFormatMessageWrapper errMsgElev(elevationError);
-                    ShowFileLoadError(hWnd, path, errMsgElev);
+                    ShowFileLoadError(/*hWnd,*/ path, errMsgElev);
                 }
                 // Exhausted all operations to work around the problem,
                 // fall through to inform that what the final outcome is
@@ -552,14 +551,14 @@ CDocument CDocumentManager::LoadFile(HWND hWnd, const std::wstring& path, int en
             // else if canceled elevation via various means or got an error even asking.
             // just fall through and issue the error that failed.
         }
-        ShowFileLoadError(hWnd, path, errMsg);
+        ShowFileLoadError(/*hWnd,*/ path, errMsg);
         return doc;
     }
     BY_HANDLE_FILE_INFORMATION fi;
     if (!GetFileInformationByHandle(hFile, &fi))
     {
         CFormatMessageWrapper errMsg; // Calls GetLastError itself.
-        ShowFileLoadError(hWnd, path, errMsg);
+        ShowFileLoadError(/*hWnd,*/ path, errMsg);
         return doc;
     }
     doc.m_bIsReadonly                    = (fi.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != 0;
@@ -588,7 +587,7 @@ CDocument CDocumentManager::LoadFile(HWND hWnd, const std::wstring& path, int en
     Scintilla::ILoader* pdocLoad = static_cast<Scintilla::ILoader*>(m_scratchScintilla.Scintilla().CreateLoader(static_cast<uptr_t>(bufferSizeRequested), docOptions));
     if (pdocLoad == nullptr)
     {
-        ShowFileLoadError(hWnd, path,ResString(g_hRes, IDS_ERR_FILETOOBIG).c_str());
+        ShowFileLoadError(/*hWnd, */path,ResString(g_hRes, IDS_ERR_FILETOOBIG).c_str());
                           //CLanguage::Instance().GetTranslatedString(ResString(g_hRes, IDS_ERR_FILETOOBIG)).c_str());
         return doc;
     }
@@ -901,7 +900,7 @@ static bool SaveAsOther(const CDocument& doc, char* buf, size_t lengthDoc, CAuto
     return true;
 }
 
-bool CDocumentManager::SaveDoc(HWND hWnd, const std::wstring& path, const CDocument& doc) const
+bool CDocumentManager::SaveDoc(/*HWND hWnd,*/ const std::wstring& path, const CDocument& doc) const
 {
     if (path.empty())
         return false;
@@ -909,7 +908,7 @@ bool CDocumentManager::SaveDoc(HWND hWnd, const std::wstring& path, const CDocum
     if (!hFile.IsValid())
     {
         CFormatMessageWrapper errMsg;
-        ShowFileSaveError(hWnd, path, errMsg);
+        ShowFileSaveError(/*hWnd,*/ path, errMsg);
         return false;
     }
 
@@ -942,11 +941,11 @@ bool CDocumentManager::SaveDoc(HWND hWnd, const std::wstring& path, const CDocum
             break;
     }
     if (!ok)
-        ShowFileSaveError(hWnd, path, err.c_str());
+        ShowFileSaveError(/*hWnd,*/ path, err.c_str());
     return true;
 }
 
-bool CDocumentManager::SaveFile(HWND hWnd, CDocument& doc, bool& bTabMoved) const
+bool CDocumentManager::SaveFile(/*HWND hWnd, */CDocument& doc, bool& bTabMoved) const
 {
     bTabMoved = false;
     if (doc.m_path.empty())
@@ -981,10 +980,10 @@ bool CDocumentManager::SaveFile(HWND hWnd, CDocument& doc, bool& bTabMoved) cons
         {
             std::wstring tempPath = CTempFiles::Instance().GetTempFilePath(true);
 
-            if (SaveDoc(hWnd, tempPath, doc))
+            if (SaveDoc(/*hWnd, */tempPath, doc))
             {
                 std::wstring cmdline        = CStringUtils::Format(L"/elevate /savepath:\"%s\" /path:\"%s\"", doc.m_path.c_str(), tempPath.c_str());
-                DWORD        elevationError = RunSelfElevated(hWnd, cmdline, true);
+                DWORD        elevationError = RunSelfElevated(/*hWnd,*/ cmdline, true);
                 // We don't know if saving worked or not.
                 // So return false since this instance didn't do the saving.
                 if (elevationError == 0)
@@ -1005,15 +1004,15 @@ bool CDocumentManager::SaveFile(HWND hWnd, CDocument& doc, bool& bTabMoved) cons
                     // Can't elevate. Explain the error,
                     // don't refer to the temp path, that would be confusing.
                     CFormatMessageWrapper errMsgElev(elevationError);
-                    ShowFileSaveError(hWnd, doc.m_path, errMsgElev);
+                    ShowFileSaveError(/*hWnd,*/ doc.m_path, errMsgElev);
                 }
             }
         }
-        ShowFileSaveError(hWnd, doc.m_path, errMsg);
+        ShowFileSaveError(/*hWnd, */doc.m_path, errMsg);
         return false;
     }
     hFile.CloseHandle();
-    if (SaveDoc(hWnd, doc.m_path, doc))
+    if (SaveDoc(/*hWnd, */doc.m_path, doc))
     {
         m_scratchScintilla.Scintilla().SetSavePoint();
         m_scratchScintilla.Scintilla().SetDocPointer(nullptr);
@@ -1033,9 +1032,9 @@ bool CDocumentManager::SaveFile(HWND hWnd, CDocument& doc, bool& bTabMoved) cons
     return true;
 }
 
-bool CDocumentManager::SaveFile(HWND hWnd, CDocument& doc, const std::wstring& path) const
+bool CDocumentManager::SaveFile(/*HWND hWnd,*/ CDocument& doc, const std::wstring& path) const
 {
-    return SaveDoc(hWnd, path, doc);
+    return SaveDoc(/*hWnd, */path, doc);
 }
 
 bool CDocumentManager::UpdateFileTime(CDocument& doc, bool bIncludeReadonly)

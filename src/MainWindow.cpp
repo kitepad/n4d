@@ -17,7 +17,6 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
-#include "main.h"
 #include "AboutDlg.h"
 #include "SettingsDlg.h"
 
@@ -99,11 +98,6 @@ bool               doCloseAll         = false;
 BOOL               closeAllDoAll      = FALSE;
 ResponseToCloseTab responseToCloseTab = ResponseToCloseTab::CloseWithoutSaving;
 } // namespace
-
-CMainWindow* CMainWindow::GetMainWindow()
-{
-    return reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
-}
 
 inline void GetRoundRectPath(Gdiplus::GraphicsPath* pPath, Rect r, int dia)
 {
@@ -325,7 +319,7 @@ CMainWindow::CMainWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = nullptr*/)
     , m_inMenuLoop(false)
     , m_scratchEditor(hResource)
     , m_blockCount(0)
-    , m_autoCompleter(this, &m_editor)
+    , m_autoCompleter(&m_editor)
     , m_dwellStartPos(-1)
     , m_bBlockAutoIndent(false)
     , m_lastCheckedLine(0)
@@ -496,20 +490,6 @@ bool CMainWindow::RegisterAndCreateWindow()
     return false;
 }
 
-//static HMENU MakeEditorContextMenu()
-//{
-//    HMENU hMenu                 = CreatePopupMenu();
-//    UINT                   menuItemFlags = MF_STRING;
-//    std::map<int, LPCWSTR> menuItems     = {
-//        {cmdFileTree, L"File Tree"}, {cmdLinenumbers, L"Line Numbers"}, {cmdFoldingMargin, L"Folding Margin"}, {cmdAutoBraces, L"Auto Braces"}};
-//    for (auto const& mi : menuItems)
-//    {
-//        AppendMenu(hMenu, menuItemFlags, mi.first, mi.second);
-//    }
-//
-//    return hMenu;
-//}
-
 static __int64 GetViewSettings(LPCWSTR k, int value = 1)
 {
     return CIniSettings::Instance().GetInt64(L"View", k, value);
@@ -595,7 +575,6 @@ void CMainWindow::HandleTabContextMenu(LPARAM lParam)
     if (idx == -1)
         return;
 
-    //SetSelected(idx);
     HMENU hMenu = CreatePopupMenu();
     UINT  menuItemFlags = MF_STRING;
 
@@ -603,8 +582,6 @@ void CMainWindow::HandleTabContextMenu(LPARAM lParam)
     {
         if (mi.cmd == 0)
             AppendMenu(hMenu, MF_SEPARATOR, 0, 0);
-        //else if (idx != m_selected && (mi.cmd == cmdSummary || mi.cmd == cmdExploreProperties))
-        //    continue;
         else
             AppendMenu(hMenu, menuItemFlags, mi.cmd, mi.label);
     }
@@ -613,11 +590,6 @@ void CMainWindow::HandleTabContextMenu(LPARAM lParam)
 
     switch(cmd)
     {
-        //case cmdCloseAll:
-        //case cmdExploreProperties:
-        //case cmdSummary:
-        //    DoCommand(cmd,0);
-        //    break;
         case cmdClose:
             CloseTab(idx);
             break;
@@ -650,10 +622,6 @@ void CMainWindow::ShowSystemMenu()
     ClientToScreen(*this, &pt);
     HMENU pop = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)), 0);
 
-    //HMENU omenu = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)),4);
-    //int   idx   = GetMenuItemCount(pop) - 2;
-    //::InsertMenu(pop, idx, MF_POPUP | MF_BYPOSITION, (UINT_PTR)omenu, L"Options");
-    //::InsertMenu(pop, idx + 1, MF_SEPARATOR | MF_BYPOSITION, 0, nullptr);
     UpdateMenu(pop);
     auto cmd = TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
     DoCommand(cmd, 0);
@@ -790,9 +758,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 
                         std::wstring sTitle = doc.m_path.empty() ? m_allTabs[m_hoveredItemIdx].name : doc.m_path;
                         pt.y                = m_allRects.total.bottom + 60;
-                        //pt.x                = m_allRects.tabs.left;
-                        //for (int i=m_firstVisibleItemIdx;i<=m_hoveredItemIdx;i++)
-                        //    pt.x += m_allTabs[i].width;
                         ClientToScreen(*this, &pt);
                         m_tabTip.ShowTip(pt, sTitle, nullptr, sTitle);
                         m_tipIdx = m_hoveredItemIdx;
@@ -854,9 +819,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 m_hoveredItemIdx = -1;
             }
 
-            //if (m_hoveredItemIdx == -1)
-            //    m_tabTip.HideTip();
-
             InvalidateRect(*this, &m_allRects.total, FALSE);
 
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -886,14 +848,12 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             else if (m_hoveredRect == TitlebarRect::Minimize)
             {
                 ShowWindow(*this, SW_MINIMIZE);
-                // m_hoveredButton = TitlebarButton::None;
                 return 0;
             }
             else if (m_hoveredRect == TitlebarRect::Maximize)
             {
                 int mode = IsMaximized(*this) ? SW_NORMAL : SW_MAXIMIZE;
                 ShowWindow(*this, mode);
-                // m_hoveredButton = TitlebarButton::None;
                 return 0;
             }
             else if (m_hoveredRect == TitlebarRect::Theme)
@@ -903,9 +863,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             else if (m_hoveredRect == TitlebarRect::Open)
             {
-                //OpenNewTab();
-                //SetSelected(GetItemCount() - 1);
-                //InvalidateRect(*this, &m_allRects.tabs, FALSE);
                 UINT cmd = (GetAsyncKeyState(VK_CONTROL) & 0x8000) ? cmdOpenFolder : cmdOpen;
                 DoCommand(cmd, 0);
                 return 0;
@@ -1047,24 +1004,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             {
                 ShowCommandPalette();
             }
-            //else if (m_hoveredRect == TitlebarRect::Open)
-            //{
-            //    DoCommand(cmdSettings, 0);
-            //}
-            else if (m_hoveredRect == TitlebarRect::Tabs)
-            {
-                HandleTabContextMenu(lParam);
-            }
-            else if (m_hoveredRect == TitlebarRect::System)
-            {
-                POINT pt = {m_allRects.system.left, m_allRects.system.bottom};
-                ClientToScreen(*this, &pt);
-                HMENU sysMenu = GetSystemMenu(*this, FALSE);
-                UINT  flags   = TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD;
-                auto  command = TrackPopupMenuEx(sysMenu, flags, pt.x, pt.y, *this, nullptr);
-                SendMessage(*this, WM_SYSCOMMAND, command, 0);
-            }
-            else if (m_hoveredRect == TitlebarRect::Layout)
+            else if (m_hoveredRect == TitlebarRect::Open)
             {
                 auto hMenu = CreatePopupMenu();
                 auto count = m_recentFolders.size();
@@ -1073,11 +1013,11 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     OnOutOfScope(DestroyMenu(hMenu));
 
                     auto& doc = m_docManager.GetModDocumentFromID(GetCurrentTabId());
-                    
+
                     for (int i = 0; i < count; ++i)
                     {
                         std::wstring folderName = m_recentFolders[i];
-                        BOOL         checked    = doc.m_path.compare(0, folderName.size(),folderName) == 0;
+                        BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
                         UINT         flags      = checked ? MF_CHECKED | MF_STRING : MF_STRING;
                         AppendMenu(hMenu, flags, i + 1, folderName.c_str());
                     }
@@ -1091,11 +1031,23 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     {
                         m_fileTree.SetPath(m_recentFolders[idx - 1]);
                         m_titleText = m_recentFolders[idx - 1];
-                        InvalidateRect(*this,&m_allRects.text, FALSE);
+                        InvalidateRect(*this, &m_allRects.text, FALSE);
                         ShowFileTree(true);
                     }
                 }
-
+            }
+            else if (m_hoveredRect == TitlebarRect::Tabs)
+            {
+                HandleTabContextMenu(lParam);
+            }
+            else if (m_hoveredRect == TitlebarRect::System)
+            {
+                POINT pt = {m_allRects.system.left, m_allRects.system.bottom};
+                ClientToScreen(*this, &pt);
+                HMENU sysMenu = GetSystemMenu(*this, FALSE);
+                UINT  flags   = TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | TPM_RETURNCMD;
+                auto  command = TrackPopupMenuEx(sysMenu, flags, pt.x, pt.y, *this, nullptr);
+                SendMessage(*this, WM_SYSCOMMAND, command, 0);
             }
 
             return true;
@@ -1213,7 +1165,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_SETFOCUS: // lParam HWND that is losing focus.
         {
             SetFocus(m_editor);
-            //m_editor.Call(SCI_SETFOCUS, true);
             m_editor.Scintilla().SetFocus(true);
             // the update check can show a dialog. Doing this in the
             // WM_SETFOCUS handler causes problems due to the dialog
@@ -1395,8 +1346,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             {
                 findReplaceClose();
                 gotoLineClose();
-                //styleConfiguratorDlgClose();
-                //defaultEncodingDlgClose();
                 return 1;
             }
 
@@ -1406,8 +1355,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_WINDOWPOSCHANGED:
         {
             findReplaceResize();
-            //styleConfiguratorDlgResize();
-            //defaultEncodingDlgResize();
         }
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -1424,39 +1371,7 @@ void CMainWindow::ShowTablistDropdown(HWND hWnd, int x, int y)
         if (hMenu)
         {
             OnOutOfScope(DestroyMenu(hMenu));
-            //auto currentIndex = m_selected;//m_tabBar.GetCurrentTabIndex();
-            //std::multimap<std::wstring, int, ci_lessW> prepList;
             int  tabCount = GetItemCount();
-            //for (int i = 0; i < tabCount; ++i)
-            //{
-            //    prepList.insert(std::make_pair(m_allTabs[i].name, i));
-            //}
-            //std::multimap<std::wstring, int, ci_lessW> tablist;
-            //for (auto& [tabTitle, tabIndex] : prepList)
-            //{
-            //    auto count = std::count_if(prepList.begin(), prepList.end(), [&](const auto& item) -> bool {
-            //        return item.first == tabTitle;
-            //    });
-            //    if (count > 1)
-            //    {
-            //        wchar_t     pathBuf[30] = {0};
-            //        const auto& doc         = m_docManager.GetDocumentFromID(GetIDFromIndex(tabIndex));
-            //        PathCompactPathEx(pathBuf, CPathUtils::GetParentDirectory(doc.m_path).c_str(), _countof(pathBuf), 0);
-            //        auto text = CStringUtils::Format(L"%s (%s)", tabTitle.c_str(),pathBuf);
-            //        tablist.insert(std::make_pair(text, tabIndex + 1));
-            //    }
-            //    else
-            //        tablist.insert(std::make_pair(tabTitle, tabIndex + 1));
-            //}
-
-            //for (auto& [tabTitle, tabIndex] : tablist)
-            //{
-            //    if (tabIndex == (m_selected + 1))
-            //        AppendMenu(hMenu, MF_STRING | MF_CHECKED, tabIndex, tabTitle.c_str());
-            //    else
-            //        AppendMenu(hMenu, MF_STRING, tabIndex, tabTitle.c_str());
-            //}
-
             for (int i = 0; i < tabCount; ++i)
             {
                 AppendMenu(hMenu, MF_STRING, i + 1, m_allTabs[i].name.c_str());
@@ -1501,8 +1416,6 @@ LRESULT CMainWindow::HandleEditorEvents(const NMHDR& nmHdr, WPARAM wParam, LPARA
         case SCN_SAVEPOINTLEFT:
             HandleSavePoint(scn);
             break;
-        //case SCN_MARGINRIGHTCLICK:
-        //    MessageBox(NULL, L"RRRR", L"RRRR", MB_OK);
         case SCN_MARGINCLICK:
             m_editor.MarginClick(pScn);
             break;
@@ -1654,21 +1567,34 @@ LRESULT CMainWindow::HandleFileTreeEvents(const NMHDR& nmHdr, WPARAM /*wParam*/,
 
 void CMainWindow::HandleTreePath(const std::wstring& path, bool isDir, bool isDot)
 {
-    if (isDir)
-    {
-        if (isDot && CIniSettings::Instance().GetInt64(L"View", L"FileTreeGotoParent", 0) != 0)
-        {
-            m_fileTree.SetPath(path);
-        }
-    }
-    else
+    if (!isDir)
     {
         bool         control   = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
         unsigned int openFlags = OpenFlags::IgnoreIfMissing;
         if (control)
             openFlags |= OpenFlags::OpenIntoActiveTab;
         OpenFile(path, openFlags);
+        return;
     }
+
+    if (isDot && CIniSettings::Instance().GetInt64(L"View", L"FileTreeGotoParent", 0) != 0)
+        m_fileTree.SetPath(path);
+
+    //if (isDir)
+    //{
+    //    if (isDot && CIniSettings::Instance().GetInt64(L"View", L"FileTreeGotoParent", 0) != 0)
+    //    {
+    //        m_fileTree.SetPath(path);
+    //    }
+    //}
+    //else
+    //{
+    //    bool         control   = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+    //    unsigned int openFlags = OpenFlags::IgnoreIfMissing;
+    //    if (control)
+    //        openFlags |= OpenFlags::OpenIntoActiveTab;
+    //    OpenFile(path, openFlags);
+    //}
 }
 
 std::vector<std::wstring> CMainWindow::GetFileListFromGlobPath(const std::wstring& path)
@@ -1700,40 +1626,12 @@ void CMainWindow::HandleStatusBar(WPARAM wParam, LPARAM lParam)
     {
         case WM_CONTEXTMENU:
         {
-            //if (lParam == STATUSBAR_DOC_TYPE)
-            //{
-            //    DoCommand(cmdSelectLexer, 0);
-            //}
             if (lParam == STATUSBAR_TABSPACE && m_editor.Scintilla().UseTabs())
             {
                 DoCommand(cmdTabSize, 0);
             }
-            //else if (lParam == STATUSBAR_UNICODE_TYPE)
-            //{
-            //    DoCommand(cmdSelectEncoding, 0);
-            //}
         }
         break;
-        //case WM_LBUTTONDBLCLK:
-        //{
-        //    switch (lParam)
-        //    {
-        //         case STATUSBAR_UNICODE_TYPE:
-        //             DoCommand(cmdSelectEncoding, 0);
-        //             break;
-        //         case STATUSBAR_DOC_TYPE:
-        //             DoCommand(cmdSelectLexer, 0);
-        //             break;
-        //         case STATUSBAR_TABSPACE:
-        //             if(m_editor.Scintilla().UseTabs())
-        //                 DoCommand(cmdTabSize, 0);
-        //             break;
-        //        //case STATUSBAR_ZOOM:
-        //        //     m_editor.Scintilla().SetZoom(0);
-        //        //    break;
-        //    }
-        //    break;
-        //}
         case WM_LBUTTONDOWN:
         {
             switch (lParam)
@@ -1881,27 +1779,9 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
         case cmdCloseAll:
             CloseAllTabs();
             break;
-        //case cmdCopyPath:
-        //    CopyCurDocPathToClipboard();
-        //    break;
-        //case cmdCopyName:
-        //    CopyCurDocNameToClipboard();
-        //    break;
-        //case cmdCopyDir:
-        //    CopyCurDocDirToClipboard();
-        //    break;
-        //case cmdExplore:
-        //    ShowCurDocInExplorer();
-        //    break;
-        //case cmdExploreProperties:
-        //    ShowCurDocExplorerProperties();
-        //    break;
         case cmdPasteHistory:
             PasteHistory();
             break;
-        //case cmdTabListDropdownMenu:
-        //    ShowTablistDropdown(reinterpret_cast<HWND>(lParam), 0, 0);
-        //    break;
         case cmdConfigStyle:
             ShowStyleConfiguratorDlg();
             break;
@@ -1938,13 +1818,7 @@ bool CMainWindow::Initialize()
     CCommandHandler::Instance().AddCommand(cmdClose);
     CCommandHandler::Instance().AddCommand(cmdCloseAll);
     CCommandHandler::Instance().AddCommand(cmdCloseAllButThis);
-    //CCommandHandler::Instance().AddCommand(cmdCopyPath);
-    //CCommandHandler::Instance().AddCommand(cmdCopyName);
-    //CCommandHandler::Instance().AddCommand(cmdCopyDir);
-    //CCommandHandler::Instance().AddCommand(cmdExplore);
-    //CCommandHandler::Instance().AddCommand(cmdExploreProperties);
     CCommandHandler::Instance().AddCommand(cmdPasteHistory);
-    //CCommandHandler::Instance().AddCommand(cmdTabListDropdownMenu);
     CCommandHandler::Instance().AddCommand(cmdAbout);
 
     m_editor.Init(hResource, *this);
@@ -1952,11 +1826,6 @@ bool CMainWindow::Initialize()
     OnOutOfScope(SendMessage(m_editor, WM_SETREDRAW, TRUE, 0));
     m_autoCompleter.Init();
     m_statusBar.Init(*this, true);
-    //m_statusBar.SetHandlerFunc([](COLORREF clr) -> COLORREF {
-    //    //if ((clr == GetSysColor(COLOR_3DFACE)) && CTheme::Instance().IsDarkTheme())
-    //    //    return CTheme::CurrentTheme().itemHover;
-    //    return CTheme::Instance().GetThemeColor(clr);
-    //});
     SendMessage(m_statusBar, WM_SETREDRAW, FALSE, 0);
     OnOutOfScope(SendMessage(m_statusBar, WM_SETREDRAW, TRUE, 0));
     m_progressBar.Init(hResource, *this);
@@ -2008,11 +1877,6 @@ bool CMainWindow::Initialize()
 
     AddClipboardFormatListener(*this);
     
-    //HMENU     sysMenu = GetSystemMenu(*this, FALSE);
-    //AppendMenu(sysMenu, MF_SEPARATOR, 0, 0);
-    //AppendMenu(sysMenu, MF_STRING, cmdSettings, L"Settings");
-    //AppendMenu(sysMenu, MF_STRING, cmdAbout, L"About");
-
     constexpr UINT flags       = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER ;//| SWP_SHOWWINDOW;// | SWP_NOCOPYBITS;
     //constexpr UINT noShowFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
     RECT           rect;
@@ -2023,7 +1887,6 @@ bool CMainWindow::Initialize()
     const int tabbarHeight   = HeightOf(m_allRects.tabs); // GetTabbarRect());
     const int height         = HeightOf(rect) - tabbarHeight - titlebarHeight - stHeight;
     const int topPos         = rect.top + titlebarHeight + tabbarHeight;
-    //const int width          = rect.right - rect.left;
 
     if (m_fileTreeVisible)
     {
@@ -2031,15 +1894,7 @@ bool CMainWindow::Initialize()
         SetWindowPos(m_fileTree, nullptr, 0, topPos, treeWidth ? treeWidth - 3 : 0, height, flags);
         SendMessage(m_hwnd, WM_SETREDRAW, TRUE, 0);
     }
-    //SendMessage(m_hwnd, WM_SETREDRAW, FALSE, 0);
-    //SetWindowPos(m_statusBar, nullptr, 0, rect.bottom - stHeight, width, stHeight, flags);
-    //SetWindowPos(m_editor, nullptr, treeWidth, topPos, width - treeWidth, height, flags);
-    //SetWindowPos(m_fileTree, nullptr, 0, topPos, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
     InvalidateRect(m_hwnd, nullptr, TRUE);
-    //SendMessage(m_hwnd, WM_SETREDRAW, TRUE, 0);
-    //MoveWindow(m_statusBar, 0, rect.bottom - stHeight, width, stHeight,FALSE);
-    //MoveWindow(m_editor, treeWidth, topPos, width - treeWidth, height,FALSE);
-    //MoveWindow(m_fileTree, 0, topPos, treeWidth ? treeWidth - 3 : 0, height,FALSE);
 
     return true;
 }
@@ -2066,8 +1921,6 @@ void CMainWindow::HandleAfterInit()
     else if (m_pathsToOpen.size() > 0)
     {
         unsigned int openFlags = OpenFlags::AskToCreateIfMissing;
-        //if (m_bPathsToOpenMRU)
-        //    openFlags |= OpenFlags::AddToMRU;
         BlockAllUIUpdates(true);
         OnOutOfScope(BlockAllUIUpdates(false););
 
@@ -2086,12 +1939,7 @@ void CMainWindow::HandleAfterInit()
             }
         }
     }
-    //else
-    //{
-    //    ShowFileTree(FALSE);
-    //}
     m_pathsToOpen.clear();
-    //m_bPathsToOpenMRU = true;
     if (!m_elevatePath.empty())
     {
         ElevatedSave(m_elevatePath, m_elevateSavePath, m_initLine);
@@ -2101,26 +1949,11 @@ void CMainWindow::HandleAfterInit()
 
     EnsureAtLeastOneTab();
 
-    //std::thread([=] {
-    //    bool bNewer = CAppUtils::CheckForUpdate(false);
-    //    if (bNewer)
-    //        PostMessage(m_hwnd, WM_UPDATEAVAILABLE, 0, 0);
-    //}).detach();
-
     CCommandHandler::Instance().AfterInit();
 
     g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); // static_cast<int>(m_editor.Call(SCI_GETMARGINWIDTHN, SC_MARGIN_BACK, 0));
 
     m_bIsAfterInit = true;
-
-    //WNDCLASSEX wcx = {sizeof(WNDCLASSEX)};
-    //wcx.lpfnWndProc   = CWindow::stWinMsgHandler;
-    //wcx.style         = CS_DBLCLKS;
-    //wcx.hInstance     = hResource;
-    //wcx.lpszClassName = L"BowPad_CScrollView";
-    //wcx.hbrBackground = CreateSolidBrush(CTheme::CurrentTheme().winBack); // darkHBR; // reinterpret_cast<HBRUSH>((COLOR_3DFACE + 1));
-    //wcx.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
-    //RegisterWindow(&wcx);
 }
 
 void CMainWindow::ResizeChildWindows()
@@ -2145,10 +1978,6 @@ void CMainWindow::ResizeChildWindows()
         const int width          = rect.right - rect.left;
 
         HDWP hDwp = BeginDeferWindowPos(3);
-        //DeferWindowPos(hDwp, m_statusBar, nullptr, rect.left, topPos, width, stHeight, flags);
-        //DeferWindowPos(hDwp, m_editor, nullptr, rect.left + treeWidth, topPos + stHeight, width - treeWidth, height, flags);
-        //DeferWindowPos(hDwp, m_fileTree, nullptr, rect.left, topPos + stHeight, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
-
         DeferWindowPos(hDwp, m_statusBar, nullptr, rect.left, rect.bottom - stHeight, width, stHeight, flags);
         DeferWindowPos(hDwp, m_editor, nullptr, rect.left + treeWidth, topPos, width - treeWidth, height, flags);
         DeferWindowPos(hDwp, m_fileTree, nullptr, rect.left, topPos, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
@@ -2246,7 +2075,7 @@ bool CMainWindow::SaveDoc(DocID docID, bool bSaveAs)
             EnsureNewLineAtEnd(doc);
 
         bool bTabMoved = false;
-        if (!m_docManager.SaveFile(*this, doc, bTabMoved))
+        if (!m_docManager.SaveFile(/**this,*/ doc, bTabMoved))
         {
             return false;
         }
@@ -2285,7 +2114,6 @@ bool CMainWindow::SaveDoc(DocID docID, bool bSaveAs)
         if (updateFileTree)
         {
             m_fileTree.SetPath(CPathUtils::GetParentDirectory(doc.m_path), bSaveAs);
-            //ResizeChildWindows();
         }
         CCommandHandler::Instance().OnDocumentSave(docID, bSaveAs);
     }
@@ -2303,7 +2131,7 @@ bool CMainWindow::SaveDoc(DocID docID, const std::wstring& path)
 
     auto& doc = m_docManager.GetModDocumentFromID(docID);
 
-    if (!m_docManager.SaveFile(*this, doc, path))
+    if (!m_docManager.SaveFile(/**this,*/ doc, path))
     {
         return false;
     }
@@ -2337,7 +2165,6 @@ void CMainWindow::ElevatedSave(const std::wstring& path, const std::wstring& sav
         UpdateStatusBar(true);
         GoToLine(line);
         m_fileTree.SetPath(CPathUtils::GetParentDirectory(savePath), false);
-        //ResizeChildWindows();
         // delete the temp file used for the elevated save
         DeleteFile(path.c_str());
     }
@@ -2381,7 +2208,6 @@ void CMainWindow::UpdateStatusBar(bool bEverything)
     static ResString rsStatusTTTyping(g_hRes, IDS_STATUSTTTYPING);           // Typing mode: %s
     static ResString rsStatusTTTypingOvl(g_hRes, IDS_STATUSTTTYPINGOVL);     // Overtype
     static ResString rsStatusTTTypingIns(g_hRes, IDS_STATUSTTTYPINGINS);     // Insert
-    static ResString rsStatusTTTabs(g_hRes, IDS_STATUSTTTABS);               // Open files: %d
     static ResString rsStatusSelection(g_hRes, IDS_STATUSSELECTION);         // Sel: %Iu chars | %Iu lines | %ld matches.
     static ResString rsStatusSelectionLong(g_hRes, IDS_STATUSSELECTIONLONG); // Selection: %Iu chars | %Iu lines | %ld matches.
     static ResString rsStatusSelectionNone(g_hRes, IDS_STATUSSELECTIONNONE); // no selection
@@ -2430,14 +2256,6 @@ void CMainWindow::UpdateStatusBar(bool bEverything)
                         0,
                         0,
                         false, true);
-    //m_statusBar.SetPart(0, STATUSBAR_SEL,
-    //                    m_titleText,
-    //                    m_titleText,
-    //                    CStringUtils::Format(rsStatusTTCurPos, line, column, selByte, selLine, selTextMarkerCount),
-    //                    0,
-    //                    0,
-    //                    0,
-    //                    false, true);
     auto overType = m_editor.Scintilla().Overtype();
     m_statusBar.SetPart(0,STATUSBAR_TYPING_MODE, 
                     overType ? L"OVR" : L"INS", L"", 
@@ -2464,8 +2282,6 @@ void CMainWindow::UpdateStatusBar(bool bEverything)
         m_statusBar.SetPart(0,STATUSBAR_DOC_TYPE, L"%b" + sLang, L"", sLang,
          0, 0, 2, true, true);
 
-        //auto eolMode = m_editor.Scintilla().EOLMode();
-        //APPVERIFY(toEolMode(doc.m_format) == eolMode);
         auto eolDesc = getEolFormatDescription(doc.m_format);
         m_statusBar.SetPart(0, STATUSBAR_EOL_FORMAT,
                             (doc.m_format == EOLFormat::Win_Format) ? L"CR/LF" : (doc.m_format == EOLFormat::Mac_Format ? L"CR" : L"LF"),
@@ -2641,16 +2457,12 @@ void CMainWindow::UpdateCaptionBar()
         sTitle += doc.m_path.empty() ? m_allTabs[idx].name : doc.m_path;
         if (doc.m_bNeedsSaving || doc.m_bIsDirty)
             sTitle += L" * ";
-        //sTitle += L" - ";
-        //sTitle += appName;
-        //SetWindowText(*this, sTitle.c_str());
         m_titleText = sTitle;
     }
     else
     {
         if (!elev.empty())
             appName += L" : " + elev;
-        //SetWindowText(*this, appName.c_str());
         m_titleText = appName;
     }
 
@@ -2923,71 +2735,6 @@ bool CMainWindow::AskToCreateNonExistingFile(const std::wstring& path) const
     bool bCreate = (nClickedBtn == 101);
     return bCreate;
 }
-
-//void CMainWindow::CopyCurDocPathToClipboard() const
-//{
-//    auto id = GetCurrentTabId();
-//    if (m_docManager.HasDocumentID(id))
-//    {
-//        const auto& doc = m_docManager.GetDocumentFromID(id);
-//        WriteAsciiStringToClipboard(doc.m_path.c_str(), *this);
-//    }
-//}
-//
-//void CMainWindow::CopyCurDocNameToClipboard() const
-//{
-//    auto id = GetCurrentTabId();
-//    if (m_docManager.HasDocumentID(id))
-//    {
-//        const auto& doc = m_docManager.GetDocumentFromID(id);
-//        WriteAsciiStringToClipboard(CPathUtils::GetFileName(doc.m_path).c_str(), *this);
-//    }
-//}
-//
-//void CMainWindow::CopyCurDocDirToClipboard() const
-//{
-//    auto id = GetCurrentTabId();
-//    if (m_docManager.HasDocumentID(id))
-//    {
-//        const auto& doc = m_docManager.GetDocumentFromID(id);
-//        WriteAsciiStringToClipboard(CPathUtils::GetParentDirectory(doc.m_path).c_str(), *this);
-//    }
-//}
-
-//void CMainWindow::ShowCurDocInExplorer() const
-//{
-//    auto id = GetCurrentTabId();
-//    if (m_docManager.HasDocumentID(id))
-//    {
-//        CoInitialize(nullptr);
-//        const auto& doc                    = m_docManager.GetDocumentFromID(id);
-//        PCIDLIST_ABSOLUTE __unaligned pidl = ILCreateFromPath(doc.m_path.c_str());
-//        //ITEMIDLIST* pidl                   = ILCreateFromPath(doc.m_path.c_str());
-//        if (pidl)
-//        {
-//            SHOpenFolderAndSelectItems(pidl, 0, nullptr, 0);
-//            CoTaskMemFree(static_cast<LPVOID>(const_cast<PIDLIST_ABSOLUTE>(pidl)));
-//        }
-//    }
-//}
-
-//void CMainWindow::ShowCurDocExplorerProperties() const
-//{
-//    auto id = GetCurrentTabId();
-//    if (m_docManager.HasDocumentID(id))
-//    {
-//        // This creates an ugly exception dialog on my machine in debug mode
-//        // but it seems to work anyway.
-//        const auto&      doc  = m_docManager.GetDocumentFromID(id);
-//        SHELLEXECUTEINFO info = {sizeof(SHELLEXECUTEINFO)};
-//        info.lpVerb           = L"properties";
-//        info.lpFile           = doc.m_path.c_str();
-//        info.nShow            = SW_NORMAL;
-//        info.fMask            = SEE_MASK_INVOKEIDLIST;
-//        info.hwnd             = *this;
-//        ShellExecuteEx(&info);
-//    }
-//}
 
 void CMainWindow::HandleClipboardUpdate()
 {
@@ -3332,7 +3079,7 @@ void CMainWindow::HandleGetDispInfo(int tab, LPNMTTDISPINFO lpNmtdi)
     GetCursorPos(&p);
     ScreenToClient(*this, &p);
     HWND hWin = RealChildWindowFromPoint(*this, p);
-    if (hWin == *this)//m_tabBar)
+    if (hWin == *this)
     {
         auto docId = GetIDFromIndex(tab);
         if (docId.IsValid())
@@ -3754,7 +3501,7 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
                 return false;
         }
 
-        CDocument doc = m_docManager.LoadFile(*this, filepath, encoding, createIfMissing);
+        CDocument doc = m_docManager.LoadFile(/**this,*/ filepath, encoding, createIfMissing);
         if (doc.m_document)
         {
             DocID activeTabId;
@@ -4225,7 +3972,7 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
             tempDoc.m_path    = tempPath;
             bool bDummy       = false;
             bool bModified    = doc.m_bIsDirty || doc.m_bNeedsSaving;
-            m_docManager.SaveFile(*this, tempDoc, bDummy);
+            m_docManager.SaveFile(/**this, */tempDoc, bDummy);
 
             COPYDATASTRUCT cpd  = {0};
             cpd.dwData          = CD_COMMAND_MOVETAB;
@@ -4275,7 +4022,7 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
                             CDocument tempDoc = doc;
                             tempDoc.m_path    = destPath;
                             bool bDummy       = false;
-                            m_docManager.SaveFile(*this, tempDoc, bDummy);
+                            m_docManager.SaveFile(/**this,*/ tempDoc, bDummy);
                             OpenFile(destPath, OpenFlags::AddToMRU);
                         }
                         else
@@ -4297,7 +4044,7 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
     tempDoc.m_path    = tempPath;
     bool bDummy       = false;
     bool bModified    = doc.m_bIsDirty || doc.m_bNeedsSaving;
-    m_docManager.SaveFile(*this, tempDoc, bDummy);
+    m_docManager.SaveFile(/**this,*/ tempDoc, bDummy);
 
     // have the plugins save any information for this document
     // before we start the new process!
@@ -4380,7 +4127,7 @@ bool CMainWindow::ReloadTab(int tab, int encoding, bool dueToOutsideChanges)
 
     // LoadFile increases the reference count, so decrease it here first
     editor->Scintilla().ReleaseDocument(doc.m_document);
-    CDocument docReload = m_docManager.LoadFile(*this, doc.m_path, encoding, false);
+    CDocument docReload = m_docManager.LoadFile(/**this,*/ doc.m_path, encoding, false);
     if (!docReload.m_document)
     {
         // since we called SCI_RELEASEDOCUMENT but LoadFile did not properly load,
@@ -4406,7 +4153,6 @@ bool CMainWindow::ReloadTab(int tab, int encoding, bool dueToOutsideChanges)
     doc.SetLanguage(lang);
     editor->RestoreCurrentPos(docReload.m_position);
     editor->Scintilla().SetReadOnly(docReload.m_bIsWriteProtected);
-    //CEditorConfigHandler::Instance().ApplySettingsForPath(doc.m_path, editor, doc, false);
     RefreshAnnotations();
 
     TBHDR tbHdr        = {};
@@ -4519,7 +4265,6 @@ void CMainWindow::ShowFileTree(bool bShow)
         InvalidateRect(m_hwnd, nullptr, TRUE);
 
     CIniSettings::Instance().SetInt64(L"View", L"FileTreeVisible", m_fileTreeVisible);
-    //CIniSettings::Instance().SetInt64(L"View", L"FileTreeVisible", m_fileTreeVisible ? m_treeWidth : 0);
 }
 
 void CMainWindow::OpenFiles(const std::vector<std::wstring>& paths)
@@ -4697,10 +4442,6 @@ void CMainWindow::SetTheme(bool dark)
     CCommandHandler::Instance().OnThemeChanged(dark);
     
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
-    //RECT rc{0};
-    //GetClientRect(*this, &rc);
-    //SetWindowPos(*this, nullptr, 0, 0, rc.right - rc.left, rc.bottom - rc.top - 1, SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-    //SetWindowPos(*this, nullptr, 0, 0, rc.right - rc.left, rc.bottom - rc.top, SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 }
 
 void CMainWindow::RefreshAnnotations()
@@ -4854,7 +4595,6 @@ void CMainWindow::DrawTabs(HDC hdc)
         {
              std::wstring iconText = L"~";
              iconPos.X -= 5;
-             //iconPos.Y -= 2;
              graphics.DrawString(iconText.c_str(), -1, &font, iconPos, &brush);
         }
         else if (m_allTabs[i].state == READONLY_DOC)
@@ -4892,13 +4632,6 @@ void CMainWindow::DrawTabs(HDC hdc)
         DeleteObject(hoverBrush);
     }
         
-
-
-    //icon_rect = {0, 0, 14, 1};
-    //CenterRectInRect(&icon_rect, &m_allRects.layout);
-    //Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-
-
     //Draw tab bar scroll arrow
     tabrc                          = m_allRects.leftRoller;// GetTabbarRect();
     int                       xPos = tabrc.left + 4;
@@ -4916,14 +4649,12 @@ void CMainWindow::DrawTabs(HDC hdc)
 }
 
 void CMainWindow::DrawTitlebar(HDC hdc) {
-    //bool isDark = CTheme::Instance().IsDarkTheme();
     THEME theme  = CTheme::CurrentTheme();
     //// Paint Background
     HBRUSH bg_brush = CreateSolidBrush(theme.winBack);
     RECT   titlebarRect = m_allRects.total;
     titlebarRect.bottom -= theme.tabHeight;//TABBAR_HEIGHT;
     FillRect(hdc, &titlebarRect, bg_brush);
-    //DeleteObject(bg_brush);
     HBRUSH      hoverBrush  = CreateSolidBrush(theme.itemHover);
 
     switch (m_hoveredRect)
@@ -4952,12 +4683,8 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     DeleteObject(hoverBrush);
 
     /* Start to draw all title bar buttons */
-    //HPEN pen = CreatePen(PS_SOLID, 2, theme.winFore);//isDark ? RGB(255, 255, 255) : RGB(0, 0, 0));
-    //HPEN backPen = CreatePen(PS_SOLID, 1, theme.winBack);
     HPEN pen = CreatePen(PS_SOLID, 1, theme.winFore);
-
     SelectObject(hdc, pen);
-
     RECT icon_rect   = {0,0,14,14};
 
     // Draw system menu icon
@@ -4969,7 +4696,7 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
     MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, NULL);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
-    //UpdateTitlebarRects();
+
     // Draw title text
     SetBkColor(hdc, theme.winBack);
     SetTextColor(hdc, theme.winFore);
@@ -4978,7 +4705,6 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     icon_rect = {0, 0, rc.right - rc.left, rc.bottom - rc.top};
     CenterRectInRect(&icon_rect, &rc);
     icon_rect.top += 6;
-    //TextOut(hdc, icon_rect.left, icon_rect.top + 2, m_titleText.c_str(), static_cast<int>(m_titleText.size()));
     DrawText(hdc, m_titleText.c_str(), -1, &icon_rect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
 
     // Draw close button
@@ -5174,3 +4900,12 @@ void CMainWindow::ShowAutoComplete()
     m_autoCompleter.HandleScintillaEvents(&scn);
 }
 
+BOOL CMainWindow::HasActiveDocument() 
+{
+    return m_docManager.HasDocumentID(GetCurrentTabId());
+}
+
+const CDocument& CMainWindow::GetActiveDocument() const
+{
+    return m_docManager.GetDocumentFromID(GetCurrentTabId());
+}

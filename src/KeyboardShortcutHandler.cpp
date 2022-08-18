@@ -19,7 +19,6 @@
 #include "SimpleIni.h"
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
-#include "main.h"
 #include "ResString.h"
 #include "AppUtils.h"
 

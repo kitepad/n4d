@@ -16,7 +16,6 @@
 //
 #include "stdafx.h"
 #include "AppUtils.h"
-#include "main.h"
 #include "StringUtils.h"
 #include "PathUtils.h"
 #include "TempFile.h"

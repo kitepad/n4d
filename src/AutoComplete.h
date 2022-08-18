@@ -39,7 +39,7 @@ class CAutoComplete
     friend class CAutoCompleteConfigDlg;
 
 public:
-    CAutoComplete(CMainWindow* main, CScintillaWnd* scintilla);
+    CAutoComplete(CScintillaWnd* scintilla);
     virtual ~CAutoComplete();
 
     void Init();
@@ -49,7 +49,6 @@ public:
     void AddWords(const std::string& lang, const std::map<std::string, AutoCompleteType>& words);
     void AddWords(const DocID& docID, std::map<std::string, AutoCompleteType>&& words);
     void AddWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words);
-    //bool StartAutoCompleteWord(bool onlyOneWord);
 
 private:
     //void                 PrepareWordList(std::map<std::string, AutoCompleteType>* wList);
@@ -64,7 +63,6 @@ private:
     
 private:
     CScintillaWnd* m_editor;
-    CMainWindow*   m_main;
 
     // map of [language, [word, AutoCompleteType]]
     std::map<std::string, std::map<std::string, AutoCompleteType, ci_less>> m_langWordList;

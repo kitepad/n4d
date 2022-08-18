@@ -27,12 +27,9 @@
 #include "ProgressDlg.h"
 #include "SysInfo.h"
 #include "OnOutOfScope.h"
-//#include "version.h"
 #include "CommandHandler.h"
-//#include "JumpListHelpers.h"
 #include "ResString.h"
 #include <wrl.h>
-//using Microsoft::WRL::ComPtr;
 
 HINSTANCE   g_hInst;
 HINSTANCE   g_hRes;
@@ -40,49 +37,7 @@ bool        firstInstance = false;
 IUIImagePtr g_emptyIcon;
 bool        g_useItemIcons = true;
 HWND        g_hMainWindow  = 0;
-//static void LoadLanguage(HINSTANCE hInstance)
-//{
-//    // load the language dll if required
-//    std::wstring lang = CIniSettings::Instance().GetString(L"UI", L"language", L"");
-//    if (!lang.empty())
-//    {
-//        std::wstring langDllPath = CAppUtils::GetDataPath(hInstance);
-//        langDllPath += L"\\BowPad_";
-//        langDllPath += lang;
-//        langDllPath += L".lang";
-//        //if (!CAppUtils::HasSameMajorVersion(langDllPath))
-//        //{
-//            // the language dll does not exist or does not match:
-//            // try downloading the new language dll right now
-//            // so the user gets the selected language immediately after
-//            // updating BowPad
-//            //std::wstring sLangURL = CStringUtils::Format(L"https://github.com/stefankueng/BowPad/raw/%d.%d.%d/Languages/%s/BowPad_%s.lang", BP_VERMAJOR, BP_VERMINOR, BP_VERMICRO, LANGPLAT, lang.c_str());
-//
-//            // note: text below is in English and not translatable because
-//            // we try to download the translation file here, so there's no
-//            // point in having this translated...
-//            //CProgressDlg progDlg;
-//            //progDlg.SetTitle(L"BowPad Update");
-//            //progDlg.SetLine(1, L"Downloading BowPad Language file...");
-//            //progDlg.ResetTimer();
-//            //progDlg.SetTime();
-//            //progDlg.ShowModal(nullptr);
-//
-//            //CDownloadFile fileDownloader(L"BowPad", &progDlg);
-//
-//            //if (!fileDownloader.DownloadFile(sLangURL, langDllPath))
-//            //{
-//            //    DeleteFile(langDllPath.c_str());
-//            //}
-//        //}
-//        if (CAppUtils::HasSameMajorVersion(langDllPath))
-//        {
-//            g_hRes = LoadLibraryEx(langDllPath.c_str(), nullptr, DONT_RESOLVE_DLL_REFERENCES | LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE);
-//            if (g_hRes == nullptr)
-//                g_hRes = g_hInst;
-//        }
-//    }
-//}
+//void*       g_pMainWindow  = nullptr;
 
 static void SetIcon()
 {
@@ -152,54 +107,6 @@ static void RegisterContextMenu(bool bAdd)
     }
 }
 
-//static void SetJumplist(LPCTSTR appID)
-//{
-//    CoInitialize(nullptr);
-//    OnOutOfScope(CoUninitialize());
-//    ComPtr<ICustomDestinationList> pcdl;
-//    HRESULT                        hr = CoCreateInstance(CLSID_DestinationList, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(pcdl.GetAddressOf()));
-//    if (SUCCEEDED(hr))
-//    {
-//        hr = pcdl->DeleteList(appID);
-//        hr = pcdl->SetAppID(appID);
-//        if (FAILED(hr))
-//            return;
-//
-//        UINT                 uMaxSlots;
-//        ComPtr<IObjectArray> poaRemoved;
-//        hr = pcdl->BeginList(&uMaxSlots, IID_PPV_ARGS(&poaRemoved));
-//        if (FAILED(hr))
-//            return;
-//
-//        ComPtr<IObjectCollection> poc;
-//        hr = CoCreateInstance(CLSID_EnumerableObjectCollection, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(poc.GetAddressOf()));
-//        if (FAILED(hr))
-//            return;
-//
-//        if (!SysInfo::Instance().IsElevated())
-//        {
-//            ResString sTemp(g_hRes, IDS_RUNASADMIN);
-//
-//            ComPtr<IShellLink> pslAdmin;
-//            hr = CreateShellLink(L"/multiple", sTemp, 4, true, &pslAdmin);
-//            if (SUCCEEDED(hr))
-//            {
-//                hr = poc->AddObject(pslAdmin.Get());
-//            }
-//        }
-//
-//        ComPtr<IObjectArray> poa;
-//        hr = poc.As(&poa);
-//        if (SUCCEEDED(hr))
-//        {
-//            hr = pcdl->AppendKnownCategory(KDC_FREQUENT);
-//            hr = pcdl->AppendKnownCategory(KDC_RECENT);
-//            if (!SysInfo::Instance().IsElevated())
-//                hr = pcdl->AddUserTasks(poa.Get());
-//            hr = pcdl->CommitList();
-//        }
-//    }
-//}
 
 static void ForwardToOtherInstance(HWND hBowPadWnd, LPCTSTR lpCmdLine, CCmdLineParser& parser)
 {
@@ -358,12 +265,6 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
             //mainWindow.SetFileOpenMRU(false);
             firstInstance = false;
         }
-        //if (parser.HasKey(L"tabmove") && parser.HasKey(L"savepath"))
-        //{
-        //    std::wstring title = parser.HasVal(L"title") ? parser.GetVal(L"title") : L"";
-        //    mainWindow.SetTabMove(parser.GetVal(L"path"), parser.GetVal(L"savepath"), !!parser.HasKey(L"modified"), static_cast<long>(line), title);
-        //    mainWindow.SetFileOpenMRU(false);
-        //}
     }
     else
     {
@@ -434,19 +335,13 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
     }
 }
 
-//int bpMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCTSTR lpCmdLine, int nCmdShow, bool bAlreadyRunning)
-//{
-//    UNREFERENCED_PARAMETER(hInstance);
-//    UNREFERENCED_PARAMETER(hPrevInstance);
-//    UNREFERENCED_PARAMETER(nCmdShow);
 int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
 {
 
-    //SetDllDirectory(L"");
-    //HRESULT hr = CoInitialize(nullptr);
-    //if (FAILED(hr))
-    //    return -1;
-    //OnOutOfScope(CoUninitialize(););
+    HRESULT hr = CoInitialize(nullptr);
+    if (FAILED(hr))
+        return -1;
+    OnOutOfScope(CoUninitialize(););
 
     auto parser = std::make_unique<CCmdLineParser>(lpCmdLine);
     if (parser->HasKey(L"?") || parser->HasKey(L"help"))
@@ -490,38 +385,8 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
         }
     }
 
-    //auto appID = isAdminMode ? APP_ID_ELEVATED : APP_ID;
-    //SetAppID(appID);
-    //SetJumplist(appID);
-
     CIniSettings::Instance().SetIniPath(CAppUtils::GetDataPath() + L"\\n4d.settings");
-    //LoadLanguage(hInstance);
-
     SetIcon();
-
-    //auto                      ribbonVer = CPathUtils::GetVersionFromFile(L"UIRibbon.dll");
-    //std::vector<std::wstring> tokens;
-    //stringtok(tokens, ribbonVer, false, L".");
-    //g_useItemIcons = true;
-    //if (tokens.size() == 4)
-    //{
-    //    auto major = std::stol(tokens[0]);
-    //    auto minor = std::stol(tokens[1]);
-    //    auto micro = std::stol(tokens[2]);
-    //    //auto build = std::stol(tokens[3]);
-    //    if (major > 10)
-    //        g_useItemIcons = false;
-    //    else if (major == 10)
-    //    {
-    //        if (minor > 0)
-    //            g_useItemIcons = false;
-    //        else if (micro >= 19041 && micro < 22000)
-    //            g_useItemIcons = false;
-    //    }
-    //    if (g_useItemIcons)
-    //        CAppUtils::CreateImage(MAKEINTRESOURCE(IDB_EMPTY), g_emptyIcon);
-    //  
-    //}
 
     if (parser->HasKey(L"elevate") && parser->HasVal(L"savepath") && parser->HasVal(L"path"))
     {
@@ -576,7 +441,7 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     //if (modulePath.find(' ') != std::wstring::npos)
     //    modulePath = L"\"" + modulePath + L"\"";
     //SetRelaunchCommand(mainWindow, appID, (modulePath + params).c_str(), L"BowPad", sIconPath.c_str());
-    
+    //g_pMainWindow = &mainWindow;
     g_hMainWindow = mainWindow;
 
     // Main message loop:

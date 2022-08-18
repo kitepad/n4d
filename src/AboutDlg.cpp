@@ -15,7 +15,6 @@
 // See <http://www.gnu.org/licenses/> for a copy of the full license text
 //
 #include "stdafx.h"
-#include "main.h"
 #include "AboutDlg.h"
 #include "AppUtils.h"
 #include "Theme.h"
@@ -47,7 +46,7 @@ LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
             InitDialog(hwndDlg, IDI_BOWPAD);
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
             // initialize the controls
-            m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, L"http://tools.stefankueng.com");
+            //m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, L"http://tools.stefankueng.com");
             SetDlgItemText(hwndDlg, IDC_VERSIONLABEL, L"N4D (Notepad for Developer) 1.0.0 (64-bit)");
         }
             return TRUE;

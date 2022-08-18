@@ -23,7 +23,6 @@
 #include "ProgressBar.h"
 #include "CustomTooltip.h"
 #include "CommandPaletteDlg.h"
-//#include "ChoseLexerDlg.h"
 #include "AutoComplete.h"
 
 #include <list>
@@ -166,8 +165,9 @@ public:
     void AddAutoCompleteWords(const std::string& lang, const std::map<std::string, AutoCompleteType>& words);
     void AddAutoCompleteWords(const DocID& docID, std::map<std::string, AutoCompleteType>&& words);
     void AddAutoCompleteWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words);
-
-    static CMainWindow* GetMainWindow();
+    BOOL                HasActiveDocument();
+    const CDocument&           GetActiveDocument() const;
+    //static CMainWindow* GetMainWindow();
 
 protected:
     /// the message handler for this window
@@ -194,11 +194,6 @@ private:
     void                             CloseAllButThis(int idx = -1);
     void                             EnsureNewLineAtEnd(const CDocument& doc) const;
     void                             OpenNewTab();
-    //void                             CopyCurDocPathToClipboard() const;
-    //void                             CopyCurDocNameToClipboard() const;
-    //void                             CopyCurDocDirToClipboard() const;
-    //void                             ShowCurDocInExplorer() const;
-    //void                             ShowCurDocExplorerProperties() const;
     void                             PasteHistory();
     void                             About() const;
     void                             ShowStyleConfiguratorDlg() const;

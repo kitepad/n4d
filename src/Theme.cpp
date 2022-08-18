@@ -16,7 +16,6 @@
 //
 #include "stdafx.h"
 #include "Theme.h"
-#include "main.h"
 #include "AppUtils.h"
 #include "GDIHelpers.h"
 #include "DarkModeHelper.h"

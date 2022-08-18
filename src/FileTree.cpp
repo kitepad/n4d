@@ -80,7 +80,6 @@ static FileTreeItem* GetFileTreeItem(HWND hWnd, HTREEITEM hItem)
 
 CFileTree::CFileTree(HINSTANCE hInst)
     : CWindow(hInst)
-    //, ICommand(obj)
     , m_nBlockRefresh(0)
     , m_threadsRunning(0)
     , m_bStop(false)
@@ -104,6 +103,8 @@ void CFileTree::Clear()
     {
         delete data;
     }
+    SendMessage(*this, WM_SETREDRAW, FALSE, 0);
+    OnOutOfScope(SendMessage(*this, WM_SETREDRAW, TRUE, 0));
     TreeView_DeleteAllItems(*this);
 }
 
@@ -306,19 +307,19 @@ LRESULT CALLBACK CFileTree::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, L
             if (pData->refreshRoot != TVI_ROOT)
                 fi = GetFileTreeItem(*this, pData->refreshRoot);
             //CMainWindow* pMain = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(GetParent(*this), GWLP_USERDATA));
-            CMainWindow* pMain  = CMainWindow::GetMainWindow();
-
-            auto id = pMain->GetCurrentTabId();
-            bool hasDoc = pMain->m_docManager.HasDocumentID(id);
+            //CMainWindow* pMain  = CMainWindow::GetMainWindow();
+            //auto id = pMain->GetCurrentTabId();
+            //bool hasDoc = pMain->m_docManager.HasDocumentID(id);
             //const CDocument& doc    = pMain->m_docManager.GetDocumentFromID(pMain->GetCurrentTabId());
             if (((pData->refreshRoot == TVI_ROOT) && (CPathUtils::PathCompare(pData->refreshPath, m_path) == 0)) ||
                 (fi && (CPathUtils::PathCompare(fi->path, pData->refreshPath) == 0)))
             {
                 std::wstring activePath;
-                if(hasDoc)// (HasActiveDocument())
+  
+                CMainWindow* pMain = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
+                if (pMain->HasActiveDocument())
                 {
-                    const auto& doc = pMain->m_docManager.GetDocumentFromID(pMain->GetCurrentTabId());
-                    //GetActiveDocument();
+                    const auto& doc = pMain->GetActiveDocument();
                     if (!doc.m_path.empty() && (m_path.size() < doc.m_path.size()))
                     {
                         if (CPathUtils::PathCompare(m_path, doc.m_path.substr(0, m_path.size())) == 0)
@@ -739,16 +740,15 @@ void CFileTree::MarkActiveDocument(bool ensureVisible)
     if (m_nBlockRefresh)
         return;
     m_bBlockExpansion = false;
-
-    CMainWindow* pMain  = CMainWindow::GetMainWindow();
-    auto id     = pMain->GetCurrentTabId();
-    bool hasDoc = pMain->m_docManager.HasDocumentID(id);
-
+    
+    //CMainWindow* pMain  = static_cast<CMainWindow*>(g_pMainWindow); // CMainWindow::GetMainWindow();
+    //auto id     = pMain->GetCurrentTabId();
+    //bool hasDoc = pMain->m_docManager.HasDocumentID(id);
+    CMainWindow* pMain        = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
     bool bRecurseDone = false;
-    if (hasDoc) //HasActiveDocument())
+    if (pMain->HasActiveDocument())
     {
-        const auto& doc = pMain->m_docManager.GetDocumentFromID(pMain->GetCurrentTabId());
-        //GetActiveDocument();
+        const auto& doc = pMain->GetActiveDocument();
         if (!doc.m_path.empty())
         {
             if (!PathIsChild(m_path, doc.m_path))

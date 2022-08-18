@@ -24,6 +24,4 @@ extern bool firstInstance;
 extern IUIImagePtr g_emptyIcon;
 extern bool g_useItemIcons;
 extern HWND g_hMainWindow;
-
 #define EMPTY_IMAGE (g_useItemIcons ? g_emptyIcon : nullptr)
-

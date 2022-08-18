@@ -16,7 +16,6 @@
 //
 #include "stdafx.h"
 #include "AutoComplete.h"
-#include "main.h"
 #include "AppUtils.h"
 #include "MainWindow.h"
 #include "ScintillaWnd.h"
@@ -88,6 +87,7 @@
 //        return buf[position - startPos];
 //    }
 //};
+
 class SciTextReader
 {
 public:
@@ -344,9 +344,8 @@ static bool getPathsForPathCompletion(const std::wstring& input, std::wstring& p
     }
 }
 
-CAutoComplete::CAutoComplete(CMainWindow* main, CScintillaWnd* scintilla)
+CAutoComplete::CAutoComplete(CScintillaWnd* scintilla)
     : m_editor(scintilla)
-    , m_main(main)
     , m_insertingSnippet(false)
     , m_currentSnippetPos(-1)
 {
@@ -480,13 +479,15 @@ void CAutoComplete::HandleScintillaEvents(const SCNotification* scn)
                     if (colonPos != std::string::npos)
                     {
                         auto        sKey = sText.substr(0, colonPos);
+                        CMainWindow* pMain = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
                         std::string sSnippet;
                         {
                             std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
-                            auto                                  docID      = m_main->GetCurrentTabId();
-                            auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
-                            const auto&                           snippetMap = m_langSnippetList[lang];
-                            auto                                  foundIt    = snippetMap.find(sKey);
+                            //auto                                  docID      = m_main->GetCurrentTabId();
+                            //auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
+                            auto           lang       = pMain->GetActiveDocument().GetLanguage();
+                            const auto&    snippetMap = m_langSnippetList[lang];
+                            auto           foundIt    = snippetMap.find(sKey);
                             if (foundIt != snippetMap.end())
                             {
                                 sSnippet = foundIt->second;
@@ -498,8 +499,8 @@ void CAutoComplete::HandleScintillaEvents(const SCNotification* scn)
                             auto autoBrace = CIniSettings::Instance().GetInt64(L"View", L"autobrace", 1);
                             CIniSettings::Instance().SetInt64(L"View", L"autobrace", 0);
                             OnOutOfScope(CIniSettings::Instance().SetInt64(L"View", L"autobrace", autoBrace));
-                            m_main->m_bBlockAutoIndent = true;
-                            OnOutOfScope(m_main->m_bBlockAutoIndent = false);
+                            pMain->m_bBlockAutoIndent = true;
+                            OnOutOfScope(pMain->m_bBlockAutoIndent = false);
                             auto pos           = m_editor->Scintilla().CurrentPos();
                             auto startIndent   = m_editor->Scintilla().LineIndentation(m_editor->GetCurrentLineNumber());
                             auto tabWidth      = m_editor->Scintilla().TabWidth();
@@ -984,8 +985,10 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
                     std::string sAutoCompleteString;
                     {
                         std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
-                        auto                                  docID      = m_main->GetCurrentTabId();
-                        auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
+                        //auto                                  docID      = m_main->GetCurrentTabId();
+                        //auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
+                        CMainWindow*                          pMain      = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
+                        auto                                  lang       = pMain->GetActiveDocument().GetLanguage();
                         const auto&                           snippetMap = m_langSnippetList[lang];
                         auto                                  foundIt    = snippetMap.find(word);
                         if (foundIt != snippetMap.end())
@@ -1021,9 +1024,10 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
         PrepareWordList(wordSet);
         {
             std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
-            auto                                  docID        = m_main->GetCurrentTabId();
+            CMainWindow*                          pMain        = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
+            auto                                  docID        = pMain->GetCurrentTabId();
             auto                                  docAutoList  = m_docWordList[docID];
-            auto                                  lang         = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
+            auto                                  lang         = pMain->GetActiveDocument().GetLanguage();
             auto                                  langAutoList = m_langWordList[lang];
             const auto&                           snippetMap   = m_langSnippetList[lang];
             if (docAutoList.empty() && langAutoList.empty() && snippetMap.empty() && wordSet.empty())

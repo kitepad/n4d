@@ -2192,7 +2192,7 @@ void CFindReplaceDlg::SearchThread(
 
         // TODO! Ideally we need a means to check for cancellation during load so that
         // BowPad doesn't appear hung while loading large files.
-        CDocument doc = manager.LoadFile(nullptr, path, -1, false);
+        CDocument doc = manager.LoadFile(/*nullptr,*/ path, -1, false);
         // Don't crash if the document cannot be loaded. .e.g. if it is locked.
         if (doc.m_document != static_cast<Document>(0))
         {

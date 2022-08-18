@@ -16,7 +16,7 @@
 //
 #pragma once
 #include "BaseDialog.h"
-#include "hyperlink.h"
+//#include "hyperlink.h"
 
 /**
  * about dialog.
@@ -35,6 +35,6 @@ protected:
 private:
     //HWND                    m_hParent;
     //HWND                    m_hHiddenWnd;
-    CHyperLink              m_link;
+    //CHyperLink              m_link;
 };
 

@@ -77,3 +77,5 @@
 #define WM_SCICHAR           (WM_APP + 17)
 #define WM_EDITORCONTEXTMENU (WM_APP + 18)
 #define WM_TABCONTEXTMENU    (WM_APP + 19)
+
+#include "main.h"
