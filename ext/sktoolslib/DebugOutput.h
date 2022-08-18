@@ -169,7 +169,12 @@ private:
         : m_fi(nullptr)
     {
         m_lastTick = GetTickCount64();
-        m_bActive  = !!CRegStdDWORD(DEBUGOUTPUTREGPATH, FALSE);
+        //m_bActive  = !!CRegStdDWORD(DEBUGOUTPUTREGPATH, FALSE);
+#ifdef _DEBUG
+        m_bActive = true;
+#else
+        m_bActive = !!CRegStdDWORD(DEBUGOUTPUTREGPATH, FALSE);
+#endif
     }
     ~CTraceToOutputDebugString()
     {
@@ -204,7 +209,7 @@ private:
 
     bool IsActive()
     {
-#ifdef DEBUG
+#ifdef _DEBUG
         return true;
 #else
         if (GetTickCount64() - m_lastTick > 10000)
