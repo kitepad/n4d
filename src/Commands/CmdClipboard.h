@@ -17,8 +17,7 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "BowPadUI.h"
-//#include "commands.h"
+
 class ClipboardBase : public ICommand
 {
 public:
@@ -49,8 +48,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdCut; }
-
-    //void ScintillaNotify(SCNotification* pScn) override;
 };
 
 class CCmdCutPlain : public ClipboardBase
@@ -66,8 +63,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdCutPlain; }
-
-    //void ScintillaNotify(SCNotification* pScn) override;
 };
 
 class CCmdCopy : public ClipboardBase
@@ -113,10 +108,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdPaste; }
-
-    //void OnClipboardChanged() override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
 };
 
 class CCmdPasteHtml : public ClipboardBase
@@ -132,10 +123,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdPasteHtml; }
-
-    //void OnClipboardChanged() override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
 
 private:
     void HtmlExtractMetadata(const std::string& cfHtml, std::string* baseURL, size_t* htmlStart, size_t* fragmentStart, size_t* fragmentEnd) const;

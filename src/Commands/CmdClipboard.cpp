@@ -260,12 +260,6 @@ bool CCmdCut::Execute()
     return true;
 }
 
-//void CCmdCut::ScintillaNotify(SCNotification* pScn)
-//{
-//    //if (pScn->nmhdr.code == SCN_UPDATEUI)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
-
 bool CCmdCutPlain::Execute()
 {
     bool bEmpty = Scintilla().SelectionEmpty() != 0;
@@ -276,12 +270,6 @@ bool CCmdCutPlain::Execute()
     AddLexerToClipboard();
     return true;
 }
-
-//void CCmdCutPlain::ScintillaNotify(SCNotification* pScn)
-//{
-//    //if (pScn->nmhdr.code == SCN_UPDATEUI)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
 
 bool CCmdCopy::Execute()
 {
@@ -325,20 +313,6 @@ bool CCmdPaste::Execute()
     return true;
 }
 
-//void CCmdPaste::OnClipboardChanged()
-//{
-//    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
-
-//HRESULT CCmdPaste::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, (ScintillaCall(SCI_CANPASTE) != 0), pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 bool CCmdPasteHtml::Execute()
 {
     // test first if there's a file on the clipboard
@@ -364,20 +338,6 @@ bool CCmdPasteHtml::Execute()
     }
     return true;
 }
-
-//void CCmdPasteHtml::OnClipboardChanged()
-//{
-//    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
-
-//HRESULT CCmdPasteHtml::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, IsClipboardFormatAvailable(CF_HTML), pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
 
 void CCmdPasteHtml::HtmlExtractMetadata(const std::string& cfHtml,
                                         std::string*       baseURL,

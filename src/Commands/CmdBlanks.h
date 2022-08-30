@@ -17,8 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "BowPadUI.h"
-//#include "commands.h"
 #include "BaseDialog.h"
  
 class CCmdTrim : public ICommand
