@@ -30,55 +30,22 @@ bool CCmdEOLBase::Execute()
         doc.m_format = toEolFormat(lineType);
         UpdateStatusBar(true);
     }
-    //InvalidateUICommand(cmdEOLWin, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //InvalidateUICommand(cmdEOLUnix, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //InvalidateUICommand(cmdEOLMac, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
+
     return true;
 }
-
-//void CCmdEOLBase::TabNotify(TBHDR* ptbHdr)
-//{
-//    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-//    //}
-//}
-
-//HRESULT CCmdEOLBase::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_BooleanValue == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_BooleanValue, ScintillaCall(SCI_GETEOLMODE) == GetLineType(), pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
 
 CCmdEOLWin::CCmdEOLWin(void* obj)
     : CCmdEOLBase(obj)
 {
 }
 
-//void CCmdEOLWin::AfterInit()
-//{
-//    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-//}
-
 CCmdEOLUnix::CCmdEOLUnix(void* obj)
     : CCmdEOLBase(obj)
 {
 }
-
-//void CCmdEOLUnix::AfterInit()
-//{
-//    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-//}
 
 CCmdEOLMac::CCmdEOLMac(void* obj)
     : CCmdEOLBase(obj)
 {
 }
 
-//void CCmdEOLMac::AfterInit()
-//{
-//    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-//}

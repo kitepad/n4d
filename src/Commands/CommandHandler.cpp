@@ -60,52 +60,6 @@ CCommandHandler::CCommandHandler()
 
 std::unique_ptr<CCommandHandler> CCommandHandler::m_instance = nullptr;
 
-//CCommandHandler& CCommandHandler::Instance()
-//{
-//    if (m_instance == nullptr)
-//    {
-//        m_instance.reset(new CCommandHandler());
-//        m_instance.get()->LoadUIHeaders();
-//    }
-//    
-//    return *m_instance.get();
-//}
-
-//void CCommandHandler::LoadUIHeaders() 
-//{
-//    m_resourceData.clear();
-//    DWORD       resSize = 0;
-//    const char* resData = CAppUtils::GetResourceData(L"config", 152 /*IDR_BOWPADUIH*/, resSize);
-//    // parse the header file
-//    DWORD lastLineStart = 0;
-//    for (DWORD ind = 0; ind < resSize; ++ind)
-//    {
-//        if (resData[ind] == '\n')
-//        {
-//            std::string sLine(resData + lastLineStart, ind - lastLineStart);
-//            lastLineStart = ind + 1;
-//            // cut off '#define'
-//            if (sLine.empty())
-//                continue;
-//            if (sLine[0] == '/')
-//                continue;
-//            if (sLine.find("#define") == std::string::npos)
-//                continue;
-//            auto spacePos = sLine.find(' ');
-//            if (spacePos != std::string::npos)
-//            {
-//                auto spacePos2 = sLine.find(' ', spacePos + 1);
-//                if (spacePos2 != std::string::npos)
-//                {
-//                    std::string sIDString = sLine.substr(spacePos + 1, spacePos2 - spacePos - 1);
-//                    int         id        = atoi(sLine.substr(spacePos2).c_str());
-//                    m_resourceData[CUnicodeUtils::StdGetUnicode(sIDString)] = id;
-//                }
-//            }
-//        }
-//    }
-//}
-
 void CCommandHandler::ShutDown()
 {
     m_instance.reset(nullptr);

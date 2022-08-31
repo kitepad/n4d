@@ -100,22 +100,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdBookmarkNext; }
-
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-    //void ScintillaNotify(SCNotification* pScn) override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(
-    //    REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
-    //void TabNotify(TBHDR* ptbHdr) override
-    //{
-    //    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-    //    //{
-    //    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //    //}
-    //}
 };
 
 class CCmdBookmarkPrev : public ICommand
@@ -131,20 +115,4 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdBookmarkPrev; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //void ScintillaNotify(SCNotification* pScn) override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(
-    //    REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
-    //void TabNotify(TBHDR* ptbHdr) override
-    //{
-    //    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-    //    //{
-    //    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //    //}
-    //}
 };

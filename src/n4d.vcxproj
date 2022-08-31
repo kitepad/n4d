@@ -465,7 +465,6 @@
     <ClCompile Include="Commands\CmdClipboard.cpp" />
     <ClCompile Include="Commands\CmdComment.cpp" />
     <ClCompile Include="Commands\CmdConvertCase.cpp" />
-    <ClCompile Include="Commands\CmdEditSelection.cpp" />
     <ClCompile Include="Commands\CmdEOL.cpp" />
     <ClCompile Include="Commands\CmdFiles.cpp" />
     <ClCompile Include="Commands\CmdFindReplace.cpp" />

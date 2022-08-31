@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 #include "BaseDialog.h"
 
 class CGotoLineDlg : public CDialog, public ICommand
@@ -31,9 +30,6 @@ public:
     bool Execute() { return true; };
     void UpdateLineInfo();
     UINT GetCmdId() override { return cmdGotoLine; }
-
-    //sptr_t       line;
-    //std::wstring lineInfo;
 
 protected:
     LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;

@@ -300,27 +300,6 @@ bool CCmdSort::Execute()
     return true;
 }
 
-//void CCmdSort::ScintillaNotify(SCNotification* pScn)
-//{
-//    //if (pScn->nmhdr.code == SCN_UPDATEUI)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //    InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, nullptr);
-//    //}
-//}
-
-//HRESULT CCmdSort::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    // Enabled if there's something to go back to.
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        bool isRectangular = ScintillaCall(SCI_SELECTIONISRECTANGLE) != 0;
-//        // Don't handle multiple selections unless it's rectangular.
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, (ScintillaCall(SCI_GETSELECTIONS) > 1 && !isRectangular) ? FALSE : TRUE, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 static SortOptions GetSortOptions(HWND hWnd)
 {
     CSortDlg sortDlg;

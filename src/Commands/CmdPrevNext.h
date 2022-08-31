@@ -64,5 +64,4 @@ public:
 
     bool Execute() override;
     UINT GetCmdId() override { return cmdNext; }
-
 };

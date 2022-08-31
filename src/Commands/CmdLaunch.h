@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 #include "BaseDialog.h"
 #include "StringUtils.h"
 #include <Shobjidl.h>
@@ -97,14 +96,6 @@ public:
     {
         return cmdLaunchEdge;
     }
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override
-    //{
-    //    if (UI_PKEY_Enabled == key)
-    //    {
-    //        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, IsWindows10OrGreater(), pPropVarNewValue);
-    //    }
-    //    return E_NOTIMPL;
-    //}
 };
 
 
@@ -133,33 +124,6 @@ public:
     bool Execute() override { return Launch(L"chrome \"$(TAB_PATH)\""); }
     UINT GetCmdId() override { return cmdLaunchChrome; }
 };
-
-
-//class CCmdLaunchSearch : public LaunchBase
-//{
-//public:
-//    CCmdLaunchSearch(void* obj)
-//        : LaunchBase(obj)
-//    {
-//    }
-//    ~CCmdLaunchSearch() = default;
-//
-//    bool Execute() override;
-//    UINT GetCmdId() override { return cmdLaunchSearch; }
-//};
-//
-//class CCmdLaunchWikipedia : public LaunchBase
-//{
-//public:
-//    CCmdLaunchWikipedia(void* obj)
-//        : LaunchBase(obj)
-//    {
-//    }
-//    ~CCmdLaunchWikipedia() = default;
-//
-//    bool Execute() override { return Launch(L"http://en.wikipedia.org/wiki/Special:Search?search=$(SEL_TEXT_ESCAPED)"); }
-//    UINT GetCmdId() override { return cmdLaunchWikipedia; }
-//};
 
 class CCmdLaunchConsole : public LaunchBase
 {
@@ -192,51 +156,6 @@ public:
     bool Execute() override { return Launch(L"explorer \"$(TAB_DIR)\""); }
     UINT GetCmdId() override { return cmdLaunchExplorer; }
 };
-
-//class CCmdLaunchCustom : public LaunchBase
-//{
-//public:
-//    CCmdLaunchCustom(UINT customId, void* obj);
-//    ~CCmdLaunchCustom() = default;
-//
-//    bool Execute() override { return Launch(CIniSettings::Instance().GetString(L"CustomLaunch", m_settingsID.c_str(), L"")); }
-//    UINT GetCmdId() override { return m_customCmdId; }
-//    //void AfterInit() override;
-//
-//    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
-//
-//private:
-//    UINT         m_customId;
-//    UINT         m_customCmdId;
-//    std::wstring m_settingsID;
-//};
-
-//class CCustomCommandsDlg : public CDialog
-//{
-//public:
-//    CCustomCommandsDlg();
-//    virtual ~CCustomCommandsDlg() = default;
-//
-//protected:
-//    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
-//    LRESULT          DoCommand(int id);
-//
-//private:
-//    CDlgResizer m_resizer;
-//};
-
-//class CCmdCustomCommands : public ICommand
-//{
-//public:
-//    CCmdCustomCommands(void* obj)
-//        : ICommand(obj)
-//    {
-//    }
-//    ~CCmdCustomCommands() = default;
-//
-//    virtual bool Execute() override;
-//    virtual UINT GetCmdId() override { return cmdCustomCommands; }
-//};
 
 class CCmdLaunchSciter : public LaunchBase
 {

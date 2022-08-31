@@ -144,9 +144,6 @@ bool CCmdBookmarkToggle::Execute()
         DocScrollAddLineColor(DOCSCROLLTYPE_BOOKMARK, line, g_bmColor);
     }
     DocScrollUpdate();
-    //InvalidateUICommand(cmdBookmarkNext, UI_INVALIDATIONS_STATE, nullptr);
-    //InvalidateUICommand(cmdBookmarkPrev, UI_INVALIDATIONS_STATE, nullptr);
-    //InvalidateUICommand(cmdBookmarkClearAll, UI_INVALIDATIONS_STATE, nullptr);
 
     return true;
 }
@@ -178,25 +175,6 @@ bool CCmdBookmarkNext::Execute()
     return true;
 }
 
-//void CCmdBookmarkNext::ScintillaNotify(SCNotification* pScn)
-//{
-//    //if (pScn->nmhdr.code == SCN_MODIFIED)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //else if ((pScn->nmhdr.code == SCN_MARGINCLICK) && (pScn->margin == SC_MARGE_SYMBOL) && !pScn->modifiers)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
-
-//HRESULT CCmdBookmarkNext::IUICommandHandlerUpdateProperty(
-//    REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        auto nextPos = ScintillaCall(SCI_MARKERNEXT, 0, (1 << MARK_BOOKMARK));
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, nextPos >= 0, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 // CCmdBookmarkPrev
 
 bool CCmdBookmarkPrev::Execute()
@@ -214,21 +192,3 @@ bool CCmdBookmarkPrev::Execute()
     }
     return true;
 }
-
-//void CCmdBookmarkPrev::ScintillaNotify(SCNotification* pScn)
-//{
-//    //if (pScn->nmhdr.code == SCN_MODIFIED)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //else if ((pScn->nmhdr.code == SCN_MARGINCLICK) && (pScn->margin == SC_MARGE_SYMBOL) && !pScn->modifiers)
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//}
-
-//HRESULT CCmdBookmarkPrev::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        auto nextPos = ScintillaCall(SCI_MARKERNEXT, 0, (1 << MARK_BOOKMARK));
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, nextPos >= 0, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}

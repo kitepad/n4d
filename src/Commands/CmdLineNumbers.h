@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 #include "IniSettings.h"
 
 class CCmdLineNumbers : public ICommand

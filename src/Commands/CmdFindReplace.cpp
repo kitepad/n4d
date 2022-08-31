@@ -24,7 +24,6 @@
 #include "PathUtils.h"
 #include "DocumentManager.h"
 #include "DirFileEnum.h"
-//#include "BrowseFolder.h"
 #include "LexStyles.h"
 #include "OnOutOfScope.h"
 #include "ResString.h"
@@ -1509,43 +1508,6 @@ void CFindReplaceDlg::LetUserSelectSearchFolder()
         pItem->Release();
     }
 }
-
-//void CFindReplaceDlg::LetUserSelectSearchFolder()
-//{
-//    std::wstring currentFolder = GetDlgItemText(IDC_SEARCHFOLDER).get();
-//    std::wstring selectedFolder;
-//
-//    CBrowseFolder bf;
-//    ResString     title(g_hRes, IDS_APP_TITLE);
-//    bf.SetInfo(title);
-//    // Don't use a path that doesn't exist as the dialog will refuse to open.
-//    // Try to offer something other than blank.
-//    // If a path doesn't exist, try to back up to the first parent that does exist.
-//    if (currentFolder.empty())
-//        currentFolder = GetHomeFolder();
-//    while (!PathFileExists(currentFolder.c_str()))
-//    {
-//        auto parent = CPathUtils::GetParentDirectory(currentFolder);
-//        if (parent.empty())
-//            break;
-//        currentFolder = parent;
-//    }
-//    if (!PathFileExists(currentFolder.c_str()))
-//        currentFolder.clear();
-//    bf.m_style  = BIF_USENEWUI;
-//    auto result = bf.Show(*this, selectedFolder, currentFolder);
-//    if (result == CBrowseFolder::RetVal::Ok)
-//    {
-//        SetSearchFolder(selectedFolder);
-//        // If the user is changing the search folder they must
-//        // must be intending to click IDC_FINDFILES or IDC_FINDALLINDIR.
-//        // We'll assume it's find files and set the default button to that,
-//        // because if we set it to IDC_FINDALLINDIR that button is hidden
-//        // under the IDC_FINDBTN and they can't see it will be the default
-//        // button so they will have to click it anyway to be sure.
-//        SetDefaultButton(IDC_FINDFILES);
-//    }
-//}
 
 void CFindReplaceDlg::SetInfoText(UINT resid, AlertMode alertMode)
 {

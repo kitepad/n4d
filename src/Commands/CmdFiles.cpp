@@ -17,7 +17,6 @@
 #include "stdafx.h"
 #include "main.h"
 #include "CmdFiles.h"
-//#include "MRU.h"
 #include "LexStyles.h"
 #include "PreserveChdir.h"
 #include "PathUtils.h"
@@ -143,43 +142,6 @@ bool CCmdSave::Execute()
     return SaveCurrentTab();
 }
 
-//void CCmdSave::ScintillaNotify(SCNotification* pScn)
-//{
-//    //switch (pScn->nmhdr.code)
-//    //{
-//    //    case SCN_SAVEPOINTREACHED:
-//    //    case SCN_SAVEPOINTLEFT:
-//    //    {
-//    //        InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //    }
-//    //    break;
-//    //    default:
-//    //        break;
-//    //}
-//}
-
-//void CCmdSave::TabNotify(TBHDR* ptbHdr)
-//{
-//    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //}
-//}
-
-//HRESULT CCmdSave::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        if (HasActiveDocument())
-//        {
-//            const auto& doc = GetActiveDocument();
-//            return UIInitPropertyFromBoolean(UI_PKEY_Enabled, doc.m_bIsDirty || doc.m_bNeedsSaving, pPropVarNewValue);
-//        }
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, false, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 bool CCmdSaveAll::Execute()
 {
     auto docCount = GetDocumentCount();
@@ -194,95 +156,10 @@ bool CCmdSaveAll::Execute()
     return true;
 }
 
-//void CCmdSaveAll::ScintillaNotify(SCNotification* pScn)
-//{
-//    //switch (pScn->nmhdr.code)
-//    //{
-//    //    case SCN_SAVEPOINTREACHED:
-//    //    case SCN_SAVEPOINTLEFT:
-//    //    {
-//    //        InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //    }
-//    //    break;
-//    //    default:
-//    //        break;
-//    //}
-//}
-
-//void CCmdSaveAll::TabNotify(TBHDR* ptbHdr)
-//{
-//    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //}
-//}
-
-//HRESULT CCmdSaveAll::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        auto docCount   = GetDocumentCount();
-//        int  dirtyCount = 0;
-//        for (decltype(docCount) i = 0; i < docCount; ++i)
-//        {
-//            const auto& doc = GetDocumentFromID(GetDocIDFromTabIndex(i));
-//            if (doc.m_bIsDirty || doc.m_bNeedsSaving)
-//                dirtyCount++;
-//        }
-//
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, dirtyCount > 0, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 bool CCmdSaveAs::Execute()
 {
     return SaveCurrentTab(true);
 }
-
-//HRESULT CCmdReload::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        if (HasActiveDocument())
-//        {
-//            const auto& doc = GetActiveDocument();
-//            return UIInitPropertyFromBoolean(UI_PKEY_Enabled, !doc.m_path.empty(), pPropVarNewValue);
-//        }
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, false, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
-//void CCmdReload::TabNotify(TBHDR* ptbHdr)
-//{
-//    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //}
-//}
-
-//HRESULT CCmdFileDelete::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        if (HasActiveDocument())
-//        {
-//            const auto& doc = GetActiveDocument();
-//            return UIInitPropertyFromBoolean(UI_PKEY_Enabled, !doc.m_path.empty(), pPropVarNewValue);
-//        }
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, false, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
-//void CCmdFileDelete::TabNotify(TBHDR* ptbHdr)
-//{
-//    //if (ptbHdr->hdr.code == TCN_SELCHANGE)
-//    //{
-//    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-//    //}
-//}
 
 bool CCmdFileDelete::Execute()
 {
@@ -375,19 +252,8 @@ bool CCmdSaveAuto::Execute()
 {
     int autoSave = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"AutoSave", 0));
     SetInt64(DEFAULTS_SECTION, L"AutoSave", autoSave ? 0 : 1);
-    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
     return true;
 }
-
-//HRESULT CCmdSaveAuto::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_BooleanValue == key)
-//    {
-//        int autoSave = static_cast<int>(CIniSettings::Instance().GetInt64(L"View", L"autosave", 0));
-//        return UIInitPropertyFromBoolean(UI_PKEY_BooleanValue, autoSave != 0, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
 
 void CCmdSaveAuto::TabNotify(TBHDR* ptbHdr)
 {
@@ -474,11 +340,6 @@ bool CCmdOpenFolder::Execute()
         if (CAppUtils::FailedShowMessage(hr))
             return false;
     }
-
-    //IShellItemPtr psiaResult;
-    //hr = pfd->GetResult(&psiaResult);
-    //if (CAppUtils::FailedShowMessage(hr))
-    //    return false;
 
     // Fetch the (possibly multiple) results. Some may possibly fail
     // but get as many as we can. We don't report partial failure.

@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdLineDuplicate : public ICommand
 {

@@ -85,7 +85,6 @@ CCmdAutoBraces::CCmdAutoBraces(void* obj)
 bool CCmdAutoBraces::Execute()
 {
     SetInt64(DEFAULTS_SECTION, L"autobrace", GetInt64(DEFAULTS_SECTION, L"AutoBrace") ? 0 : 1);
-    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
     return true;
 }
 

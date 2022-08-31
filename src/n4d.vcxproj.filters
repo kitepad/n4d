@@ -452,9 +452,6 @@
     <ClCompile Include="BPBaseDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Commands\CmdEditSelection.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
     <ClCompile Include="CustomLexers\LexLog.cxx">
       <Filter>Lexer</Filter>
     </ClCompile>

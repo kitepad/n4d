@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdUndo : public ICommand
 {
@@ -36,25 +35,6 @@ public:
     }
 
     UINT GetCmdId() override { return cmdUndo; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //void ScintillaNotify(SCNotification* pScn) override
-    //{
-    //    //if (pScn->nmhdr.code == SCN_MODIFIED)
-    //    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override
-    //{
-    //    if (UI_PKEY_Enabled == key)
-    //    {
-    //        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, (ScintillaCall(SCI_CANUNDO) != 0), pPropVarNewValue);
-    //    }
-    //    return E_NOTIMPL;
-    //}
 };
 
 class CCmdRedo : public ICommand
@@ -74,23 +54,4 @@ public:
     }
 
     UINT GetCmdId() override { return cmdRedo; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //void ScintillaNotify(SCNotification* pScn) override
-    //{
-    //    //if (pScn->nmhdr.code == SCN_MODIFIED)
-    //    //    InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override
-    //{
-    //    if (UI_PKEY_Enabled == key)
-    //    {
-    //        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, (ScintillaCall(SCI_CANREDO) != 0), pPropVarNewValue);
-    //    }
-    //    return E_NOTIMPL;
-    //}
 };

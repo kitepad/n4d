@@ -17,8 +17,7 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "BowPadUI.h"
-//#include "commands.h"
+
 class CCmdEditSelection : public ICommand
 {
 public:
@@ -29,10 +28,7 @@ public:
 
     ~CCmdEditSelection() = default;
 
-    bool Execute() override;
+    bool Execute() override { MarkSelectedWord(false, true); return true; }
 
     UINT GetCmdId() override { return cmdEditSelection; }
-
-    //void    ScintillaNotify(SCNotification* pScn) override;
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
 };

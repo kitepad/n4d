@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdEOLBase : public ICommand
 {
@@ -25,8 +24,6 @@ protected:
     // Don't do anything in this base, like call InvalidateUICommand which
     // might result in a virtual call and the derived class won't be setup.
     CCmdEOLBase(void* obj) : ICommand(obj) {}
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
-    //void TabNotify(TBHDR* ptbHdr) override;
     bool Execute() override;
     virtual Scintilla::EndOfLine GetLineType() const = 0;
 };
@@ -37,7 +34,6 @@ public:
     CCmdEOLWin(void* obj);
     UINT GetCmdId() override { return cmdEOLWin; }
     Scintilla::EndOfLine GetLineType() const override { return Scintilla::EndOfLine::CrLf; }
-    //void AfterInit() override;
 };
 
 class CCmdEOLUnix : public CCmdEOLBase
@@ -46,7 +42,6 @@ public:
     CCmdEOLUnix(void* obj);
     UINT GetCmdId() override { return cmdEOLUnix; }
     Scintilla::EndOfLine GetLineType() const override { return Scintilla::EndOfLine::Lf; }
-    //void AfterInit() override;
 };
 
 class CCmdEOLMac : public CCmdEOLBase
@@ -55,5 +50,4 @@ public:
     CCmdEOLMac(void* obj);
     UINT GetCmdId() override { return cmdEOLMac; }
     Scintilla::EndOfLine GetLineType() const override { return Scintilla::EndOfLine::Cr; }
-    //void AfterInit() override;
 };

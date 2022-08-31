@@ -17,6 +17,7 @@
 
 #pragma once
 #include "ICommand.h"
+
 class CCmdOpen : public ICommand
 {
 public:
@@ -56,15 +57,6 @@ public:
 
     bool Execute() override;
     UINT GetCmdId() override { return cmdSave; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //void ScintillaNotify(SCNotification* pScn) override;
-    //void TabNotify(TBHDR* ptbHdr) override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
 };
 
 class CCmdSaveAll : public ICommand
@@ -78,15 +70,6 @@ public:
 
     bool Execute() override;
     UINT GetCmdId() override { return cmdSaveAll; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_STATE, nullptr);
-    //}
-
-    //void ScintillaNotify(SCNotification* pScn) override;
-    //void TabNotify(TBHDR* ptbHdr) override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
 };
 
 class CCmdSaveAuto : public ICommand
@@ -101,7 +84,6 @@ public:
     bool Execute() override;
     UINT GetCmdId() override { return cmdSaveAuto; }
 
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
     void    TabNotify(TBHDR* ptbHdr) override;
     void    ScintillaNotify(SCNotification* pScn) override;
 
@@ -140,10 +122,6 @@ public:
         return true;
     }
     UINT GetCmdId() override { return cmdReload; }
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
-
-    //void TabNotify(TBHDR* ptbHdr) override;
 };
 
 class CCmdFileDelete : public ICommand
@@ -158,8 +136,4 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdFileDelete; }
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* pPropVarCurrentValue, PROPVARIANT* pPropVarNewValue) override;
-
-    //void TabNotify(TBHDR* ptbHdr) override;
 };

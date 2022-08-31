@@ -17,8 +17,7 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "BowPadUI.h"
-//#include "commands.h"
+
 class CCmdConvertUppercase : public ICommand
 {
 public:
@@ -32,10 +31,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdUppercase; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //}
 };
 
 class CCmdConvertLowercase : public ICommand
@@ -51,10 +46,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdLowercase; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //}
 };
 
 class CCmdConvertTitlecase : public ICommand
@@ -70,8 +61,4 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdTitlecase; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //}
 };

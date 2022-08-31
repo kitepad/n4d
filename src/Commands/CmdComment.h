@@ -17,8 +17,7 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "BowPadUI.h"
-//#include "commands.h"
+
 class CCmdComment : public ICommand
 {
 public:

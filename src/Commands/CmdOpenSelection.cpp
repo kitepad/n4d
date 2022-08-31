@@ -67,41 +67,6 @@ bool CCmdOpenSelection::Execute()
     return false;
 }
 
-//void CCmdOpenSelection::AfterInit()
-//{
-//    // invalidate the label and enabled state immediately here:
-//    // if it's not invalidated here, the first attempt to show the
-//    // context menu will only show the pre-set text for the command label.
-//    //InvalidateUICommand(cmdOpenSelection, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_Label);
-//    //InvalidateUICommand(cmdOpenSelection, UI_INVALIDATIONS_STATE, &UI_PKEY_Enabled);
-//}
-
-//HRESULT CCmdOpenSelection::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, !GetPathUnderCursor().empty(), pPropVarNewValue);
-//    }
-//    if (UI_PKEY_Label == key)
-//    {
-//        // add the filename to the command label
-//        std::wstring path = GetPathUnderCursor();
-//        path              = CPathUtils::GetFileName(path);
-//
-//        ResString label(g_hRes, cmdOpenSelection_LabelTitle_RESID);
-//        if (!path.empty())
-//        {
-//            wchar_t compactPath[100] = {};
-//            PathCompactPathEx(compactPath, path.c_str(), 30, 0);
-//            std::wstring tip = CStringUtils::Format(L"%s \"%s\"", static_cast<LPCWSTR>(label), compactPath);
-//            return UIInitPropertyFromString(UI_PKEY_Label, tip.c_str(), pPropVarNewValue);
-//        }
-//        else
-//            return UIInitPropertyFromString(UI_PKEY_Label, label, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
-
 std::wstring CCmdOpenSelection::GetPathUnderCursor()
 {
     if (!HasActiveDocument())
@@ -120,9 +85,6 @@ std::wstring CCmdOpenSelection::GetPathUnderCursor()
                                           Scintilla().WordEndPosition(pos, false));
         pathUnderCursor    = CUnicodeUtils::StdGetUnicode(sWordA);
     }
-
-    //InvalidateUICommand(cmdOpenSelection, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_Label);
-    //InvalidateUICommand(cmdOpenSelection, UI_INVALIDATIONS_STATE, &UI_PKEY_Enabled);
 
     // Look for the file name under the cursor in either the same directory
     // as the current document or in it's parent directory.

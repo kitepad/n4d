@@ -82,12 +82,8 @@ public:
     void        OnThemeChanged(bool bDark);
     void        OnLangChanged();
     void        OnStylesSet();
-    //const auto& GetPluginMap() const { return m_plugins; }
-    //int         GetPluginVersion(const std::wstring& name);
     void        AddCommand(ICommand* cmd);
     void        AddCommand(UINT cmdId);
-    //void        InsertPlugins(void* obj);
-    //void        PluginNotify(UINT cmdId, const std::wstring& pluginName, LPARAM data);
 
     const std::map<UINT, std::unique_ptr<ICommand>>& GetCommands() const
     {
@@ -117,8 +113,6 @@ private:
 
     std::map<UINT, std::unique_ptr<ICommand>> m_commands;
     std::map<UINT, ICommand*>                 m_noDeleteCommands;
-    //std::map<UINT, std::wstring>              m_plugins;
-    //std::map<std::wstring, int>               m_pluginVersion;
     UINT                                      m_highestCmdId;
     static std::unique_ptr<CCommandHandler>   m_instance;
     std::unordered_map<std::wstring, UINT>     m_resourceData;

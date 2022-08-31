@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdPrint : public ICommand
 {
@@ -36,11 +35,6 @@ public:
     }
 
     UINT GetCmdId() override { return cmdPrint; }
-    //void AfterInit() override
-    //{
-    //    //InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
-    //}
-
     void Print(bool bShowDlg);
 };
 

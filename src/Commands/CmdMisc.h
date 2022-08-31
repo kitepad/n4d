@@ -313,23 +313,3 @@ public:
 
     UINT GetCmdId() override { return cmdFrameCaretLine; }
 };
-
-//class CCmdScrollStyle : public ICommand
-//{
-//public:
-//    CCmdScrollStyle(void* obj)
-//        : ICommand(obj)
-//    {
-//    }
-//
-//    ~CCmdScrollStyle() = default;
-//
-//    bool Execute() override
-//    {
-//        auto val = CIniSettings::Instance().GetInt64(L"View", L"scrollstyle", 1) ? 0 : 1;
-//        CIniSettings::Instance().SetInt64(L"View", L"scrollstyle", val);
-//        return true;
-//    }
-//
-//    UINT GetCmdId() override { return cmdScrollStyle; }
-//};

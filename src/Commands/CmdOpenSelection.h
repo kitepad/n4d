@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdOpenSelection : public ICommand
 {
@@ -29,9 +28,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdOpenSelection; }
-    //void AfterInit() override;
-
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
 
 private:
     std::wstring GetPathUnderCursor();

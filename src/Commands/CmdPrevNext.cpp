@@ -105,8 +105,6 @@ void CCmdPrevNext::ScintillaNotify(SCNotification* pScn)
                 {
                     auto col = Scintilla().Column(Scintilla().CurrentPos());
                     AddNewPosition(g_currentDocId, line, col);
-                    //InvalidateUICommand(cmdPrevious, UI_INVALIDATIONS_STATE, nullptr);
-                    //InvalidateUICommand(cmdNext, UI_INVALIDATIONS_STATE, nullptr);
                 }
                 return;
             }
@@ -116,8 +114,6 @@ void CCmdPrevNext::ScintillaNotify(SCNotification* pScn)
                     ResizePositionSpace();
                     auto col = Scintilla().Column(Scintilla().CurrentPos());
                     AddNewPosition(g_currentDocId, line, col);
-                    //InvalidateUICommand(cmdPrevious, UI_INVALIDATIONS_STATE, nullptr);
-                    //InvalidateUICommand(cmdNext, UI_INVALIDATIONS_STATE, nullptr);
                     SetCurrentLine(line);
                 };
                 // Store a new position if it's more than 10 lines from the old one.
@@ -207,22 +203,10 @@ bool CCmdPrevious::Execute()
         SetCurrentLine(data.line);
         ++g_offsetBeforeEnd;
         g_ignore = false;
-        //InvalidateUICommand(cmdPrevious, UI_INVALIDATIONS_STATE, nullptr);
-        //InvalidateUICommand(cmdNext, UI_INVALIDATIONS_STATE, nullptr);
         return true;
     }
     return false;
 }
-
-//HRESULT CCmdPrevious::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    // Enabled if there's something to go back to.
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, g_positions.size() > g_offsetBeforeEnd + 1, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}
 
 bool CCmdNext::Execute()
 {
@@ -257,19 +241,7 @@ bool CCmdNext::Execute()
         Scintilla().GrabFocus();
         SetCurrentLine(data.line);
         g_ignore = false;
-        //InvalidateUICommand(cmdPrevious, UI_INVALIDATIONS_STATE, nullptr);
-        //InvalidateUICommand(cmdNext, UI_INVALIDATIONS_STATE, nullptr);
         return true;
     }
     return false;
 }
-
-//HRESULT CCmdNext::IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue)
-//{
-//    // enabled if there's something to go forward to
-//    if (UI_PKEY_Enabled == key)
-//    {
-//        return UIInitPropertyFromBoolean(UI_PKEY_Enabled, g_offsetBeforeEnd > 0, pPropVarNewValue);
-//    }
-//    return E_NOTIMPL;
-//}

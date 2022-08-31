@@ -17,7 +17,6 @@
 
 #pragma once
 #include "ICommand.h"
-//#include "commands.h" //#include "BowPadUI.h"
 
 class CCmdFoldAll : public ICommand
 {
@@ -28,7 +27,6 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdFoldAll; }
-    //void AfterInit() override;
 };
 
 class CCmdFoldCurrent : public ICommand
@@ -40,35 +38,7 @@ public:
     bool Execute() override;
 
     UINT GetCmdId() override { return cmdFoldCurrent; }
-    // void AfterInit() override;
 };
-
-//class CCmdFoldLevel : public ICommand
-//{
-//public:
-//    CCmdFoldLevel(UINT customId, void* obj);
-//    ~CCmdFoldLevel() = default;
-//
-//    bool Execute() override;
-//    UINT GetCmdId() override { return m_customCmdId; }
-//
-//private:
-//    UINT m_customId;
-//    UINT m_customCmdId;
-//};
-
-//class CCmdInitFoldingMargin : public ICommand
-//{
-//public:
-//    CCmdInitFoldingMargin(void* obj);
-//    ~CCmdInitFoldingMargin() = default;
-//
-//    bool Execute() override;
-//    UINT GetCmdId() override { return cmdInitFoldingMargin; }
-//    void TabNotify(TBHDR* ptbHdr) override;
-//    void ScintillaNotify(SCNotification* pScn) override;
-//    //void AfterInit() override;
-//};
 
 class CCmdFoldingMargin : public ICommand
 {
@@ -78,6 +48,4 @@ public:
 
     bool Execute() override;
     UINT GetCmdId() override { return cmdFoldingMargin; }
-    //void AfterInit() override;
-    //HRESULT IUICommandHandlerUpdateProperty(REFPROPERTYKEY key, const PROPVARIANT* /*pPropVarCurrentValue*/, PROPVARIANT* pPropVarNewValue) override;
 };

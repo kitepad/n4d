@@ -23,11 +23,6 @@
 #include "ResString.h"
 #include "MainWindow.h"
 
-//CGotoLineDlg::CGotoLineDlg()
-//    : line(0)
-//{
-//}
-
 namespace
 {
 std::unique_ptr<CGotoLineDlg>    g_pGotoLineDlg;
@@ -80,8 +75,6 @@ LRESULT CGotoLineDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
             RECT        rc;
             GetClientRect(hwndDlg, &rc);
             HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
-            //rc.left += 4;
-            //rc.top -= 1;
             rc.bottom += 1;
             FrameRect(hdc, &rc, hbr);
             DeleteObject(hbr);
@@ -133,7 +126,6 @@ LRESULT CGotoLineDlg::DoCommand(int id, int /*msg*/)
 
 bool CCmdGotoLine::Execute()
 {
-    //CGotoLineDlg dlg(m_pMainWindow);
     if (g_pGotoLineDlg == nullptr)
         g_pGotoLineDlg = std::make_unique<CGotoLineDlg>(m_pMainWindow);
     
@@ -181,5 +173,4 @@ void gotoLineClose()
 {
     if (g_pGotoLineDlg != nullptr && IsWindowVisible(*g_pGotoLineDlg))
         SendMessage(*g_pGotoLineDlg, WM_COMMAND, IDCANCEL, 0);
-        // ShowWindow(*g_pGotoLineDlg, SW_HIDE);
 }

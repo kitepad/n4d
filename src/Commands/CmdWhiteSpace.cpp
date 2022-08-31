@@ -42,7 +42,7 @@ bool CCmdWhiteSpace::Execute()
         Scintilla().SetViewEOL(false);
     else
         Scintilla().SetViewEOL(true);
-    // InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
+
     return true;
 }
 
@@ -50,7 +50,6 @@ void CCmdWhiteSpace::AfterInit()
 {
     auto ws = static_cast<Scintilla::WhiteSpace>(GetInt64(DEFAULTS_SECTION, L"Whitespace", 0));
     Scintilla().SetViewWS(ws);
-    // InvalidateUICommand(UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
 }
 
 CCmdTabSize::CCmdTabSize(void* obj)
