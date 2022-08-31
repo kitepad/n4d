@@ -509,16 +509,6 @@ void CCommandHandler::Load()
     userIni.LoadFile(userFile.c_str());
     Load(userIni);
 
-    //resSize = 0;
-    //resData = CAppUtils::GetResourceData(L"config", IDR_SHORTCUTSINTERNAL, resSize);
-    //if (resData != nullptr)
-    //{
-    //    CSimpleIni ini;
-    //    ini.SetMultiKey(true);
-    //    ini.LoadFile(resData, resSize);
-    //    Load(ini);
-    //}
-
     m_bLoaded = true;
 }
 
