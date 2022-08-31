@@ -87,7 +87,6 @@ protected:
 
 private:
     CMainWindow*  m_main;
-    //CDlgResizer   m_resizer;
     CScintillaWnd m_scintilla;
 };
 

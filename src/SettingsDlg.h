@@ -75,171 +75,6 @@ protected:
     }
 
 private:
-    //static BOOL SD_OnInitDialog(HWND hwnd, HWND /*hwndFocus*/, LPARAM /*lParam*/)
-    //{
-    //    RECT rc = {};
-    //    GetClientRect(hwnd, &rc);
-
-    //    const SIZE sz = {rc.right - rc.left, rc.bottom - rc.top};
-
-    //    SCROLLINFO si = {};
-    //    si.cbSize     = sizeof(SCROLLINFO);
-    //    si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE;
-    //    si.nPos = si.nMin = 1;
-
-    //    si.nMax  = sz.cx;
-    //    si.nPage = sz.cx;
-    //    SetScrollInfo(hwnd, SB_HORZ, &si, FALSE);
-
-    //    si.nMax  = sz.cy;
-    //    si.nPage = sz.cy;
-    //    SetScrollInfo(hwnd, SB_VERT, &si, FALSE);
-    //    SCROLLBARINFO sbi;
-    //    GetScrollBarInfo(hwnd, OBJID_VSCROLL, &sbi);
-
-    //    CTheme::Instance().SetThemeForDialog(hwnd, CTheme::Instance().IsDarkTheme());
-    //    return FALSE;
-    //}
-
-    //static void SD_ScrollClient(HWND hwnd, int bar, int pos)
-    //{
-    //    static int s_prevx = 1;
-    //    static int s_prevy = 1;
-
-    //    int cx = 0;
-    //    int cy = 0;
-
-    //    int& delta = (bar == SB_HORZ ? cx : cy);
-    //    int& prev  = (bar == SB_HORZ ? s_prevx : s_prevy);
-
-    //    delta = prev - pos;
-    //    prev  = pos;
-
-    //    if (cx || cy)
-    //    {
-    //        ScrollWindow(hwnd, cx, cy, nullptr, nullptr);
-    //    }
-    //}
-
-    //static void SD_OnSize(HWND hwnd, UINT state, int cx, int cy)
-    //{
-    //    if (state != SIZE_RESTORED && state != SIZE_MAXIMIZED)
-    //        return;
-
-    //    SCROLLINFO si = {};
-    //    si.cbSize     = sizeof(SCROLLINFO);
-
-    //    const int bar[]  = {SB_HORZ, SB_VERT};
-    //    const int page[] = {cx, cy};
-    //    for (size_t i = 0; i < ARRAYSIZE(bar); ++i)
-    //    {
-    //        si.fMask = SIF_PAGE;
-    //        si.nPage = page[i];
-    //        SetScrollInfo(hwnd, bar[i], &si, TRUE);
-
-    //        si.fMask = SIF_RANGE | SIF_POS;
-    //        GetScrollInfo(hwnd, bar[i], &si);
-
-    //        const int maxScrollPos = si.nMax - (page[i] - 1);
-
-    //        // Scroll client only if scroll bar is visible and window's
-    //        // content is fully scrolled toward right and/or bottom side.
-    //        // Also, update window's content on maximize.
-    //        const bool needToScroll =
-    //            (si.nPos != si.nMin && si.nPos == maxScrollPos) ||
-    //            (state == SIZE_MAXIMIZED);
-
-    //        if (needToScroll)
-    //        {
-    //            SD_ScrollClient(hwnd, bar[i], si.nPos);
-    //        }
-    //    }
-    //}
-
-    //static void SD_OnScroll(HWND hwnd, int bar, UINT code)
-    //{
-    //    SCROLLINFO si = {};
-    //    si.cbSize     = sizeof(SCROLLINFO);
-    //    si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE | SIF_TRACKPOS;
-    //    GetScrollInfo(hwnd, bar, &si);
-
-    //    const int minPos = si.nMin;
-    //    const int maxPos = si.nMax - (si.nPage - 1);
-
-    //    int scrollPos = -1;
-
-    //    switch (code)
-    //    {
-    //        case SB_LINEUP /*SB_LINELEFT*/:
-    //            scrollPos = max(si.nPos - 1, minPos);
-    //            break;
-
-    //        case SB_LINEDOWN /*SB_LINERIGHT*/:
-    //            scrollPos = min(si.nPos + 1, maxPos);
-    //            break;
-
-    //        case SB_PAGEUP /*SB_PAGELEFT*/:
-    //            scrollPos = max(si.nPos - (int)si.nPage, minPos);
-    //            break;
-
-    //        case SB_PAGEDOWN /*SB_PAGERIGHT*/:
-    //            scrollPos = min(si.nPos + (int)si.nPage, maxPos);
-    //            break;
-
-    //        case SB_THUMBPOSITION:
-    //            break;
-
-    //        case SB_THUMBTRACK:
-    //            scrollPos = si.nTrackPos;
-    //            break;
-
-    //        case SB_TOP /*SB_LEFT*/:
-    //            scrollPos = minPos;
-    //            break;
-
-    //        case SB_BOTTOM /*SB_RIGHT*/:
-    //            scrollPos = maxPos;
-    //            break;
-
-    //        case SB_ENDSCROLL:
-    //            break;
-    //    }
-
-    //    if (scrollPos == -1)
-    //        return;
-
-    //    SetScrollPos(hwnd, bar, scrollPos, TRUE);
-    //    SD_ScrollClient(hwnd, bar, scrollPos);
-    //}
-
-    //static INT_PTR CALLBACK SD_DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-    //{
-    //    switch (uMsg)
-    //    {
-    //        case WM_INITDIALOG:
-    //            SD_OnInitDialog(hwndDlg, (HWND)wParam, lParam);
-    //            break;
-    //        case WM_SIZE:
-    //            SD_OnSize(hwndDlg, (UINT)wParam, LOWORD(lParam), HIWORD(lParam));
-    //            break;
-    //        case WM_HSCROLL:
-    //            SD_OnScroll(hwndDlg, SB_HORZ, LOWORD(wParam));
-    //            break;
-    //        case WM_MOUSEWHEEL:
-    //            SD_OnScroll(hwndDlg, SB_VERT, GET_WHEEL_DELTA_WPARAM(wParam) < 0 ? SB_LINEDOWN : SB_LINEUP);
-    //            break;
-    //        case WM_VSCROLL:
-    //            SD_OnScroll(hwndDlg, SB_VERT, LOWORD(wParam));
-    //            break;
-    //        case WM_COMMAND:
-    //            return SendMessage(GetParent(hwndDlg), uMsg, wParam, lParam);
-    //        default:
-    //            return FALSE;
-    //    }
-
-    //    return TRUE;
-    //}
-
     void OnSize(HWND hwnd, UINT /*state*/, int cx, int cy)
     {
         int btnWidth = 60, btnHeight = 22;
@@ -251,21 +86,14 @@ private:
     BOOL OnInitDialog(HWND hwnd, HWND /*hwndFocus*/, LPARAM /*lParam*/)
     {
         m_pMainWindow = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(m_hParent, GWLP_USERDATA));
-        //m_hForm = CreateDialog(g_hRes, MAKEINTRESOURCE(IDD_SETTINGS_FORM), hwnd, SD_DialogProc);
         m_hForm = *this;
         RECT rc         = {};
-        //GetWindowRect(m_hForm, &rc);
-        //m_formWidth = rc.right - rc.left;
-
         GetClientRect(hwnd, &rc);
 
         int cx = rc.right - rc.left;
         int cy = rc.bottom - rc.top;
-        //OnSize(hwnd, 0, cx, cy);
         CTheme::Instance().SetThemeForDialog(hwnd, CTheme::Instance().IsDarkTheme());
 
-        //InitializeGeneralSetting();
-        //InitializeDefaultEncoding();
         InitializeLexerConfiguration();
 
         GetWindowRect(m_pMainWindow->m_hwnd, &rc);
@@ -277,7 +105,6 @@ private:
    
     void OnCommand(HWND /*hwnd*/, int id, HWND /*hwndCtl*/, UINT msg)
     {
-        //CMainWindow* pMainWindow = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(m_hParent, GWLP_USERDATA));
         switch (id)
         {
             case IDOK:
@@ -291,8 +118,6 @@ private:
                         m_pMainWindow->m_editor.SetupLexerForLang(doc.GetLanguage());
                     }
 
-                    //SaveGeneralSetting();
-                    //SaveDefaultEncoding();
                     EndDialog(*this, 0);
                 }
                 break;
@@ -328,7 +153,6 @@ private:
                             ComboBox_SetItemData(hStyleCombo, styleSel, lexId);
                         }
 
-                        // pMainWindow->m_editor.Scintilla();
                         int style = static_cast<int>(Scintilla().StyleAt(Scintilla().CurrentPos()));
                         SelectStyle(style);
                         std::wstring exts = CLexStyles::Instance().GetUserExtensionsForLanguage(currentLang);
@@ -425,7 +249,6 @@ private:
                         case IDC_HIDE:
                         {
                             CLexStyles::Instance().SetLanguageHidden(languages[langSel], IsDlgButtonChecked(m_hForm, IDC_HIDE) != 0);
-                            // NotifyPlugins(L"cmdStyleConfigurator", 1);
                             break;
                         }
                         case IDC_FG_BTN:
@@ -642,151 +465,6 @@ private:
     {
         return m_pMainWindow->m_editor.Scintilla();
     }
-
-    //void InitializeDefaultEncoding()
-    //{
-    //    UINT      cp         = static_cast<UINT>(CIniSettings::Instance().GetInt64(L"Defaults", L"encodingnew", GetACP()));
-    //    bool      bom        = CIniSettings::Instance().GetInt64(L"Defaults", L"encodingnewbom", 0) != 0;
-    //    bool      preferUtf8 = CIniSettings::Instance().GetInt64(L"Defaults", L"encodingutf8overansi", 0) != 0;
-    //    EOLFormat eol        = static_cast<EOLFormat>(CIniSettings::Instance().GetInt64(L"Defaults", L"lineendingnew", static_cast<int>(EOLFormat::Win_Format)));
-
-    //    if (cp == GetACP())
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_ANSI);
-    //    else if (cp == CP_UTF8)
-    //    {
-    //        if (bom)
-    //            CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF8BOM);
-    //        else
-    //            CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF8);
-    //    }
-    //    else if (cp == 1200)
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF16LE);
-    //    else if (cp == 1201)
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF16BE);
-    //    else if (cp == 12000)
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF32LE);
-    //    else if (cp == 12001)
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_UTF32BE);
-    //    else
-    //        CheckRadioButton(m_hForm, IDC_R_ANSI, IDC_R_UTF32BE, IDC_R_ANSI);
-
-    //    CheckDlgButton(m_hForm, IDC_LOADASUTF8, preferUtf8 ? BST_CHECKED : BST_UNCHECKED);
-
-    //    switch (eol)
-    //    {
-    //        default:
-    //        case EOLFormat::Win_Format:
-    //            CheckRadioButton(m_hForm, IDC_CRLF_RADIO, IDC_CR_RADIO, IDC_CRLF_RADIO);
-    //            break;
-    //        case EOLFormat::Mac_Format:
-    //            CheckRadioButton(m_hForm, IDC_CRLF_RADIO, IDC_CR_RADIO, IDC_CR_RADIO);
-    //            break;
-    //        case EOLFormat::Unix_Format:
-    //            CheckRadioButton(m_hForm, IDC_CRLF_RADIO, IDC_CR_RADIO, IDC_LF_RADIO);
-    //            break;
-    //    }
-    //}
-
-    //void SaveDefaultEncoding()
-    //{
-    //    UINT cp         = GetACP();
-    //    bool bom        = false;
-    //    bool preferUtf8 = IsDlgButtonChecked(m_hForm, IDC_LOADASUTF8) == BST_CHECKED;
-
-    //    if (IsDlgButtonChecked(m_hForm, IDC_R_ANSI))
-    //        cp = GetACP();
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF8))
-    //        cp = CP_UTF8;
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF8BOM))
-    //    {
-    //        cp  = CP_UTF8;
-    //        bom = true;
-    //    }
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF16LE))
-    //        cp = 1200;
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF16BE))
-    //        cp = 1201;
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF32LE))
-    //        cp = 12000;
-    //    else if (IsDlgButtonChecked(m_hForm, IDC_R_UTF32BE))
-    //        cp = 12001;
-
-    //    if (IsDlgButtonChecked(m_hForm, IDC_CRLF_RADIO))
-    //        CIniSettings::Instance().SetInt64(L"Defaults", L"lineendingnew", static_cast<int>(EOLFormat::Win_Format));
-    //    if (IsDlgButtonChecked(m_hForm, IDC_CR_RADIO))
-    //        CIniSettings::Instance().SetInt64(L"Defaults", L"lineendingnew", static_cast<int>(EOLFormat::Mac_Format));
-    //    if (IsDlgButtonChecked(m_hForm, IDC_LF_RADIO))
-    //        CIniSettings::Instance().SetInt64(L"Defaults", L"lineendingnew", static_cast<int>(EOLFormat::Unix_Format));
-
-    //    CIniSettings::Instance().SetInt64(L"Defaults", L"encodingnew", cp);
-    //    CIniSettings::Instance().SetInt64(L"Defaults", L"encodingnewbom", bom);
-    //    CIniSettings::Instance().SetInt64(L"Defaults", L"encodingutf8overansi", preferUtf8);
-    //}
-
-    //void InitializeGeneralSetting()
-    //{
-    //    bool d2d         = CIniSettings::Instance().GetInt64(L"View", L"d2d", 0) != 0;
-    //    bool matchCase = CIniSettings::Instance().GetInt64(L"View", L"autocompleteMatchCase", 0) != 0;
-    //    bool frameLine   = CIniSettings::Instance().GetInt64(L"View", L"caretlineframe", 0) != 0;
-
-    //    CheckDlgButton(m_hForm, IDC_HIDE2, frameLine ? BST_CHECKED : BST_UNCHECKED);
-    //    CheckDlgButton(m_hForm, IDC_HIDE3, d2d ? BST_CHECKED : BST_UNCHECKED);
-    //    CheckDlgButton(m_hForm, IDC_HIDE4, matchCase ? BST_CHECKED : BST_UNCHECKED);
-
-    //    int ve = static_cast<int>(CIniSettings::Instance().GetInt64(L"View", L"verticaledge", 0));
-    //    std::wstring ves = CStringUtils::Format(L"%Id", ve);
-    //    SetDlgItemText(m_hForm, IDC_MARGIN, ves.c_str());
-    //    Scintilla().SetEdgeColumn(ve);
-    //    Scintilla().SetEdgeMode(ve ? Scintilla::EdgeVisualStyle::Line : Scintilla::EdgeVisualStyle::None);
-
-    //    int          val   = static_cast<int>(CIniSettings::Instance().GetInt64(L"View", L"tabwidth", 4));
-    //    std::wstring sLine = CStringUtils::Format(L"%Id", val);
-    //    SetDlgItemText(m_hForm, IDC_TABWIDTH, sLine.c_str());
-    //}
-
-    //void SaveGeneralSetting()
-    //{
-    //    bool frameLine = IsDlgButtonChecked(m_hForm, IDC_HIDE2) == BST_CHECKED;
-    //    bool d2d = IsDlgButtonChecked(m_hForm, IDC_HIDE3) == BST_CHECKED;
-    //    bool matchCase = IsDlgButtonChecked(m_hForm, IDC_HIDE4) == BST_CHECKED;
-
-    //    CIniSettings::Instance().SetInt64(L"View", L"d2d", d2d);
-    //    CIniSettings::Instance().SetInt64(L"View", L"autocompleteMatchCase", matchCase);
-    //    CIniSettings::Instance().SetInt64(L"View", L"caretlineframe", frameLine);
-
-    //    CTheme&  theme      = CTheme::Instance();
-    //    COLORREF themeColor = theme.GetThemeColor(RGB(0, 0, 0), true);
-
-    //    if (frameLine)
-    //    {
-    //        Scintilla().SetCaretLineFrame(1);
-    //        Scintilla().SetElementColour(Scintilla::Element::CaretLineBack, Rgba(themeColor, 80));
-    //        Scintilla().SetCaretLineLayer(Scintilla::Layer::UnderText);
-    //    }
-    //    else
-    //    {
-    //        if (theme.IsDarkTheme())
-    //        {
-    //            Scintilla().SetElementColour(Scintilla::Element::CaretLineBack, themeColor);
-    //        }
-    //        else
-    //        {
-    //            Scintilla().SetElementColour(Scintilla::Element::CaretLineBack, Rgba(themeColor, 75));
-    //        }
-    //    }
-    //    WCHAR sLine[8];
-    //    ::GetDlgItemText(m_hForm, IDC_MARGIN, sLine, 4);
-    //    int ve = _wtol(sLine);
-    //    CIniSettings::Instance().SetInt64(L"View", L"verticaledge", ve);
-    //    Scintilla().SetEdgeColumn(ve);
-    //    Scintilla().SetEdgeMode(ve ? Scintilla::EdgeVisualStyle::Line : Scintilla::EdgeVisualStyle::None);
-
-    //     ::GetDlgItemText(m_hForm, IDC_TABWIDTH, sLine, 4);
-    //    int w = _wtol(sLine);
-    //    Scintilla().SetTabWidth(w);
-    //    CIniSettings::Instance().SetInt64(L"View", L"tabwidth", w);
-    //    m_pMainWindow->UpdateStatusBar(false);
-    //}
 
     std::vector<std::wstring> m_fonts;
     CColorButton              m_fgColor;

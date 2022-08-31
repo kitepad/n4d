@@ -16,7 +16,6 @@
 //
 #pragma once
 #include "BaseDialog.h"
-//#include "hyperlink.h"
 
 /**
  * about dialog.
@@ -30,11 +29,5 @@ public:
     //void                    SetHiddenWnd(HWND hWnd) {m_hHiddenWnd = hWnd;}
 protected:
     LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
-    //LRESULT                 DoCommand(int id);
-
-private:
-    //HWND                    m_hParent;
-    //HWND                    m_hHiddenWnd;
-    //CHyperLink              m_link;
 };
 

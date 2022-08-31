@@ -16,7 +16,6 @@
 //
 #pragma once
 #include "BaseDialog.h"
-//#include "DlgResizer.h"
 #include "ICommand.h"
 #include <vector>
 
@@ -24,7 +23,6 @@ class CmdPalData
 {
 public:
     UINT         cmdId           = 0;
-    //int          collectionIndex = -1;
     std::wstring command;
     std::wstring description;
     std::wstring shortcut;
@@ -101,7 +99,6 @@ public:
     UINT GetCmdId() override { return cmdSelectLexer; }
 
 protected:
-    //void    FillResults(bool force);
     LRESULT DoListNotify(LPNMITEMACTIVATE lpNMItemActivate);
 
     virtual bool IsFiltered(std::wstring sFilterText, CListItem item);
