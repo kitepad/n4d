@@ -51,7 +51,6 @@ public:
     void AddWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words);
 
 private:
-    //void                 PrepareWordList(std::map<std::string, AutoCompleteType>* wList);
     void                 HandleAutoComplete(const SCNotification* scn);
     void                 ExitSnippetMode();
     void                 MarkSnippetPositions(bool clearOnly);

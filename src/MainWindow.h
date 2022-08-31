@@ -93,19 +93,6 @@ enum class ResponseToCloseTab
     CloseWithoutSaving
 };
 
-//struct HimagelistDeleter
-//{
-//    void operator()(_IMAGELIST* hImageList) const
-//    {
-//        if (hImageList != nullptr)
-//        {
-//            //BOOL deleted = ImageList_Destroy(hImageList);
-//            //APPVERIFY(deleted != FALSE);
-//            
-//        }
-//    }
-//};
-
 struct ItemMetrics
 {
     std::wstring name;
@@ -168,7 +155,6 @@ public:
     void AddAutoCompleteWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words);
     BOOL                HasActiveDocument();
     const CDocument&           GetActiveDocument() const;
-    //static CMainWindow* GetMainWindow();
 
 protected:
     /// the message handler for this window

@@ -30,12 +30,7 @@
 #include <comdef.h>
 
 #include "COMPtrs.h"
-
-//#define DEBUGOUTPUTREGPATH L"Software\\BowPad\\DebugOutputString"
-//#include "DebugOutput.h"
-
 #include "IniSettings.h"
-
 #include <shellapi.h>
 #include <Commctrl.h>
 #include <Shlobj.h>

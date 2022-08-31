@@ -307,8 +307,6 @@
 #define cmdFrameCaretLine               30107
 #define cmdSelectLexer                  30108
 #define cmdShowAutoComplete             30109
-//#define cmdAutocMatchcase               30110
-//#define cmdSelectEncoding               30111
 
 #define IDC_STATIC                      -1
 
