@@ -37,7 +37,6 @@ bool        firstInstance = false;
 IUIImagePtr g_emptyIcon;
 bool        g_useItemIcons = true;
 HWND        g_hMainWindow  = 0;
-//void*       g_pMainWindow  = nullptr;
 
 static void SetIcon()
 {
@@ -262,7 +261,6 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
         if (parser.HasKey(L"elevate") && parser.HasKey(L"savepath"))
         {
             mainWindow.SetElevatedSave(parser.GetVal(L"path"), parser.GetVal(L"savepath"), static_cast<long>(line));
-            //mainWindow.SetFileOpenMRU(false);
             firstInstance = false;
         }
     }
@@ -433,15 +431,6 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     // set to that dir, that dir can't be removed or renamed due to the lock.
     ::SetCurrentDirectory(CPathUtils::GetModuleDir().c_str());
 
-    //std::wstring params = L" /multiple";
-    //if (isAdminMode)
-    //    params += L" /admin";
-    //auto         modulePath = CPathUtils::GetLongPathname(CPathUtils::GetModulePath());
-    //std::wstring sIconPath  = CStringUtils::Format(L"%s,-%d", modulePath.c_str(), IDI_BOWPAD);
-    //if (modulePath.find(' ') != std::wstring::npos)
-    //    modulePath = L"\"" + modulePath + L"\"";
-    //SetRelaunchCommand(mainWindow, appID, (modulePath + params).c_str(), L"BowPad", sIconPath.c_str());
-    //g_pMainWindow = &mainWindow;
     g_hMainWindow = mainWindow;
 
     // Main message loop:
@@ -470,7 +459,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE     hInstance,
     g_hInst = hInstance;
     g_hRes  = hInstance;
 
-    const std::wstring sID = L"BowPad_EFA99E4D-68EB-4EFA-B8CE-4F5B41104540_" + CAppUtils::GetSessionID();
+    const std::wstring sID = L"N4D_EFA99E4D-68EB-4EFA-B8CE-4F5B41104540_" + CAppUtils::GetSessionID();
     ::SetLastError(NO_ERROR); // Don't do any work between these 3 statements to spoil the error code.
     HANDLE hAppMutex   = ::CreateMutex(nullptr, false, sID.c_str());
     DWORD  mutexStatus = GetLastError();
@@ -478,7 +467,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE     hInstance,
     bool bAlreadyRunning = (mutexStatus == ERROR_ALREADY_EXISTS || mutexStatus == ERROR_ACCESS_DENIED);
     firstInstance        = !bAlreadyRunning;
 
-    //auto mainResult = bpMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow, bAlreadyRunning);
     auto mainResult = bpMain(lpCmdLine, bAlreadyRunning);
     Scintilla_ReleaseResources();
 

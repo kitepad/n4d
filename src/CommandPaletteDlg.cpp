@@ -65,9 +65,9 @@ LRESULT CDialogWithFilterableList::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wPara
             // initialize the controls
             m_hFilter  = GetDlgItem(*this, IDC_FILTER);
             m_hResults = GetDlgItem(*this, IDC_RESULTS);
-            // m_hParent  = hwndDlg;
+            
             ResString sFilterCue(g_hRes, GetFilterCUE());
-            // ResString sFilterCue = GetFilterCUE();
+            
             SendMessage(m_hFilter, EM_SETCUEBANNER, 1, reinterpret_cast<LPARAM>(sFilterCue.c_str()));
             SendMessage(m_hFilter, EM_SETMARGINS, (WPARAM)(EC_LEFTMARGIN | EC_RIGHTMARGIN), (LPARAM)MAKELONG(16, 8));
             SetWindowSubclass(m_hFilter, EditSubClassProc, 0, reinterpret_cast<DWORD_PTR>(this));
@@ -119,7 +119,7 @@ LRESULT CDialogWithFilterableList::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wPara
             rc.top    = 38;
             rc.bottom = 39;
 
-            FillRect(hdc, &rc, hbr); // GetStockBrush(isDark ? GRAY_BRUSH : GRAY_BRUSH));
+            FillRect(hdc, &rc, hbr); 
             DeleteObject(hbr);
             EndPaint(hwndDlg, &ps);
             break;
@@ -289,7 +289,7 @@ void CDialogWithFilterableList::FillResults(bool force)
 LRESULT CALLBACK CDialogWithFilterableList::EditSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
     CDialogWithFilterableList* pThis = reinterpret_cast<CDialogWithFilterableList*>(dwRefData);
-    // HWND m_hResults = reinterpret_cast<HWND>(dwRefData);
+
     switch (uMsg)
     {
         case WM_DESTROY:
@@ -342,7 +342,6 @@ LRESULT CALLBACK CDialogWithFilterableList::EditSubClassProc(HWND hWnd, UINT uMs
 LRESULT CALLBACK CDialogWithFilterableList::ListViewSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
     CDialogWithFilterableList* pThis = reinterpret_cast<CDialogWithFilterableList*>(dwRefData);
-    // std::vector<CListItem>* m_results = reinterpret_cast<std::vector<CListItem>*>(dwRefData);
     switch (uMsg)
     {
         case WM_PAINT:
@@ -412,7 +411,7 @@ void CCommandPaletteDlg::DrawItemText(HDC hdc, LPRECT rc,int idx)
 {
     DrawText(hdc, m_results[idx].text2.c_str(), -1, rc, DT_LEFT | DT_VCENTER);
     rc->left -= PADDINGS.x;
-    rc->right -= PADDINGS.x; // hasScrollBar(hWnd, OBJID_VSCROLL) ? ccx : 8;
+    rc->right -= PADDINGS.x; 
     DrawText(hdc, m_results[idx].text3.c_str(), -1, rc, DT_RIGHT | DT_VCENTER);
 }
 
@@ -464,10 +463,7 @@ void CCommandPaletteDlg::OnOK()
     if (i >= 0)
     {
         const auto& data    = m_results[i];
-        //auto*       cmd     = CCommandHandler::Instance().GetCommand(data.uintVal);
-    
         m_pCmd = nullptr;
-        //SendMessage(m_hParent, WM_COMMAND, MAKEWPARAM(data.cmdId, 1), 0);
         SendMessage(GetParent(*this), WM_COMMAND, MAKEWPARAM(data.uintVal, 1), 0);
         ShowWindow(*this, SW_HIDE);
     }

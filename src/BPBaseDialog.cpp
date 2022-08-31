@@ -138,11 +138,10 @@ void CBPBaseDialog::UpdateCombo(int comboId, const std::wstring& item, int maxCo
 bool CBPBaseDialog::EnableComboBoxDeleteEvents(int comboID, bool enable)
 {
     auto hCombo = GetDlgItem(*this, comboID);
-    //APPVERIFY(hCombo != nullptr);
+
     if (!hCombo)
         return false;
     COMBOBOXINFO comboInfo = {sizeof comboInfo};
-    //APPVERIFY(SendMessage(hCombo, CB_GETCOMBOBOXINFO, 0, reinterpret_cast<LPARAM>(&comboInfo)) != 0);
     SendMessage(hCombo, CB_GETCOMBOBOXINFO, 0, reinterpret_cast<LPARAM>(&comboInfo));
     if (enable)
         return SetWindowSubclass(comboInfo.hwndItem, ComboBoxListSubClassProc, 0,
@@ -162,7 +161,6 @@ void CBPBaseDialog::FlashWindow(HWND hWnd)
 
 LRESULT CALLBACK CBPBaseDialog::ComboBoxListSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR /*dwRefData*/)
 {
-    //CFindReplaceDlg* pThis = reinterpret_cast<CFindReplaceDlg*>(dwRefData);
     switch (uMsg)
     {
         case WM_SYSKEYDOWN:

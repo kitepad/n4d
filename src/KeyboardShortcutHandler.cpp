@@ -57,70 +57,6 @@ CKeyboardShortcutHandler& CKeyboardShortcutHandler::Instance()
     {
         instance.LoadUIHeaders();
         instance.Load();
-#ifdef _DEBUG
-        // check if one of our shortcuts overrides a built-in Scintilla shortcut
-        Scintilla::Internal::KeyMap kMap;
-        const auto&                 keyMap = kMap.GetKeyMap();
-        for (auto& k : instance.m_accelerators)
-        {
-            int         modifier = 0;
-            std::string sMod;
-            if (k.fVirt & 0x10)
-            {
-                modifier |= SCMOD_ALT;
-                sMod += "Alt ";
-            }
-            if (k.fVirt & 0x08)
-            {
-                modifier |= SCMOD_CTRL;
-                sMod += "Ctrl ";
-            }
-            if (k.fVirt & 0x04)
-            {
-                modifier |= SCMOD_SHIFT;
-                sMod += "Shift ";
-            }
-            Scintilla::Internal::KeyModifiers sm(static_cast<Scintilla::Keys>(k.key1), static_cast<Scintilla::KeyMod>(modifier));
-            auto                              foundIt = keyMap.find(sm);
-            if (foundIt != keyMap.end())
-            {
-                // before hitting a break, check if it's a command we want to override
-                switch (k.cmd)
-                {
-                    case cmdCopyPlain:
-                    case cmdCutPlain:
-                    case cmdEditSelection:
-                    case cmdLineDuplicate:
-                    case cmdLowercase:
-                    case cmdPaste:
-                    case cmdRedo:
-                    case cmdSessionLast:
-                    case cmdUndo:
-                    case cmdUppercase:
-                    case cmdNew:
-                        continue;
-                    default:
-                        break;
-                }
-                const char key = static_cast<const char>(sm.key);
-                sMod += key;
-                OutputDebugString(L"\nScintilla key shortcut overridden! : ");
-                OutputDebugStringA(sMod.c_str());
-                for (const auto& [sCmd, cmd] : instance.m_resourceData)
-                {
-                    if (cmd == static_cast<int>(foundIt->second))
-                    {
-                        OutputDebugString(L" - ");
-                        OutputDebugString(sCmd.c_str());
-                    }
-                }
-                OutputDebugString(L"\n");
-                OutputDebugString(k.sCmd.c_str());
-                OutputDebugString(L"\n");
-                DebugBreak();
-            }
-        }
-#endif
     }
     return instance;
 }
@@ -142,17 +78,6 @@ void CKeyboardShortcutHandler::Load()
     userIni.SetMultiKey(true);
     userIni.LoadFile(userFile.c_str());
     Load(userIni);
-
-    //resSize = 0;
-    //resData = CAppUtils::GetResourceData(L"config", IDR_SHORTCUTSINTERNAL, resSize);
-    //if (resData != nullptr)
-    //{
-    //    CSimpleIni ini;
-    //    ini.SetMultiKey(true);
-    //    ini.LoadFile(resData, resSize);
-    //    Load(ini);
-    //}
-
     m_bLoaded = true;
 }
 
@@ -166,8 +91,6 @@ void CKeyboardShortcutHandler::Load(const CSimpleIni& ini)
         const wchar_t* keyDataString = ini.GetValue(L"virtkeys", keyName);
         if (CAppUtils::TryParse(keyDataString, vk, false, 0, 16))
             m_virtKeys[keyName] = static_cast<UINT>(vk);
-        //else
-        //    APPVERIFYM(false, L"Invalid Virtual Key ini file. Cannot convert key '%s' to uint.", keyName);
     }
 
     CSimpleIni::TNamesDepend shortkeys;
@@ -376,8 +299,8 @@ void CKeyboardShortcutHandler::LoadUIHeader(const char* resData, DWORD resSize)
                     auto spacePos2 = sLine.find(' ', spacePos + 1);
                     if (spacePos2 != std::string::npos)
                     {
-                        std::string sIDString                                   = sLine.substr(spacePos + 1, spacePos2 - spacePos - 1);
-                        int         id                                          = atoi(sLine.substr(spacePos2).c_str());
+                        std::string sIDString = sLine.substr(spacePos + 1, spacePos2 - spacePos - 1);
+                        int         id        = atoi(sLine.substr(spacePos2).c_str());
                         m_resourceData[CUnicodeUtils::StdGetUnicode(sIDString)] = id;
                     }
                 }
@@ -388,14 +311,6 @@ void CKeyboardShortcutHandler::LoadUIHeader(const char* resData, DWORD resSize)
 
 void CKeyboardShortcutHandler::UpdateTooltips()
 {
-    //for (const auto& [sCmd, cmd] : m_resourceData)
-    //{
-    //    std::wstring sAcc = GetShortCutStringForCommand(static_cast<WORD>(cmd));
-    //    if (!sAcc.empty())
-    //    {
-    //        g_pFramework->InvalidateUICommand(cmd, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_TooltipTitle);
-    //    }
-    //}
 }
 
 std::wstring CKeyboardShortcutHandler::GetTooltipTitleForCommand(WORD cmd) const

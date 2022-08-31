@@ -62,25 +62,6 @@ using namespace Gdiplus;
 #define HeightOf(rect)         (rect.bottom - rect.top)
 #define WidthOf(rect)          (rect.right - rect.left)
 
-//auto getColor{
-//    [](COLORREF crBase) {
-//        return Gdiplus::Color(255, GetRValue(crBase), GetGValue(crBase), GetBValue(crBase));
-//    }};
-//
-//auto getFont{
-//    [](std::wstring font) {
-//        size_t idx = font.find(':');
-//        std::wstring name = font.substr(0, idx - 1);
-//        float          size = stof(font.substr(idx+1));
-//
-//        return Gdiplus::Font(name.c_str(),size);
-//    }};
-//
-//auto ValueOf{
-//    [](RECT rect, bool isWidth = true) {
-//        return isWidth ? rect.right - rect.left : rect.bottom - rect.top;
-//    }};
-
 namespace
     {
 constexpr char   URL_REG_EXPR[]      = {"\\b[A-Za-z+]{3,9}://[A-Za-z0-9_\\-+~.:?&@=/%#,;{}()[\\]|*!\\\\]+\\b"};
@@ -362,10 +343,6 @@ void CMainWindow::UpdateTitlebarRects()
     m_allRects.theme    = {m_allRects.minimize.left - h1 - iconWidth, rc.top, m_allRects.minimize.left, vsPos};
     m_allRects.open = {m_allRects.system.right, rc.top, m_allRects.system.right + h1, vsPos};
     m_allRects.text = {m_allRects.open.right, rc.top, m_allRects.theme.left, vsPos};
-
-    //m_allRects.leftRoller  = {left, vsPos, left + h2 / 2, vsPos + h2};
-    //m_allRects.rightRoller = {left + h2 / 2, vsPos, left + h2, vsPos + h2};
-    //m_allRects.tabs        = {left + h2, vsPos, right, vsPos + h2};
     m_allRects.layout      = {left, vsPos, left + h2, vsPos + h2};
     m_allRects.leftRoller  = {right - h2, vsPos, right - h2 / 2, vsPos + h2};
     m_allRects.rightRoller = {right - h2 / 2, vsPos, right, vsPos + h2};
@@ -400,7 +377,7 @@ void CMainWindow::ShowCommandPalette()
 
     RECT rect{};
     GetClientRect(*this, &rect);
-    RECT tabrc = m_allRects.tabs;// GetTabbarRect();
+    RECT tabrc = m_allRects.tabs;
     constexpr UINT flags     = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
     m_commandPaletteDlg->ShowModeless(g_hRes, IDD_COMMANDPALETTE, *this, false);
     POINT pt((WidthOf(m_allRects.total) - 720) / 2, m_allRects.total.bottom);
@@ -490,11 +467,6 @@ bool CMainWindow::RegisterAndCreateWindow()
     return false;
 }
 
-//static __int64 GetViewSettings(LPCWSTR k, int value = 1)
-//{
-//    return CIniSettings::Instance().GetInt64(L"View", k, value);
-//}
-
 void CMainWindow::HandleEditorContextMenu(LPARAM lParam) 
 {
     if (GetAsyncKeyState(VK_MENU) & 0x8000)
@@ -511,8 +483,6 @@ void CMainWindow::HandleEditorContextMenu(LPARAM lParam)
     rcw.right = rcw.left + mw;
 
     int menuIdx = PtInRect(&rcw, pt) || GetAsyncKeyState(VK_CONTROL) & 0x8000 ? 2 : 1;
-    //if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-    //    menuIdx = 4;
 
     HMENU popupMenu = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)), menuIdx);
     UpdateMenu(popupMenu);
@@ -691,25 +661,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_KEYDOWN:
         case WM_CHAR:
         case WM_SYSKEYDOWN:
-        //case WM_ENTERIDLE:
-        //{
-        //    if (m_hoveredRect == TitlebarRect::Tabs)
-        //    {
-        //        if (m_hoveredItemIdx != -1)
-        //        {
-        //            const auto& doc = m_docManager.GetDocumentFromID(m_allTabs[m_hoveredItemIdx].id);
-        //            std::wstring sTitle = doc.m_path.empty() ? m_allTabs[m_hoveredItemIdx].name : doc.m_path;
-        //            POINT        pt               = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-        //            ScreenToClient(hwnd, &pt);
-        //            m_tabTip.ShowTip(pt, sTitle, nullptr, sTitle);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        m_tabTip.HideTip();
-        //    }
-
-        //}
         case WM_NCHITTEST:
         {
             POINT pt             = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
@@ -1068,7 +1019,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         }
         case WM_LBUTTONDOWN:
         {
-            if (!m_bDragging) // point.y > tabrc.bottom && !m_bDragging)
+            if (!m_bDragging) 
             {
                 SetCapture(*this);
                 m_bDragging = true;
@@ -1148,7 +1099,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_NOTIFY:
         {
             LPNMHDR pnmHdr = reinterpret_cast<LPNMHDR>(lParam);
-            //APPVERIFY(pnmHdr != nullptr);
+
             if (pnmHdr == nullptr)
                 return 0;
             const NMHDR& nmHdr = *pnmHdr;
@@ -1340,14 +1291,14 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             break;
         case WM_NCLBUTTONDBLCLK:
         {
-            if (m_hoveredRect == TitlebarRect::Tabs)// PtInRect(&m_allRects.tabs, pt))
+            if (m_hoveredRect == TitlebarRect::Tabs)
             {
-                if (m_hoveredItemIdx == -1) // if(TabItemFromCursor() == -1)
+                if (m_hoveredItemIdx == -1) 
                     OpenNewTab();
 
                 return 0;
             }
-            else if (m_hoveredRect == TitlebarRect::Text)//PtInRect(&m_allRects.text, pt))
+            else if (m_hoveredRect == TitlebarRect::Text)
                 return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
             return 0;
@@ -1593,22 +1544,6 @@ void CMainWindow::HandleTreePath(const std::wstring& path, bool isDir, bool isDo
 
     if (isDot && GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0)
         m_fileTree.SetPath(path);
-
-    //if (isDir)
-    //{
-    //    if (isDot && CIniSettings::Instance().GetInt64(L"View", L"FileTreeGotoParent", 0) != 0)
-    //    {
-    //        m_fileTree.SetPath(path);
-    //    }
-    //}
-    //else
-    //{
-    //    bool         control   = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
-    //    unsigned int openFlags = OpenFlags::IgnoreIfMissing;
-    //    if (control)
-    //        openFlags |= OpenFlags::OpenIntoActiveTab;
-    //    OpenFile(path, openFlags);
-    //}
 }
 
 std::vector<std::wstring> CMainWindow::GetFileListFromGlobPath(const std::wstring& path)
@@ -1892,7 +1827,6 @@ bool CMainWindow::Initialize()
     AddClipboardFormatListener(*this);
     
     constexpr UINT flags       = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER ;//| SWP_SHOWWINDOW;// | SWP_NOCOPYBITS;
-    //constexpr UINT noShowFlags = SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
     RECT           rect;
     GetClientRect(*this, &rect);
     const int treeWidth      = m_fileTreeVisible ? m_treeWidth : 0;
@@ -1908,7 +1842,6 @@ bool CMainWindow::Initialize()
         SetWindowPos(m_fileTree, nullptr, 0, topPos, treeWidth ? treeWidth - 3 : 0, height, flags);
         SendMessage(m_hwnd, WM_SETREDRAW, TRUE, 0);
     }
-    //InvalidateRect(m_hwnd, nullptr, TRUE);
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
     return true;
 }
@@ -2070,7 +2003,6 @@ bool CMainWindow::SaveDoc(DocID docID, bool bSaveAs)
         if (!ShowFileSaveDialog(*this, title, ext, extIndex, filePath))
             return false;
         doc.m_path = filePath;
-        //CMRU::Instance().AddPath(doc.m_path);
         if ((isActiveTab && m_fileTree.GetPath().empty()) || bSaveAs)
         {
             updateFileTree = true;
@@ -2313,7 +2245,6 @@ bool CMainWindow::CloseTab(int closingTabIndex, bool force /* = false */, bool q
 {
     if (closingTabIndex < 0 || closingTabIndex >= GetItemCount())
     {
-        //APPVERIFY(false);
         return false;
     }
     
@@ -2350,7 +2281,6 @@ bool CMainWindow::CloseTab(int closingTabIndex, bool force /* = false */, bool q
     CCommandHandler::Instance().OnDocumentClose(closingTabId);
     // Prefer to remove the document after the tab has gone as it supports it
     // and deletion causes events that may expect it to be there.
-    //m_tabBar.DeleteItemAt(closingTabIndex);
     m_allTabs.erase(m_allTabs.begin() + closingTabIndex);
     // SCI_SETDOCPOINTER is necessary so the reference count of the document
     // is decreased and the memory can be released.
@@ -3069,7 +2999,6 @@ void CMainWindow::HandleDwellStart(const SCNotification& scn, bool start)
         OnOutOfScope(m_editor.Scintilla().SetWordChars(wordCharsBuffer.c_str()));
 
         m_editor.Scintilla().SetWordChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/!%~()^_.,");
-        //m_editor.Scintilla().SetWordChars(wordCharacters.c_str());
         selStart = m_editor.Scintilla().WordStartPosition(scn.position, false);
         selEnd   = m_editor.Scintilla().WordEndPosition(scn.position, false);
         sWord    = m_editor.GetTextRange(static_cast<long>(selStart), static_cast<long>(selEnd));
@@ -3558,8 +3487,8 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
             std::wstring sFileName = CPathUtils::GetFileName(filepath);
             if (!activeTabId.IsValid())
             {
-                index = InsertAtEnd(filepath.c_str());//sFileName.c_str());
-                id    = GetIDFromIndex(index) ;//m_tabBar.GetIDFromIndex(index);
+                index = InsertAtEnd(filepath.c_str());
+                id    = GetIDFromIndex(index) ;
             }
             else
             {
@@ -3892,7 +3821,6 @@ bool CMainWindow::HandleCopyDataMoveTab(const COPYDATASTRUCT& cds)
     // don't throw away something we can't open.
     if (dataVec.size() != 4)
     {
-        //APPVERIFY(false); // Assume a bug if testing.
         return false;
     }
     std::wstring realPath = dataVec[0];
@@ -3913,7 +3841,6 @@ bool CMainWindow::HandleCopyDataMoveTab(const COPYDATASTRUCT& cds)
 
             int tab = GetIndexFromID(docID);
             SetSelected(tab);
-            //m_tabBar.ActivateAt(tab);
             DeleteFile(tempPath.c_str());
 
             return true;
@@ -4048,7 +3975,6 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
                             {
                                 doc.m_path = destPath;
                                 SetSelected(tab);
-                                //m_tabBar.ActivateAt(tab);
                             }
                         }
                     }
@@ -4061,7 +3987,7 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
     tempDoc.m_path    = tempPath;
     bool bDummy       = false;
     bool bModified    = doc.m_bIsDirty || doc.m_bNeedsSaving;
-    m_docManager.SaveFile(/**this,*/ tempDoc, bDummy);
+    m_docManager.SaveFile(tempDoc, bDummy);
 
     // have the plugins save any information for this document
     // before we start the new process!
@@ -4072,7 +3998,7 @@ void CMainWindow::HandleTabDroppedOutside(int tab, POINT pt)
     std::wstring cmdLine = CStringUtils::Format(L"/multiple /tabmove /savepath:\"%s\" /path:\"%s\" /line:%Id /title:\"%s\"",
                                                 doc.m_path.c_str(), tempPath.c_str(),
                                                 m_editor.GetCurrentLineNumber() + 1,
-                                                L"" /*m_tabBar.GetTitle(tab).c_str()*/);
+                                                L"");
     if (bModified)
         cmdLine += L" /modified";
     SHELLEXECUTEINFO shExecInfo = {};
@@ -4318,7 +4244,6 @@ void CMainWindow::OpenFiles(const std::vector<std::wstring>& paths)
         if (docToActivate.IsValid())
         {
             auto tabToActivate = GetIndexFromID(docToActivate);
-            //m_tabBar.ActivateAt(tabToActivate);
             SetSelected(tabToActivate);
         }
     }
@@ -4336,7 +4261,6 @@ void CMainWindow::BlockAllUIUpdates(bool block)
     else
     {
         --m_blockCount;
-        //APPVERIFY(m_blockCount >= 0);
         if (m_blockCount == 0)
         {
             // unblock
@@ -4375,8 +4299,6 @@ void CMainWindow::ReBlockUI(int blockCount)
 
 void CMainWindow::ShowProgressCtrl(UINT delay)
 {
-    //APPVERIFY(m_blockCount > 0);
-
     m_progressBar.SetDarkMode(CTheme::Instance().IsDarkTheme(), CTheme::Instance().GetThemeColor(GetSysColor(COLOR_WINDOW)));
     RECT rect;
     GetClientRect(*this, &rect);
@@ -4529,7 +4451,6 @@ void CMainWindow::DrawTabs(HDC hdc)
     RECT tabrc = m_allRects.total;
     tabrc.top += theme.titleHeight;
 
-
     Gdiplus::Graphics   graphics(hdc);
     Gdiplus::SolidBrush brush(ColorFrom(theme.tabBack));
     graphics.FillRectangle(&brush, 0.0f, tabrc.top * 1.0f, WidthOf(tabrc) * 1.0f, HeightOf(tabrc) * 1.0f);
@@ -4554,9 +4475,9 @@ void CMainWindow::DrawTabs(HDC hdc)
     }
 
     int len  = GetItemCount();
-    int left = m_allRects.tabs.left;   //tabrc.left + TABBAR_HEIGHT;
+    int left = m_allRects.tabs.left;   
 
-    RECT itemRect = m_allRects.tabs;//tabrc;
+    RECT itemRect = m_allRects.tabs;
     Pen  pen(ColorFrom(theme.selFore));
 
     for (int i = m_firstVisibleItemIdx; i < len; i++)
@@ -4650,7 +4571,7 @@ void CMainWindow::DrawTabs(HDC hdc)
     }
         
     //Draw tab bar scroll arrow
-    tabrc                          = m_allRects.leftRoller;// GetTabbarRect();
+    tabrc                          = m_allRects.leftRoller;
     int                       xPos = tabrc.left + 4;
     int                       mPos = tabrc.top + HeightOf(tabrc) / 2;
     const int                 size = 5;
@@ -4670,7 +4591,7 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     //// Paint Background
     HBRUSH bg_brush = CreateSolidBrush(theme.winBack);
     RECT   titlebarRect = m_allRects.total;
-    titlebarRect.bottom -= theme.tabHeight;//TABBAR_HEIGHT;
+    titlebarRect.bottom -= theme.tabHeight;
     FillRect(hdc, &titlebarRect, bg_brush);
     HBRUSH      hoverBrush  = CreateSolidBrush(theme.itemHover);
 
@@ -4695,8 +4616,7 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
             FillRect(hdc, &m_allRects.theme, hoverBrush);
             break;
     }
-
-    // SelectObject(hdc, old);
+      
     DeleteObject(hoverBrush);
 
     /* Start to draw all title bar buttons */
@@ -4830,7 +4750,7 @@ void CMainWindow::SetSelected(int idx)
 
 int CMainWindow::AdjustItemWidth(int width)
 {
-    return width + ITEM_XPADDING * 2;// + CLOSEZONE_WIDTH;
+    return width + ITEM_XPADDING * 2;
 }
 
 

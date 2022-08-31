@@ -30,8 +30,6 @@
 #include "../ext/lexilla/lexlib/LexerModule.h"
 #include "Lexilla.h"
 
-//#include <UIRibbon.h>
-//#include <UIRibbonPropertyHelpers.h>
 #include <uxtheme.h>
 #include <chrono>
 
@@ -50,14 +48,11 @@ constexpr Scintilla::FoldLevel operator|(Scintilla::FoldLevel a, Scintilla::Fold
     return static_cast<Scintilla::FoldLevel>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-//extern IUIFramework*        g_pFramework;
 extern std::string          g_sHighlightString;  // from CmdFindReplace
 extern sptr_t               g_searchMarkerCount; // from CmdFindReplace
 extern Lexilla::LexerModule lmSimple;
 extern Lexilla::LexerModule lmLog;
 extern Lexilla::LexerModule lmSnippets;
-
-//UINT32                      g_contextID                    = cmdContextMap;
 
 constexpr int               TIM_HIDECURSOR                 = 101;
 constexpr int               TIM_BRACEHIGHLIGHTTEXT         = 102;
@@ -198,7 +193,6 @@ bool CScintillaWnd::Init(HINSTANCE hInst, HWND hParent, HWND hWndAttachTo)
     m_scintilla.FoldDisplayTextSetStyle(Scintilla::FoldDisplayTextStyle::Standard);
 
     bool isWrap = GetInt64(DEFAULTS_SECTION, L"WrapMode", 0) != 0;
-    //m_scintilla.SetWrapVisualFlags(Scintilla::WrapVisualFlag::Margin);
     m_scintilla.SetWrapMode(isWrap ? Scintilla::Wrap::Word : Scintilla::Wrap::None);
 
     m_scintilla.SetFontQuality(Scintilla::FontQuality::QualityLcdOptimized);
@@ -1249,9 +1243,6 @@ void CScintillaWnd::SetupFoldingColors(COLORREF fore, COLORREF back, COLORREF ba
     m_scintilla.MarkerSetBackSelected(SC_MARKNUM_FOLDEREND, foldMarkBackSelectedActive);
     m_scintilla.MarkerSetBackSelected(SC_MARKNUM_FOLDEROPENMID, foldMarkBackSelected);
     m_scintilla.MarkerSetBackSelected(SC_MARKNUM_FOLDERMIDTAIL, foldMarkBackSelected);
-
-    // m_scintilla.StyleSetFore(STYLE_FOLDDISPLAYTEXT, foldmarkfore);
-    // m_scintilla.StyleSetBack(STYLE_FOLDDISPLAYTEXT, foldmarkback);
 }
 
 void CScintillaWnd::GotoLine(sptr_t line)
@@ -2458,12 +2449,6 @@ void CScintillaWnd::SetTabSettings(TabSpace ts) const
 
 void CScintillaWnd::SetReadDirection(Scintilla::Bidirectional rd) const
 {
-    // auto ex = GetWindowLongPtr(*this, GWL_EXSTYLE);
-    // if (rd != R2L)
-    //     ex &= WS_EX_LAYOUTRTL/*WS_EX_RTLREADING*/;
-    // else
-    //     ex |= WS_EX_LAYOUTRTL/*WS_EX_RTLREADING*/;
-    // SetWindowLongPtr(*this, GWL_EXSTYLE, ex);
     m_scintilla.SetBidirectional(rd);
 }
 
@@ -2540,11 +2525,6 @@ void CScintillaWnd::DocScrollUpdate()
                  SWP_FRAMECHANGED | // NO to everything else
                      SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER |
                      SWP_NOACTIVATE | SWP_NOSENDCHANGING);
-    //bool ok = SetWindowPos(*this, nullptr, 0, 0, 0, 0,
-    //                       SWP_FRAMECHANGED | // NO to everything else
-    //                           SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER |
-    //                           SWP_NOACTIVATE | SWP_NOSENDCHANGING) != FALSE;
-    //APPVERIFY(ok);
 }
 
 void CScintillaWnd::SetEOLType(Scintilla::EndOfLine eolType) const

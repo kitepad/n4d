@@ -31,62 +31,6 @@
 #include "../ext/tinyexpr/tinyexpr.h"
 #include <chrono>
 
-//class TextReader
-//{
-//protected:
-//    static constexpr Scintilla::Position extremePosition = INTPTR_MAX;
-//    /** @a bufferSize is a trade off between time taken to copy the characters
-//     * and retrieval overhead.
-//     * @a slopSize positions the buffer before the desired position
-//     * in case there is some backtracking. */
-//    static constexpr Scintilla::Position bufferSize = 4000;
-//    static constexpr Scintilla::Position slopSize   = bufferSize / 8;
-//    char                                 buf[bufferSize + 1];
-//    Scintilla::Position                  startPos;
-//    Scintilla::Position                  endPos;
-//    Scintilla::ScintillaCall& sc;
-//    Scintilla::Position       lenDoc;
-//    void Fill(Scintilla::Position position)
-//    {
-//        if (lenDoc == -1)
-//            lenDoc = sc.Length();
-//        startPos = position - slopSize;
-//        if (startPos + bufferSize > lenDoc)
-//            startPos = lenDoc - bufferSize;
-//        if (startPos < 0)
-//            startPos = 0;
-//        endPos = startPos + bufferSize;
-//        if (endPos > lenDoc)
-//            endPos = lenDoc;
-//        sc.SetTarget(Scintilla::Span(startPos, endPos));
-//        sc.TargetText(buf);
-//    }
-//
-//public:
-//    explicit TextReader(Scintilla::ScintillaCall& sc_) noexcept
-//        : startPos(extremePosition)
-//        , endPos(0)
-//        , sc(sc_)
-//        , lenDoc(-1)
-//    {
-//        buf[0] = 0;
-//    }
-//
-//    /** Safe version of operator[], returning a defined value for invalid position. */
-//    char SafeGetCharAt(Scintilla::Position position, char chDefault = ' ')
-//    {
-//        if (position < startPos || position >= endPos)
-//        {
-//            Fill(position);
-//            if (position < startPos || position >= endPos)
-//            {
-//                // Position is outside range of document
-//                return chDefault;
-//            }
-//        }
-//        return buf[position - startPos];
-//    }
-//};
 
 class SciTextReader
 {
@@ -147,62 +91,6 @@ protected:
     Scintilla::Position                  lenDoc;
 };
 
-//static void PrepareWordListOld(std::map<std::string, AutoCompleteType>* wordList, CScintillaWnd* m_editor, bool ignoreCase)
-//{
-//    //const std::string wordCharacters         = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//    //bool              autoCompleteIgnoreCase = false;
-//    auto                      wordCharacters = m_editor->GetWordChars();
-//    auto               lineLen   = m_editor->Scintilla().GetCurLine(0, nullptr);
-//    const std::string  line      = m_editor->Scintilla().GetCurLine(lineLen); // GetCurrentLine();
-//    const Scintilla::Position caret     = m_editor->Scintilla().CurrentPos();
-//    const Scintilla::Line     ln        = m_editor->Scintilla().LineFromPosition(caret);
-//    const Scintilla::Position lineStart = m_editor->Scintilla().LineStart(ln);
-//    const Scintilla::Position current   = caret - lineStart;
-//    
-//    Scintilla::Position startword = current;
-//    // Autocompletion of pure numbers is mostly an annoyance
-//    bool allNumber = true;
-//    while (startword > 0 && (wordCharacters.find(line[startword - 1]) != std::string::npos))
-//    {
-//        startword--;
-//        if (line[startword] < '0' || line[startword] > '9')
-//        {
-//            allNumber = false;
-//        }
-//    }
-//    if (startword == current || allNumber)
-//        return; // true;
-//
-//    const std::string    root       = line.substr(startword, current - startword);
-//    const Scintilla::Position rootLength = root.length();
-//    const Scintilla::Position doclen     = m_editor->Scintilla().Length();
-//    const Scintilla::FindOption flags =
-//        Scintilla::FindOption::WordStart | (ignoreCase ? Scintilla::FindOption::None : Scintilla::FindOption::MatchCase);
-//    const Scintilla::Position posCurrentWord = m_editor->Scintilla().CurrentPos() - rootLength;
-//
-//    m_editor->Scintilla().SetTarget(Scintilla::Span(0, doclen));
-//    m_editor->Scintilla().SetSearchFlags(flags);
-//    Scintilla::Position posFind = m_editor->Scintilla().SearchInTarget(root);
-//    TextReader   acc(m_editor->Scintilla());
-//    while (posFind >= 0 && posFind < doclen)
-//    { // search all the document
-//        Scintilla::Position wordEnd = posFind + rootLength;
-//        if (posFind != posCurrentWord)
-//        {
-//            while (wordCharacters.find(acc.SafeGetCharAt(wordEnd)) != std::string::npos)
-//                wordEnd++;
-//            const Scintilla::Position wordLength = wordEnd - posFind;
-//            if (wordLength > rootLength)
-//            {
-//                const std::string word = m_editor->Scintilla().StringOfSpan(Scintilla::Span(posFind, wordEnd));
-//                wordList->insert({word, AutoCompleteType::Snippet});
-//            }
-//        }
-//        m_editor->Scintilla().SetTarget(Scintilla::Span(wordEnd, doclen));
-//        posFind = m_editor->Scintilla().SearchInTarget(root);
-//    }
-//}
-
 constexpr int fullSnippetPosId = 9999;
 
 bool CAutoComplete::IsWordChar(int ch)
@@ -213,84 +101,6 @@ bool CAutoComplete::IsWordChar(int ch)
         return true;
     return false;
 }
-
-//static HICON  LoadIconEx(HINSTANCE hInstance, LPCWSTR lpIconName, int iconWidth, int iconHeight)
-//{
-//    // the docs for LoadIconWithScaleDown don't mention that a size of 0 will
-//    // use the default system icon size like for e.g. LoadImage or LoadIcon.
-//    // So we don't assume that this works but do it ourselves.
-//    if (iconWidth == 0)
-//        iconWidth = GetSystemMetrics(SM_CXSMICON);
-//    if (iconHeight == 0)
-//        iconHeight = GetSystemMetrics(SM_CYSMICON);
-//    HICON hIcon = nullptr;
-//    if (FAILED(LoadIconWithScaleDown(hInstance, lpIconName, iconWidth, iconHeight, &hIcon)))
-//    {
-//        // fallback, just in case
-//        hIcon = static_cast<HICON>(LoadImage(hInstance, lpIconName, IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
-//    }
-//    return hIcon;
-//}
-//
-//static std::unique_ptr<UINT[]> Icon2Image(HICON hIcon)
-//{
-//    if (hIcon == nullptr)
-//        return nullptr;
-//
-//    ICONINFO iconInfo;
-//    if (!GetIconInfo(hIcon, &iconInfo))
-//        return nullptr;
-//
-//    BITMAP bm;
-//    if (!GetObject(iconInfo.hbmColor, sizeof(BITMAP), &bm))
-//        return nullptr;
-//
-//    int        width            = bm.bmWidth;
-//    int        height           = bm.bmHeight;
-//    int        bytesPerScanLine = (width * 3 + 3) & 0xFFFFFFFC;
-//    int        size             = bytesPerScanLine * height;
-//    BITMAPINFO infoHeader;
-//    infoHeader.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-//    infoHeader.bmiHeader.biWidth       = width;
-//    infoHeader.bmiHeader.biHeight      = height;
-//    infoHeader.bmiHeader.biPlanes      = 1;
-//    infoHeader.bmiHeader.biBitCount    = 24;
-//    infoHeader.bmiHeader.biCompression = BI_RGB;
-//    infoHeader.bmiHeader.biSizeImage   = size;
-//
-//    auto   ptrb                        = std::make_unique<BYTE[]>(2LL * size + 4LL * height * width);
-//    LPBYTE pixelsIconRGB               = ptrb.get();
-//    LPBYTE alphaPixels                 = pixelsIconRGB + size;
-//    HDC    hDC                         = CreateCompatibleDC(nullptr);
-//    OnOutOfScope(DeleteDC(hDC));
-//    HBITMAP hBmpOld = static_cast<HBITMAP>(SelectObject(hDC, static_cast<HGDIOBJ>(iconInfo.hbmColor)));
-//    if (!GetDIBits(hDC, iconInfo.hbmColor, 0, height, static_cast<LPVOID>(pixelsIconRGB), &infoHeader, DIB_RGB_COLORS))
-//        return nullptr;
-//
-//    SelectObject(hDC, hBmpOld);
-//    if (!GetDIBits(hDC, iconInfo.hbmMask, 0, height, static_cast<LPVOID>(alphaPixels), &infoHeader, DIB_RGB_COLORS))
-//        return nullptr;
-//
-//    auto imagePixels = std::make_unique<UINT[]>(static_cast<size_t>(height) * width);
-//    int  lsSrc       = width * 3;
-//    int  vsDest      = height - 1;
-//    for (int y = 0; y < height; y++)
-//    {
-//        int linePosSrc  = (vsDest - y) * lsSrc;
-//        int linePosDest = y * width;
-//        for (int x = 0; x < width; x++)
-//        {
-//            int currentDestPos          = linePosDest + x;
-//            int currentSrcPos           = linePosSrc + x * 3;
-//            imagePixels[currentDestPos] = (static_cast<UINT>((
-//                                                                 ((pixelsIconRGB[currentSrcPos + 2] /*Red*/) | (pixelsIconRGB[currentSrcPos + 1] << 8 /*Green*/)) | pixelsIconRGB[currentSrcPos] << 16 /*Blue*/
-//                                                                 ) |
-//                                                             ((alphaPixels[currentSrcPos] ? 0 : 0xff) << 24)) &
-//                                           0xffffffff);
-//        }
-//    }
-//    return imagePixels;
-//}
 
 static bool isAllowedBeforeDriveLetter(wchar_t c)
 {
@@ -368,14 +178,6 @@ void CAutoComplete::Init()
     m_editor->Scintilla().RGBAImageSetHeight(iconHeight);
     m_editor->Scintilla().AutoCSetIgnoreCase(TRUE);
     m_editor->Scintilla().AutoCStops("([.");
-    //int i = 0;
-    //for (auto icon : {IDI_SCI_CODE, IDI_SCI_FILE, IDI_SCI_SNIPPET})
-    //{
-    //    CAutoIcon hIcon = LoadIconEx(g_hInst, MAKEINTRESOURCE(icon), iconWidth, iconHeight);
-    //    auto      bytes = Icon2Image(hIcon);
-    //    m_editor->Scintilla().RegisterRGBAImage(i, reinterpret_cast<const char*>(bytes.get()));
-    //    ++i;
-    //}
 
     std::vector<std::unique_ptr<CSimpleIni>> iniFiles;
 
@@ -483,8 +285,6 @@ void CAutoComplete::HandleScintillaEvents(const SCNotification* scn)
                         std::string sSnippet;
                         {
                             std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
-                            //auto                                  docID      = m_main->GetCurrentTabId();
-                            //auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
                             auto           lang       = pMain->GetActiveDocument().GetLanguage();
                             const auto&    snippetMap = m_langSnippetList[lang];
                             auto           foundIt    = snippetMap.find(sKey);
@@ -985,8 +785,6 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
                     std::string sAutoCompleteString;
                     {
                         std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
-                        //auto                                  docID      = m_main->GetCurrentTabId();
-                        //auto                                  lang       = m_main->m_docManager.GetDocumentFromID(docID).GetLanguage();
                         CMainWindow*                          pMain      = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
                         auto                                  lang       = pMain->GetActiveDocument().GetLanguage();
                         const auto&                           snippetMap = m_langSnippetList[lang];
@@ -1061,7 +859,7 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
                 }
             }
         }
-        //PrepareWordList(wordSet);
+
         if (wordSet.empty())
             m_editor->Scintilla().AutoCCancel();
         else
@@ -1083,8 +881,6 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
             SetWindowStylesForAutocompletionPopup();
         }
     }
-
-    //StartAutoCompleteWord(true);
 }
 
 void CAutoComplete::ExitSnippetMode()
@@ -1199,21 +995,8 @@ LRESULT CAutoCompleteConfigDlg::DlgFunc(HWND /*hwndDlg*/, UINT uMsg, WPARAM wPar
         case WM_INITDIALOG:
         {
             InitDialog(*this, IDI_BOWPAD);
-            //m_resizer.Init(*this);
             m_scintilla.Init(g_hRes, *this, GetDlgItem(*this, IDC_SCINTILLA));
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
-            //m_resizer.AddControl(*this, IDC_LABEL1, RESIZER_TOPLEFT);
-            //m_resizer.AddControl(*this, IDC_LANGCOMBO, RESIZER_TOPLEFT);
-            //m_resizer.AddControl(*this, IDC_SNIPPETGROUP, RESIZER_TOPLEFTBOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDC_SNIPPETLIST, RESIZER_TOPLEFTBOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDC_DELETE, RESIZER_BOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDC_SCINTILLA, RESIZER_TOPLEFTBOTTOMRIGHT);
-            //m_resizer.AddControl(*this, IDC_LABEL2, RESIZER_BOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDC_SNIPPETNAME, RESIZER_BOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDC_LABEL3, RESIZER_BOTTOMLEFTRIGHT);
-            //m_resizer.AddControl(*this, IDC_SAVE, RESIZER_BOTTOMLEFT);
-            //m_resizer.AddControl(*this, IDCANCEL, RESIZER_BOTTOMRIGHT);
-            //m_resizer.UseSizeGrip(true);
 
             m_scintilla.SetupLexerForLang("Snippets");
             m_scintilla.Scintilla().SetEOLMode(Scintilla::EndOfLine::Lf);
@@ -1240,16 +1023,6 @@ LRESULT CAutoCompleteConfigDlg::DlgFunc(HWND /*hwndDlg*/, UINT uMsg, WPARAM wPar
 
         case WM_COMMAND:
             return DoCommand(LOWORD(wParam), HIWORD(wParam));
-        //case WM_SIZE:
-        //    m_resizer.DoResize(LOWORD(lParam), HIWORD(lParam));
-        //    break;
-        //case WM_GETMINMAXINFO:
-        //{
-        //    MINMAXINFO* mmi       = reinterpret_cast<MINMAXINFO*>(lParam);
-        //    mmi->ptMinTrackSize.x = m_resizer.GetDlgRectScreen()->right;
-        //    mmi->ptMinTrackSize.y = m_resizer.GetDlgRectScreen()->bottom;
-        //    return 0;
-        //}
         case WM_NOTIFY:
         {
             LPNMHDR pnmHdr = reinterpret_cast<LPNMHDR>(lParam);

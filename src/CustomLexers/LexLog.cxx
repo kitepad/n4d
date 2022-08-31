@@ -71,39 +71,6 @@ enum LogStates
     Error
 };
 
-//static bool IsAWordChar(const int ch)
-//{
-//    return (ch < 0x80) && (isalnum(ch) || ch == '.' || ch == '_' || ch == '$');
-//}
-
-//static LogStates GetState(LogStyles style)
-//{
-//    switch (style)
-//    {
-//        case LogStyles::Default:
-//        case LogStyles::Block:
-//        case LogStyles::String:
-//        case LogStyles::Number:
-//            return LogStates::Debug;
-//        case LogStyles::InfoDefault:
-//        case LogStyles::InfoBlock:
-//        case LogStyles::InfoString:
-//        case LogStyles::InfoNumber:
-//            return LogStates::Info;
-//        case LogStyles::WarnDefault:
-//        case LogStyles::WarnBlock:
-//        case LogStyles::WarnString:
-//        case LogStyles::WarnNumber:
-//            return LogStates::Warn;
-//        case LogStyles::ErrorDefault:
-//        case LogStyles::ErrorBlock:
-//        case LogStyles::ErrorString:
-//        case LogStyles::ErrorNumber:
-//            return LogStates::Error;
-//    }
-//    return LogStates::Debug;
-//}
-
 bool hasTokenAsWord(const std::string& token, const std::string_view& sLine)
 {
     if (auto pos = sLine.find(token); pos != std::string::npos)

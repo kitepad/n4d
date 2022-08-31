@@ -81,7 +81,6 @@ bool CPathWatcher::RemovePath(const std::wstring& path)
 {
     std::unique_lock locker(m_guard);
 
-    //CTraceToOutputDebugString::Instance()(TEXT(__FUNCTION__) L": RemovePath for %s\n", path.c_str());
     bool bRet = (watchedPaths.erase(path) != 0);
     m_hCompPort.CloseHandle();
     return bRet;
@@ -103,7 +102,6 @@ void CPathWatcher::ClearPaths(bool includeChangedPaths)
 bool CPathWatcher::AddPath(const std::wstring& path, bool recursive)
 {
     std::unique_lock locker(m_guard);
-    //CTraceToOutputDebugString::Instance()(TEXT(__FUNCTION__) L": AddPath for %s\n", path.c_str());
     watchedPaths[path] = recursive;
     m_hCompPort.CloseHandle();
     return true;
@@ -185,7 +183,6 @@ void CPathWatcher::WorkerThread()
                         watchedPaths.erase(watchedPath);
                         break;
                     }
-                    //CTraceToOutputDebugString::Instance()(TEXT(__FUNCTION__) L": watching path %s\n", watchedPath.c_str());
                     m_watchInfoMap[pDirInfo->m_hDir] = std::move(pDirInfo);
                 }
             }
@@ -216,7 +213,6 @@ void CPathWatcher::WorkerThread()
                                     continue;
                                 }
                                 buf[min(bufferSize - 1, pdi->m_dirPath.size() + (pnotify->FileNameLength / sizeof(WCHAR)))] = 0;
-                                //CTraceToOutputDebugString::Instance()(TEXT(__FUNCTION__) L": change notification for %s\n", buf);
                                 {
                                     std::unique_lock locker(m_guard);
                                     m_changedPaths.emplace_back(pnotify->Action, buf);

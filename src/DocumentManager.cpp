@@ -476,7 +476,7 @@ bool CDocumentManager::HasDocumentID(DocID id) const
         return false;
 
     // If we find something with an invalid id, something is very wrong.
-    //APPVERIFY(id.IsValid());
+
     if (!id.IsValid())
         return false;
 
@@ -488,7 +488,6 @@ const CDocument& CDocumentManager::GetDocumentFromID(DocID id) const
     auto pos = m_documents.find(id);
     if (pos == std::end(m_documents))
     {
-        //APPVERIFY(false);
         return g_emptyDoc;
     }
     return pos->second;
@@ -499,7 +498,6 @@ CDocument& CDocumentManager::GetModDocumentFromID(DocID id)
     auto pos = m_documents.find(id);
     if (pos == std::end(m_documents))
     {
-        //APPVERIFY(false);
         return g_emptyDoc;
     }
     return pos->second;
@@ -508,9 +506,6 @@ CDocument& CDocumentManager::GetModDocumentFromID(DocID id)
 void CDocumentManager::AddDocumentAtEnd(const CDocument& doc, DocID id)
 {
     // Catch attempts to id's that serve as null type values.
-    //APPVERIFY(id.IsValid());                              // Serious bug.
-    //APPVERIFY(m_documents.find(id) == m_documents.end()); // Should not already exist.
-    //m_documents[id] = doc;
 
     if (id.IsValid() && m_documents.find(id) == m_documents.end())
     {
@@ -558,14 +553,14 @@ CDocument CDocumentManager::LoadFile(/*HWND hWnd,*/ const std::wstring& path, in
             // else if canceled elevation via various means or got an error even asking.
             // just fall through and issue the error that failed.
         }
-        ShowFileLoadError(/*hWnd,*/ path, errMsg);
+        ShowFileLoadError(path, errMsg);
         return doc;
     }
     BY_HANDLE_FILE_INFORMATION fi;
     if (!GetFileInformationByHandle(hFile, &fi))
     {
         CFormatMessageWrapper errMsg; // Calls GetLastError itself.
-        ShowFileLoadError(/*hWnd,*/ path, errMsg);
+        ShowFileLoadError(path, errMsg);
         return doc;
     }
     doc.m_bIsReadonly                    = (fi.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != 0;
@@ -594,8 +589,7 @@ CDocument CDocumentManager::LoadFile(/*HWND hWnd,*/ const std::wstring& path, in
     Scintilla::ILoader* pdocLoad = static_cast<Scintilla::ILoader*>(m_scratchScintilla.Scintilla().CreateLoader(static_cast<uptr_t>(bufferSizeRequested), docOptions));
     if (pdocLoad == nullptr)
     {
-        ShowFileLoadError(/*hWnd, */path,ResString(g_hRes, IDS_ERR_FILETOOBIG).c_str());
-                          //CLanguage::Instance().GetTranslatedString(ResString(g_hRes, IDS_ERR_FILETOOBIG)).c_str());
+        ShowFileLoadError(path,ResString(g_hRes, IDS_ERR_FILETOOBIG).c_str());
         return doc;
     }
     auto& edit                    = *pdocLoad;
@@ -987,7 +981,7 @@ bool CDocumentManager::SaveFile(/*HWND hWnd, */CDocument& doc, bool& bTabMoved) 
         {
             std::wstring tempPath = CTempFiles::Instance().GetTempFilePath(true);
 
-            if (SaveDoc(/*hWnd, */tempPath, doc))
+            if (SaveDoc(tempPath, doc))
             {
                 std::wstring cmdline        = CStringUtils::Format(L"/elevate /savepath:\"%s\" /path:\"%s\"", doc.m_path.c_str(), tempPath.c_str());
                 DWORD        elevationError = RunSelfElevated(/*hWnd,*/ cmdline, true);
@@ -1015,11 +1009,11 @@ bool CDocumentManager::SaveFile(/*HWND hWnd, */CDocument& doc, bool& bTabMoved) 
                 }
             }
         }
-        ShowFileSaveError(/*hWnd, */doc.m_path, errMsg);
+        ShowFileSaveError(doc.m_path, errMsg);
         return false;
     }
     hFile.CloseHandle();
-    if (SaveDoc(/*hWnd, */doc.m_path, doc))
+    if (SaveDoc(doc.m_path, doc))
     {
         m_scratchScintilla.Scintilla().SetSavePoint();
         m_scratchScintilla.Scintilla().SetDocPointer(nullptr);
@@ -1039,9 +1033,9 @@ bool CDocumentManager::SaveFile(/*HWND hWnd, */CDocument& doc, bool& bTabMoved) 
     return true;
 }
 
-bool CDocumentManager::SaveFile(/*HWND hWnd,*/ CDocument& doc, const std::wstring& path) const
+bool CDocumentManager::SaveFile(CDocument& doc, const std::wstring& path) const
 {
-    return SaveDoc(/*hWnd, */path, doc);
+    return SaveDoc(path, doc);
 }
 
 bool CDocumentManager::UpdateFileTime(CDocument& doc, bool bIncludeReadonly)

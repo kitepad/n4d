@@ -30,8 +30,6 @@
 #pragma warning(pop)
 #include <algorithm>
 
-//constexpr COLORREF darkBkColor           = 0x26211c;
-//constexpr COLORREF darkTextColor         = 0xDDDDDD;
 constexpr COLORREF darkDisabledTextColor = 0x808080;
 
 constexpr auto SubclassID = 1234;
@@ -99,12 +97,10 @@ void CTheme::Load()
         COLORREF     clr1;
         std::wstring s  = it;
         bool         ok = GDIHelpers::HexStringToCOLORREF(s, &clr1);
-        //APPVERIFY(ok);
 
         COLORREF clr2;
         s  = themeIni.GetValue(L"SubstColors", it, L"");
         ok = GDIHelpers::HexStringToCOLORREF(s, &clr2);
-        //APPVERIFY(ok);
 
         m_colorMap[clr1] = clr2;
     }
@@ -456,8 +452,8 @@ BOOL CTheme::AdjustThemeForChildrenProc(HWND hwnd, LPARAM lParam)
             CHARFORMAT2 format = {0};
             format.cbSize      = sizeof(CHARFORMAT2);
             format.dwMask      = CFM_COLOR | CFM_BACKCOLOR;
-            format.crTextColor = CTheme::CurrentTheme().winFore;//CTheme::Instance().GetThemeColor(GetSysColor(COLOR_WINDOWTEXT));
-            format.crBackColor = CTheme::CurrentTheme().winBack;//CTheme::Instance().GetThemeColor(GetSysColor(COLOR_WINDOW));
+            format.crTextColor = CTheme::CurrentTheme().winFore;
+            format.crBackColor = CTheme::CurrentTheme().winBack;
             SendMessage(hwnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&format));
             SendMessage(hwnd, EM_SETBKGNDCOLOR, 0, static_cast<LPARAM>(format.crBackColor));
         }
@@ -496,7 +492,7 @@ LRESULT CTheme::ListViewSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                         return CDRF_NOTIFYITEMDRAW;
                     case CDDS_ITEMPREPAINT:
                     {
-                        SetTextColor(nmcd->hdc, CurrentTheme().winFore); // darkTextColor);
+                        SetTextColor(nmcd->hdc, CurrentTheme().winFore); 
                         SetBkMode(nmcd->hdc, TRANSPARENT);
                         return CDRF_DODEFAULT;
                     }
@@ -530,10 +526,10 @@ LRESULT CTheme::ComboBoxSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
             auto hbrBkgnd = reinterpret_cast<HBRUSH*>(dwRefData);
             HDC  hdc      = reinterpret_cast<HDC>(wParam);
             SetBkMode(hdc, TRANSPARENT);
-            SetTextColor(hdc, CurrentTheme().winFore); // darkTextColor);
-            SetBkColor(hdc, CurrentTheme().winBack);   // darkBkColor);
+            SetTextColor(hdc, CurrentTheme().winFore); 
+            SetBkColor(hdc, CurrentTheme().winBack);   
             if (!*hbrBkgnd)
-                *hbrBkgnd = CreateSolidBrush(CurrentTheme().winBack); // darkBkColor);
+                *hbrBkgnd = CreateSolidBrush(CurrentTheme().winBack); 
             return reinterpret_cast<LRESULT>(*hbrBkgnd);
         }
         case WM_DRAWITEM:
@@ -561,7 +557,7 @@ LRESULT CTheme::ComboBoxSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                 }
                 else
                 {
-                    ::SetBkColor(hDC, CurrentTheme().winBack); // darkBkColor);
+                    ::SetBkColor(hDC, CurrentTheme().winBack); 
                 }
                 ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
 
@@ -577,7 +573,7 @@ LRESULT CTheme::ComboBoxSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
                     }
                 }
 
-                SetTextColor(pDis->hDC, CurrentTheme().winFore); // darkTextColor);
+                SetTextColor(pDis->hDC, CurrentTheme().winFore); 
                 SetBkMode(hDC, TRANSPARENT);
                 DrawText(hDC, cbi.pszText, -1, &rc, DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX | DT_END_ELLIPSIS);
                 return TRUE;
@@ -608,10 +604,10 @@ LRESULT CTheme::MainSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             auto hbrBkgnd = reinterpret_cast<HBRUSH*>(dwRefData);
             HDC  hdc      = reinterpret_cast<HDC>(wParam);
             SetBkMode(hdc, TRANSPARENT);
-            SetTextColor(hdc, CurrentTheme().winFore); // darkTextColor);
-            SetBkColor(hdc, CurrentTheme().winBack); //  darkBkColor);
+            SetTextColor(hdc, CurrentTheme().winFore); 
+            SetBkColor(hdc, CurrentTheme().winBack); 
             if (!*hbrBkgnd)
-                *hbrBkgnd = CreateSolidBrush(CurrentTheme().winBack); // darkBkColor);
+                *hbrBkgnd = CreateSolidBrush(CurrentTheme().winBack); 
             return reinterpret_cast<LRESULT>(*hbrBkgnd);
         }
         case WM_DESTROY:
@@ -640,10 +636,10 @@ LRESULT CTheme::AutoSuggestSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
             if (pDis->itemState & LVIS_FOCUSED)
                 ::SetBkColor(hDC, darkDisabledTextColor);
             else
-                ::SetBkColor(hDC, CurrentTheme().winBack); // darkBkColor);
+                ::SetBkColor(hDC, CurrentTheme().winBack); 
             ::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rc, nullptr, 0, nullptr);
 
-            SetTextColor(pDis->hDC, CurrentTheme().winFore); // darkTextColor);
+            SetTextColor(pDis->hDC, CurrentTheme().winFore); 
             SetBkMode(hDC, TRANSPARENT);
             DrawText(hDC, itemText, -1, &rc, DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX | DT_END_ELLIPSIS);
         }
@@ -737,19 +733,19 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                             if (hFontOld)
                                 hFontOld = static_cast<HFONT>(SelectObject(hdcPaint, hFontOld));
 
-                            ::SetBkColor(hdcPaint, CurrentTheme().winBack); // darkBkColor);
+                            ::SetBkColor(hdcPaint, CurrentTheme().winBack); 
                             ::ExtTextOut(hdcPaint, 0, 0, ETO_OPAQUE, &rcClient, nullptr, 0, nullptr);
 
                             BufferedPaintSetAlpha(hBufferedPaint, &ps.rcPaint, 0x00);
 
                             DTTOPTS dttOpts   = {sizeof(DTTOPTS)};
                             dttOpts.dwFlags   = DTT_COMPOSITED | DTT_GLOWSIZE;
-                            dttOpts.crText    = CurrentTheme().winFore; //darkTextColor;
+                            dttOpts.crText    = CurrentTheme().winFore; 
                             dttOpts.iGlowSize = 12; // Default value
 
                             DetermineGlowSize(&dttOpts.iGlowSize);
 
-                            COLORREF cr = CurrentTheme().winBack; //darkBkColor;
+                            COLORREF cr = CurrentTheme().winBack; 
                             GetEditBorderColor(hWnd, &cr);
                             if (CTheme::Instance().IsDarkTheme())
                                 cr = CurrentTheme().itemHover;
@@ -781,13 +777,13 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                                         rcDraw = rcClient;
                                         rcDraw.left += iX;
                                         DrawTextW(hdcPaint, szText, -1, &rcDraw, dwFlags | DT_CALCRECT);
-                                        ::SetBkColor(hdcPaint, CurrentTheme().winBack); // darkBkColor);
+                                        ::SetBkColor(hdcPaint, CurrentTheme().winBack); 
                                         ::ExtTextOut(hdcPaint, 0, 0, ETO_OPAQUE, &rcDraw, nullptr, 0, nullptr);
                                         rcDraw.left++;
                                         rcDraw.right++;
 
                                         SetBkMode(hdcPaint, TRANSPARENT);
-                                        SetTextColor(hdcPaint, CurrentTheme().winFore); // darkTextColor);
+                                        SetTextColor(hdcPaint, CurrentTheme().winFore); 
                                         DrawText(hdcPaint, szText, -1, &rcDraw, dwFlags);
                                     }
 
@@ -818,7 +814,7 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                         HPAINTBUFFER hBufferedPaint = BeginBufferedPaint(hdc, &rcClient, BPBF_TOPDOWNDIB, &params, &hdcPaint);
                         if (hdcPaint && hBufferedPaint)
                         {
-                            ::SetBkColor(hdcPaint, CurrentTheme().winBack); // darkBkColor);
+                            ::SetBkColor(hdcPaint, CurrentTheme().winBack); 
                             ::ExtTextOut(hdcPaint, 0, 0, ETO_OPAQUE, &rcClient, nullptr, 0, nullptr);
 
                             BufferedPaintSetAlpha(hBufferedPaint, &ps.rcPaint, 0x00);
@@ -893,7 +889,7 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
                             DTTOPTS dttOpts   = {sizeof(DTTOPTS)};
                             dttOpts.dwFlags   = DTT_COMPOSITED | DTT_GLOWSIZE;
-                            dttOpts.crText    = CurrentTheme().winFore; //darkTextColor;
+                            dttOpts.crText    = CurrentTheme().winFore; 
                             dttOpts.iGlowSize = 12; // Default value
 
                             DetermineGlowSize(&dttOpts.iGlowSize);
@@ -949,7 +945,7 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                                         if (dwStyle & WS_DISABLED)
                                             SetTextColor(hdcPaint, darkDisabledTextColor);
                                         else
-                                            SetTextColor(hdcPaint, CurrentTheme().winFore); // darkTextColor);
+                                            SetTextColor(hdcPaint, CurrentTheme().winFore); 
                                         DrawText(hdcPaint, szText, -1, &rc, dwFlags);
 
                                         // draw the focus rectangle if necessary:
@@ -1226,8 +1222,6 @@ BOOL DetermineGlowSize(int* piSize, LPCWSTR pszClassIdList /*= NULL*/)
 
 BOOL GetEditBorderColor(HWND hWnd, COLORREF* pClr)
 {
-    //ASSERT(pClr);
-
     HTHEME hTheme = OpenThemeData(hWnd, L"Edit");
     if (hTheme)
     {

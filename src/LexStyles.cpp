@@ -111,23 +111,15 @@ void CLexStyles::ParseStyle(
         switch (i)
         {
             case 0: // Name
-#ifdef _DEBUG
-                if (s.find(',') != std::wstring::npos)
-                    APPVERIFYM(false, s.c_str());
-#endif
                 style.name = s;
                 break;
             case 1: // Foreground color
                 if (GDIHelpers::HexStringToCOLORREF(s, &clr))
                     style.foregroundColor = clr;
-                //else
-                //    APPVERIFYM(s.empty(), styleName);
                 break;
             case 2: // Background color
                 if (GDIHelpers::HexStringToCOLORREF(s, &clr))
                     style.backgroundColor = clr;
-                //else
-                //    APPVERIFYM(s.empty(), styleName);
                 break;
             case 3: // Font name
                 style.fontName = s;
@@ -136,7 +128,7 @@ void CLexStyles::ParseStyle(
             {
                 int fs;
                 if (!CAppUtils::TryParse(s.c_str(), fs, true))
-                    assert(false); // APPVERIFYM(false, styleName);
+                    assert(false); 
                 style.fontStyle = static_cast<FontStyle>(fs);
             }
             break;
@@ -147,8 +139,6 @@ void CLexStyles::ParseStyle(
             case 6: // Override default background color in case the style was set with a variable
                 if (GDIHelpers::HexStringToCOLORREF(s, &clr))
                     style.backgroundColor = clr;
-                //else
-                //    APPVERIFYM(s.empty(), styleName);
                 break;
             case 7: // eolstylefilled
                 if (!s.empty())
@@ -198,7 +188,6 @@ void CLexStyles::Load()
         ini->GetAllKeys(L"variables", lexVars);
         for (const auto& l : lexVars)
         {
-            //APPVERIFY(*l != L'\0');
             std::wstring v   = ini->GetValue(L"variables", l);
             std::wstring key = L"$(";
             key += l;
@@ -214,10 +203,8 @@ void CLexStyles::Load()
         ini->GetAllKeys(L"lexers", lexKeys);
         for (const auto& l : lexKeys)
         {
-            //APPVERIFY(*l != L'\0');
             int lex;
             if (!CAppUtils::TryParse(ini->GetValue(l, L"Lexer", L""), lex, false))
-                // APPVERIFY(false);
                 assert(false);
             m_lexerSection[lex] = l;
         }
@@ -229,12 +216,8 @@ void CLexStyles::Load()
                 continue;
             int lex;
             if (!CAppUtils::TryParse(slex.c_str(), lex, false))
-                // APPVERIFY(false);
                 assert(false);
             std::wstring lexName = ini->GetValue(lexerName.c_str(), L"LexerName", L"");
-#ifdef _DEBUG
-            assert(!lexName.empty());
-#endif
             if (lexName.empty() && lex)
             {
                 auto lexIt = m_lexerData.find(lex);
@@ -406,7 +389,7 @@ void CLexStyles::Load()
                 {
                     int vn;
                     if (!CAppUtils::TryParse(sk + 8, vn, false))
-                        assert(false);//APPVERIFY(false);
+                        assert(false);
                     ld.keywordList[vn] = CUnicodeUtils::StdGetUTF8(ini->GetValue(langSect.c_str(), sk));
                 }
                 else if (_wcsicmp(L"CommentLine", sk) == 0)
@@ -427,9 +410,8 @@ void CLexStyles::Load()
                 else if (_wcsicmp(L"CommentLineAtStart", sk) == 0)
                 {
                     int vn = 0;
-                    if (!CAppUtils::TryParse(
-                            ini->GetValue(langSect.c_str(), sk), vn, false))
-                        assert(false); // APPVERIFY(false);
+                    if (!CAppUtils::TryParse(ini->GetValue(langSect.c_str(), sk), vn, false))
+                        assert(false); 
                     ld.commentLineAtStart = vn != 0;
                 }
                 else if (_wcsicmp(L"FunctionRegex", sk) == 0)
@@ -439,10 +421,8 @@ void CLexStyles::Load()
                 }
                 else if (_wcsicmp(L"FunctionRegexSort", sk) == 0)
                 {
-                    if (!CAppUtils::TryParse(
-                            ini->GetValue(langSect.c_str(), sk),
-                            ld.functionRegexSort, false))
-                        assert(false); // APPVERIFY(false);
+                    if (!CAppUtils::TryParse(ini->GetValue(langSect.c_str(), sk),ld.functionRegexSort, false))
+                        assert(false); 
                 }
                 else if (_wcsicmp(L"FunctionRegexTrim", sk) == 0)
                 {
@@ -456,10 +436,8 @@ void CLexStyles::Load()
                 }
                 else if (_wcsicmp(L"UserFunctions", sk) == 0)
                 {
-                    if (!CAppUtils::TryParse(
-                            ini->GetValue(langSect.c_str(), sk),
-                            ld.userFunctions, false))
-                        assert(false); // APPVERIFY(false);
+                    if (!CAppUtils::TryParse(ini->GetValue(langSect.c_str(), sk), ld.userFunctions, false))
+                        assert(false); 
                 }
                 else if (_wcsicmp(L"DetectionString+", sk) == 0)
                 {
@@ -944,7 +922,7 @@ void CLexStyles::SaveUserData()
                 sSize.clear();
             int fore = GetRValue(styleData.foregroundColor) << 16 | GetGValue(styleData.foregroundColor) << 8 | GetBValue(styleData.foregroundColor);
             int back = GetRValue(styleData.backgroundColor) << 16 | GetGValue(styleData.backgroundColor) << 8 | GetBValue(styleData.backgroundColor);
-            // styleNR=name;foreground;background;fontname;fontstyle;fontsize
+            
             const auto& name = styleData.name.empty() ? m_lexerData[lexerId].styles[styleId].name : styleData.name;
             v                = CStringUtils::Format(L"%s;%06X;%06X;%s;%d;%s", name.c_str(), fore, back, styleData.fontName.c_str(), styleData.fontStyle, sSize.c_str());
             if (auto origStyleIt = origStyleData.find(styleId); origStyleIt != origStyleData.end())

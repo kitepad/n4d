@@ -229,13 +229,6 @@ UINT_PTR CALLBACK CColorButton::CCHookProc(
             {
                 pColorButton->m_lastColor    = color;
                 pColorButton->m_hasLastColor = true;
-#ifdef _DEBUG
-                std::wstring msg = CStringUtils::Format(L"RGB(%d,%d,%d)\n",
-                                                        static_cast<int>(GetRValue(color)),
-                                                        static_cast<int>(GetGValue(color)),
-                                                        static_cast<int>(GetBValue(color)));
-                OutputDebugString(msg.c_str());
-#endif
                 pColorButton->SetColor(color);
                 SendMessage(GetParent(hDlg), WM_COMMAND,
                             pColorButton->m_ctlId, reinterpret_cast<LPARAM>(GetParent(hDlg)));

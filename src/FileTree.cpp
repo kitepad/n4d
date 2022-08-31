@@ -224,7 +224,6 @@ LRESULT CALLBACK CFileTree::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, L
             const FileTreeItem* pTreeItem = GetFileTreeItem(*this, hSelItem);
             if (!pTreeItem)
             {
-                //APPVERIFY(false);
                 break; // switch.
             }
 
@@ -306,11 +305,6 @@ LRESULT CALLBACK CFileTree::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, L
             FileTreeItem* fi = nullptr;
             if (pData->refreshRoot != TVI_ROOT)
                 fi = GetFileTreeItem(*this, pData->refreshRoot);
-            //CMainWindow* pMain = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(GetParent(*this), GWLP_USERDATA));
-            //CMainWindow* pMain  = CMainWindow::GetMainWindow();
-            //auto id = pMain->GetCurrentTabId();
-            //bool hasDoc = pMain->m_docManager.HasDocumentID(id);
-            //const CDocument& doc    = pMain->m_docManager.GetDocumentFromID(pMain->GetCurrentTabId());
             if (((pData->refreshRoot == TVI_ROOT) && (CPathUtils::PathCompare(pData->refreshPath, m_path) == 0)) ||
                 (fi && (CPathUtils::PathCompare(fi->path, pData->refreshPath) == 0)))
             {
@@ -371,7 +365,6 @@ LRESULT CALLBACK CFileTree::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, L
                 pData = nullptr;
             }
         }
-            //MarkActiveDocument(wParam == 0);
             break;
         case WM_TIMER:
             HandleChangeNotifications();
@@ -714,36 +707,12 @@ void CFileTree::OnThemeChanged(bool bDark)
     }
 }
 
-//bool CFileTree::Execute()
-//{
-//    return false;
-//}
-//
-//UINT CFileTree::GetCmdId()
-//{
-//    return 0;
-//}
-
-//void CFileTree::TabNotify(TBHDR* ptbhdr)
-//{
-//    if ((ptbhdr->hdr.code == TCN_SELCHANGE))
-//    {
-//        if (m_nBlockRefresh)
-//            return;
-//        m_bBlockExpansion = false;
-//        MarkActiveDocument(true);
-//    }
-//}
-
 void CFileTree::MarkActiveDocument(bool ensureVisible)
 {
     if (m_nBlockRefresh)
         return;
     m_bBlockExpansion = false;
     
-    //CMainWindow* pMain  = static_cast<CMainWindow*>(g_pMainWindow); // CMainWindow::GetMainWindow();
-    //auto id     = pMain->GetCurrentTabId();
-    //bool hasDoc = pMain->m_docManager.HasDocumentID(id);
     CMainWindow* pMain        = reinterpret_cast<CMainWindow*>(GetWindowLongPtr(g_hMainWindow, GWLP_USERDATA));
     bool bRecurseDone = false;
     if (pMain->HasActiveDocument())
@@ -753,7 +722,6 @@ void CFileTree::MarkActiveDocument(bool ensureVisible)
         {
             if (!PathIsChild(m_path, doc.m_path))
             {
-                //MessageBox(NULL, m_path.c_str(), doc.m_path.c_str(), MB_OK);
                 SetPath(CPathUtils::GetParentDirectory(doc.m_path));
             }
         }
@@ -796,7 +764,6 @@ void CFileTree::MarkActiveDocument(bool ensureVisible)
     if (!bRecurseDone)
     {
         SetPath(L"");
-        //SetActiveItem(nullptr);
     }
 }
 

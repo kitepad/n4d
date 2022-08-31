@@ -81,7 +81,6 @@ void CCustomToolTip::ShowTip(POINT screenPt, const std::wstring& text, COLORREF*
 
     wcscpy_s(textBuf.get(), m_infoText.size() + 4, m_infoText.c_str());
     RECT rc{};
-    // GetClientRect(*this, &rc);
     rc.left   = 0;
     rc.right  = CDPIAware::Instance().Scale(*this, 800);
     rc.top    = 0;
@@ -161,8 +160,6 @@ void CCustomToolTip::OnPaint(HDC hdc, RECT* pRc)
     pRc->right -= BORDER;
     pRc->bottom -= BORDER;
     ::SetTextColor(hdc, CTheme::Instance().GetThemeColor(GetSysColor(COLOR_INFOTEXT)));
-    //::SetBkColor(hdc, CTheme::Instance().GetThemeColor(GetSysColor(COLOR_INFOBK)));
-    //SetBkMode(hdc, TRANSPARENT);
     auto oldFont = SelectObject(hdc, m_hFont);
     auto textBuf = std::make_unique<wchar_t[]>(m_infoText.size() + 4);
     wcscpy_s(textBuf.get(), m_infoText.size() + 4, m_infoText.c_str());
@@ -185,35 +182,8 @@ LRESULT CCustomToolTip::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 {
     switch (uMsg)
     {
-        //case WM_KEYDOWN:
-        //    if (wParam == VK_ESCAPE)
-        //    {
-        //        HideTip();
-        //        return TRUE;
-        //    }
-        //    break;
         case WM_ERASEBKGND:
             return 0;
-        //case WM_LBUTTONDOWN:
-        //{
-        //    if (!m_copyText.empty())
-        //    {
-        //        WriteAsciiStringToClipboard(m_copyText.c_str(), *this);
-        //    }
-        //    else
-        //    {
-        //        // send the click to the parent window
-        //        POINT pt{};
-        //        pt.x = GET_X_LPARAM(lParam);
-        //        pt.y = GET_Y_LPARAM(lParam);
-        //        MapWindowPoints(m_hwnd, m_hParent, &pt, 1);
-        //        SendMessage(m_hParent, WM_LBUTTONDOWN, 0, MAKELPARAM(pt.x, pt.y));
-        //    }
-        //    return 0;
-        //}
-        //case WM_RBUTTONDOWN:
-        //    HideTip();
-        //    return 0;
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
