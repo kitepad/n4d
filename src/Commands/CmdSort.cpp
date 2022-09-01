@@ -134,12 +134,6 @@ LRESULT CSortDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             InitDialog(hwndDlg, IDI_BOWPAD);
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
-            //auto      sortOrderList = GetDlgItem(*this, IDC_SORTDLG_ORDER);
-            //ResString ascending(g_hRes, IDS_ASCENDING);
-            //ResString descending(g_hRes, IDS_DESCENDING);
-            //int       defSel = ListBox_AddString(sortOrderList, ascending);
-            //ListBox_AddString(sortOrderList, descending);
-            //ListBox_SetCurSel(sortOrderList, defSel);
         }
             return FALSE;
         case WM_COMMAND:
@@ -156,6 +150,8 @@ LRESULT CSortDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             EndPaint(hwndDlg, &ps);
             return 0;
         }
+        default:
+            break;
 
     }
     return FALSE;
@@ -174,6 +170,8 @@ LRESULT CSortDlg::DoCommand(int id, int /*msg*/)
             break;
         case IDCANCEL:
             EndDialog(*this, id);
+            break;
+        default:
             break;
     }
     return 1;

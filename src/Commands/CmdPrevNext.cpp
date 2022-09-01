@@ -88,73 +88,56 @@ void SetCurrentLine(sptr_t line)
 
 void CCmdPrevNext::ScintillaNotify(SCNotification* pScn)
 {
-    switch (pScn->nmhdr.code)
+    if (pScn->nmhdr.code == SCN_UPDATEUI)
     {
-        case SCN_UPDATEUI:
+        if (g_ignore)
+            return;
+        if (g_offsetBeforeEnd >= g_positions.size())
+            g_offsetBeforeEnd = 0;
+        auto line = GetCurrentLineNumber();
+        if (!g_currentDocId.IsValid() || g_currentLine == -1)
         {
-            if (g_ignore)
-                return;
-            if (g_offsetBeforeEnd >= g_positions.size())
-                g_offsetBeforeEnd = 0;
-            auto line = GetCurrentLineNumber();
-            if (!g_currentDocId.IsValid() || g_currentLine == -1)
+            ResizePositionSpace();
+            g_currentDocId = GetDocIdOfCurrentTab();
+            if (g_currentDocId.IsValid())
             {
-                ResizePositionSpace();
-                g_currentDocId = GetDocIdOfCurrentTab();
-                if (g_currentDocId.IsValid())
-                {
-                    auto col = Scintilla().Column(Scintilla().CurrentPos());
-                    AddNewPosition(g_currentDocId, line, col);
-                }
-                return;
+                auto col = Scintilla().Column(Scintilla().CurrentPos());
+                AddNewPosition(g_currentDocId, line, col);
             }
-            else if (g_currentLine != line)
-            {
-                auto mark = [&]() {
-                    ResizePositionSpace();
-                    auto col = Scintilla().Column(Scintilla().CurrentPos());
-                    AddNewPosition(g_currentDocId, line, col);
-                    SetCurrentLine(line);
-                };
-                // Store a new position if it's more than 10 lines from the old one.
-                if (g_currentLine > line)
-                {
-                    auto theDistance = g_currentLine - line;
-                    if (theDistance > POSITION_SAVE_GRANULARITY)
-                        mark();
-                }
-                else if (g_currentLine < line)
-                {
-                    auto theDistance = line - g_currentLine;
-                    if (theDistance > POSITION_SAVE_GRANULARITY)
-                        mark();
-                }
-            }
-            // don't store too many positions, drop the oldest ones
-            if (g_positions.size() > MAX_PREV_NEXT_POSITIONS)
-                g_positions.pop_front();
+            return;
         }
-        break;
+        else if (g_currentLine != line)
+        {
+            auto mark = [&]() {
+                ResizePositionSpace();
+                auto col = Scintilla().Column(Scintilla().CurrentPos());
+                AddNewPosition(g_currentDocId, line, col);
+                SetCurrentLine(line);
+            };
+            // Store a new position if it's more than 10 lines from the old one.
+            if (g_currentLine > line)
+            {
+                auto theDistance = g_currentLine - line;
+                if (theDistance > POSITION_SAVE_GRANULARITY)
+                    mark();
+            }
+            else if (g_currentLine < line)
+            {
+                auto theDistance = line - g_currentLine;
+                if (theDistance > POSITION_SAVE_GRANULARITY)
+                    mark();
+            }
+        }
+        // don't store too many positions, drop the oldest ones
+        if (g_positions.size() > MAX_PREV_NEXT_POSITIONS)
+            g_positions.pop_front();
     }
 }
 
 void CCmdPrevNext::TabNotify(TBHDR* ptbHdr)
 {
-    //MessageBox(NULL, L"NNN", L"NNN", MB_OK);
-    //g_currentDocId = GetDocIdOfCurrentTab();
-    switch (ptbHdr->hdr.code)
-    {
-        case TCN_SELCHANGE:
-        {
-            // document got activated
-            //MessageBox(NULL, L"NNN", L"NNN", MB_OK);
-            g_currentDocId = GetDocIdOfCurrentTab();
-        }
-        break;
-            // Not definite event of closure. User may cancel so don't erase saved
-            // positions here. Do it on OnDocumentClose.
-            // case TCN_TABDELETE:
-    }
+    if(ptbHdr->hdr.code == TCN_SELCHANGE)
+        g_currentDocId = GetDocIdOfCurrentTab();
 }
 
 void CCmdPrevNext::OnDocumentClose(DocID id)

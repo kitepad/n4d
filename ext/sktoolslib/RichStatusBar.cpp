@@ -402,6 +402,8 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
             m_hoverPart = -1;
         }
         break;
+        default:
+            break;
     }
     if (prevWndProc)
         return prevWndProc(hwnd, uMsg, wParam, lParam);

@@ -45,7 +45,7 @@ namespace
 constexpr wchar_t thisOsPathSeparator  = L'\\';
 constexpr wchar_t otherOsPathSeparator = L'/';
 constexpr wchar_t DeviceSeparator      = L':';
-
+ 
 // Check if the character given is either type of folder separator.
 // if we want to remove support for "other"separators we can just
 // change this function and force callers to use NormalizeFolderSeparators on

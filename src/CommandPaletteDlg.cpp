@@ -136,6 +136,8 @@ LRESULT CDialogWithFilterableList::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wPara
             }
         }
             break;
+        default:
+            break;
     }
     return FALSE;
 }
@@ -160,6 +162,8 @@ LRESULT CDialogWithFilterableList::DoCommand(int id, int code)
         case IDC_FILTER:
             if (code == EN_CHANGE)
                 SetTimer(*this, 101, 50, nullptr);
+            break;
+        default:
             break;
     }
     return 1;

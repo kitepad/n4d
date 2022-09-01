@@ -164,6 +164,8 @@ LRESULT CSetTabSizeDlg::DoCommand(int id, int /*msg*/)
             Scintilla().SetTabWidth(w);
             SetInt64(DEFAULTS_SECTION, L"TabWidth", w);
             UpdateStatusBar(false);
+            EndDialog(*this, id);
+            break;
         }
         case IDCANCEL:
             EndDialog(*this, id);

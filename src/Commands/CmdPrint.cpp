@@ -120,7 +120,7 @@ void CCmdPrint::Print(bool bShowDlg)
     if (pagesetupMargin.left != 0 || pagesetupMargin.right != 0 ||
         pagesetupMargin.top != 0 || pagesetupMargin.bottom != 0)
     {
-        RECT rectSetup;
+        RECT rectSetup = {0};
 
         // Convert the hundredths of millimeters (HiMetric) or
         // thousandths of inches (HiEnglish) margin values
