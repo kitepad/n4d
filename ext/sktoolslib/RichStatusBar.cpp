@@ -22,7 +22,6 @@
 #include "DPIAware.h"
 #include <deque>
 #include "Theme.h"
-//#include "Themes.h"
 
 constexpr int border_width = 8;
 #define ICON_WIDTH (GetHeight())
@@ -31,7 +30,6 @@ CRichStatusBar::CRichStatusBar(HINSTANCE hInst)
     : CWindow(hInst)
     , m_fonts{nullptr}
     , m_tooltip(nullptr)
-    //, m_themeColorFunc(nullptr)
     , m_hoverPart(-1)
     , m_height(0)
     , m_drawGrip(false)
@@ -53,7 +51,7 @@ bool CRichStatusBar::Init(HWND hParent, bool drawGrip)
     wcx.style         = CS_DBLCLKS;
     wcx.hInstance     = hResource;
     wcx.lpszClassName = L"RichStatusBar_{226E35DD-FFAC-4D97-A040-B94AF5BE39EC}";
-    wcx.hbrBackground = CreateSolidBrush(CTheme::CurrentTheme().winBack); // darkHBR; // reinterpret_cast<HBRUSH>((COLOR_3DFACE + 1));
+    wcx.hbrBackground = CreateSolidBrush(CTheme::CurrentTheme().winBack); 
     wcx.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
     if (RegisterWindow(&wcx))
     {
@@ -194,49 +192,6 @@ int CRichStatusBar::GetWidthToLeft(int idx)
     return width;
 }
 
-//void CRichStatusBar::DrawSizeGrip(HDC hdc, LPCRECT lpRect)
-//{
-//    POINT pt = {0};
-//    INT   i  = {0};
-//
-//    const auto oneDpi = CDPIAware::Instance().Scale(*this, 1);
-//    pt.x              = lpRect->right - oneDpi;
-//    pt.y              = lpRect->bottom - oneDpi;
-//
-//    HPEN hPenFace = CreatePen(PS_SOLID, 1, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DFACE)) : GetSysColor(COLOR_3DFACE));
-//    HPEN hOldPen  = static_cast<HPEN>(SelectObject(hdc, hPenFace));
-//    MoveToEx(hdc, pt.x - CDPIAware::Instance().Scale(*this, 12), pt.y, nullptr);
-//    LineTo(hdc, pt.x, pt.y);
-//    LineTo(hdc, pt.x, pt.y - CDPIAware::Instance().Scale(*this, 13));
-//
-//    pt.x--;
-//    pt.y--;
-//
-//    HPEN hPenShadow = CreatePen(PS_SOLID, 1, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DSHADOW)) : GetSysColor(COLOR_3DSHADOW));
-//    SelectObject(hdc, hPenShadow);
-//    for (i = 1; i < CDPIAware::Instance().Scale(*this, 11); i += 4)
-//    {
-//        MoveToEx(hdc, pt.x - i, pt.y, nullptr);
-//        LineTo(hdc, pt.x + 1, pt.y - i - 1);
-//
-//        MoveToEx(hdc, pt.x - i - 1, pt.y, nullptr);
-//        LineTo(hdc, pt.x + 1, pt.y - i - 2);
-//    }
-//
-//    HPEN hPenHighlight = CreatePen(PS_SOLID, 1, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DHIGHLIGHT)) : GetSysColor(COLOR_3DHIGHLIGHT));
-//    SelectObject(hdc, hPenHighlight);
-//    for (i = 3; i < CDPIAware::Instance().Scale(*this, 13); i += 4)
-//    {
-//        MoveToEx(hdc, pt.x - i, pt.y, nullptr);
-//        LineTo(hdc, pt.x + 1, pt.y - i - 1);
-//    }
-//
-//    SelectObject(hdc, hOldPen);
-//    DeleteObject(hPenFace);
-//    DeleteObject(hPenShadow);
-//    DeleteObject(hPenHighlight);
-//}
-
 LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -245,18 +200,15 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
         {
             PAINTSTRUCT ps;
             HDC         hdc = BeginPaint(hwnd, &ps);
-            RECT        rect; // = ps.rcPaint;
-            //rc.right += 200;
-            //RECT        rcWin;
+            RECT        rect; 
             GetClientRect(hwnd, &rect);
-            //GetWindowRect(hwnd, &rc);
             THEME currentTheme = CTheme::CurrentTheme();
             auto hMyMemDC   = ::CreateCompatibleDC(hdc);
             auto hBitmap    = CreateCompatibleBitmap(hdc, rect.right - rect.left, rect.bottom - rect.top);
             auto hOldBitmap = static_cast<HBITMAP>(SelectObject(hMyMemDC, hBitmap));
 
-            auto foreColor = currentTheme.winFore; // m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_WINDOWTEXT)) : GetSysColor(COLOR_WINDOWTEXT);
-            auto backColor = currentTheme.winBack;//m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DFACE)) : GetSysColor(COLOR_3DFACE);
+            auto foreColor = currentTheme.winFore; 
+            auto backColor = currentTheme.winBack;
             auto hbr       = CreateSolidBrush(backColor);
             FillRect(hMyMemDC, &rect, hbr);
             DeleteObject(hbr);
@@ -266,18 +218,11 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
             FillRect(hMyMemDC, &r, hbr);
             DeleteObject(hbr);
 
-            //DrawEdge(hMyMemDC, &rect, 1, BF_TOP | BF_FLAT | BF_MONO);
-            //if (m_drawGrip)
-            //    DrawSizeGrip(hMyMemDC, &rect);
-
             SetTextColor(hMyMemDC, foreColor);
             SetBkColor(hMyMemDC, backColor);
 
             const auto oneDpi = CDPIAware::Instance().Scale(*this, 1);
             const auto twoDpi = CDPIAware::Instance().Scale(*this, 2);
-
-            //COLORREF checkedColor = GDIHelpers::Darker(GetSysColor(COLOR_3DFACE), CTheme::Instance().IsDarkTheme() ? 0.4f : 0.8f);
-
             RECT     partRect     =  rect;
             int  right    = 0;
             for (decltype(m_parts.size()) i = 0; i < m_parts.size(); ++i)
@@ -287,7 +232,7 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
                 partRect.left    = right;
                 partRect.right   = partRect.left + m_partWidths[i].calculatedWidth;
                 right            = partRect.right;
-                auto penColor    = currentTheme.selBack; // RGB(100, 100, 100) ;//m_themeColorFunc ? RGB(0x48, 0x48, 0x48) : GetSysColor(COLOR_GRAYTEXT);
+                auto penColor    = currentTheme.selBack; 
                 auto pen         = CreatePen(PS_SOLID, 1, penColor);
                 auto oldPen      = SelectObject(hMyMemDC, pen);
                 MoveToEx(hMyMemDC, partRect.left, partRect.top, nullptr);
@@ -313,13 +258,10 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
                     tempRect.bottom += 4;
                     tempRect.left -= 3;
                     tempRect.right += 4;
-
-                    //GDIHelpers::FillSolidRect(hMyMemDC, &tempRect, checkedColor);
-                    //DrawEdge(hMyMemDC, &tempRect, i == m_hoverPart ? EDGE_ETCHED : BDR_SUNKENOUTER, BF_RECT | BF_MONO | BF_SOFT | BF_ADJUST);
                 }
                 
                 int x = 0;
-                if (part.type == 2/*part.icon && !m_partWidths[i].collapsed*/)
+                if (part.type == 2)
                 {
                     RECT tempRect = partRect;
                     InflateRect(&tempRect, -twoDpi, -twoDpi);
@@ -329,10 +271,10 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
                 }
                 partRect.left += x;
                 RECT tempRect = partRect;
-                if (part.type != 2/*!m_partWidths[i].collapsed || !part.collapsedIcon*/)
+                if (part.type != 2)
                 {
                     InflateRect(&tempRect, -(border_width - twoDpi), 0);
-                    auto text   = /* m_partWidths[i].shortened && !part.shortText.empty() ? part.shortText : */part.text;
+                    auto text   = part.text;
                     UINT format = DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER;
                     if (part.align == 1)
                         format |= DT_CENTER;
@@ -342,7 +284,6 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
                         format |= DT_LEFT;
 
                     tempRect.left += 1;
-                    //tempRect.bottom -= 2;
                     tempRect.top += 1;
                     SetBkColor(hMyMemDC,currentTheme.winBack);
                     DrawRichText(part.fontIdx,hMyMemDC, text, tempRect, format);
@@ -364,16 +305,6 @@ LRESULT CRichStatusBar::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
         case WM_SIZE:
             CalcWidths();
             break;
-        //case WM_NCHITTEST:
-        //{
-        //    POINT pt;
-        //    pt.x = GET_X_LPARAM(lParam);
-        //    pt.y = GET_Y_LPARAM(lParam);
-        //    ScreenToClient(*this, &pt);
-        //    if (m_partWidths[0].calculatedWidth > pt.x)
-        //        SendMessage(GetParent(*this), WM_NCLBUTTONDOWN, HTCAPTION, NULL);
-        //    return 0;
-        //}
         case WM_LBUTTONDBLCLK:
         case WM_LBUTTONUP:
         case WM_LBUTTONDOWN:
@@ -486,25 +417,15 @@ void CRichStatusBar::CalcRequestedWidths(int index)
 
     PartWidths w;
     w.calculatedWidth = 0;
-    //w.collapsed       = false;
-    //w.canCollapse     = part.collapsedIcon != nullptr;
-    //w.shortened       = false;
     w.fixed           = part.fixedWidth;
 
-    //if (part.shortWidth > 0)
-    //    w.shortWidth = CDPIAware::Instance().Scale(*this, part.shortWidth);
-    //else
-    //{
-        RECT rc = rect;
+    RECT rc = rect;
 
-        DrawRichText(part.fontIdx,hdc, part.text/*part.shortText.empty() ? part.text : part.shortText*/, rc, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
-        //w.shortWidth = rc.right - rc.left;
-    //}
+    DrawRichText(part.fontIdx,hdc, part.text, rc, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
     if (part.width > 0)
         w.defaultWidth = CDPIAware::Instance().Scale(*this, part.width);
     else
     {
-        //RECT rc = rect;
         DrawRichText(part.fontIdx,hdc, part.text, rc, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
         w.defaultWidth = rc.right - rc.left;
     }
@@ -513,22 +434,17 @@ void CRichStatusBar::CalcRequestedWidths(int index)
         if (part.text.empty())
         {
             w.defaultWidth += 12; //ICON_WIDTH;
-            //w.shortWidth += 12;   //ICON_WIDTH;
         }
         else
         {
             w.defaultWidth = w.defaultWidth + ICON_WIDTH - 36;
-            //w.shortWidth = w.shortWidth + ICON_WIDTH - 36;
         }
     }
     const auto twodpi = CDPIAware::Instance().Scale(*this, 2);
-    //w.shortWidth += (twodpi * border_width);
     w.defaultWidth += (twodpi * border_width);
     // add padding
     if (part.width < 0)
         w.defaultWidth -= part.width;
-    //if (part.shortWidth < 0)
-    //    w.shortWidth -= part.shortWidth;
     m_partWidths[index] = w;
     ReleaseDC(*this, hdc);
 }
@@ -592,7 +508,7 @@ void CRichStatusBar::DrawRichText(int fontIdx, HDC hdc, const std::wstring& text
     int                font    = fontIdx;//0;
     auto               oldFont = SelectObject(hdc, m_fonts[font]);
 
-    SetTextColor(hdc, CTheme::CurrentTheme().winFore); // m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_WINDOWTEXT)) : GetSysColor(COLOR_WINDOWTEXT));
+    SetTextColor(hdc, CTheme::CurrentTheme().winFore); 
 
     SetBkMode(hdc, TRANSPARENT);
 
@@ -652,8 +568,6 @@ void CRichStatusBar::DrawRichText(int fontIdx, HDC hdc, const std::wstring& text
                         auto sColor = text.substr(percPos + 2, 6);
                         auto color  = wcstoul(sColor.c_str(), nullptr, 16);
                         color       = RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-                        //if (m_themeColorFunc)
-                        //    color = m_themeColorFunc(color);
                         color = CTheme::Instance().GetThemeColor(color);
                         textControls.color   = color;
                         textControls.command = text[pos];
@@ -668,8 +582,7 @@ void CRichStatusBar::DrawRichText(int fontIdx, HDC hdc, const std::wstring& text
                     for (auto& obj : objStack)
                         SelectObject(hdc, obj);
                     objStack.clear();
-                    SetTextColor(hdc, CTheme::CurrentTheme().winFore); // m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_WINDOWTEXT)) : GetSysColor(COLOR_WINDOWTEXT));
-                    //SetBkColor(hdc, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DFACE)) : GetSysColor(COLOR_3DFACE));
+                    SetTextColor(hdc, CTheme::CurrentTheme().winFore); 
                     textControls.font    = nullptr;
                     textControls.color   = static_cast<COLORREF>(-1);
                     textControls.command = text[pos];
@@ -699,8 +612,7 @@ void CRichStatusBar::DrawRichText(int fontIdx, HDC hdc, const std::wstring& text
     }
     else
     {
-        SetTextColor(hdc, CTheme::CurrentTheme().winFore); // m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_WINDOWTEXT)) : GetSysColor(COLOR_WINDOWTEXT));
-        //SetBkColor(hdc, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DFACE)) : GetSysColor(COLOR_3DFACE));
+        SetTextColor(hdc, CTheme::CurrentTheme().winFore); 
         flags &= ~DT_CALCRECT;
         if (flags & DT_CENTER)
         {
@@ -728,8 +640,7 @@ void CRichStatusBar::DrawRichText(int fontIdx, HDC hdc, const std::wstring& text
                     for (auto& obj : objStack)
                         SelectObject(hdc, obj);
                     objStack.clear();
-                    SetTextColor(hdc, CTheme::CurrentTheme().winFore); // m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_WINDOWTEXT)) : GetSysColor(COLOR_WINDOWTEXT));
-                    //SetBkColor(hdc, m_themeColorFunc ? m_themeColorFunc(GetSysColor(COLOR_3DFACE)) : GetSysColor(COLOR_3DFACE));
+                    SetTextColor(hdc, CTheme::CurrentTheme().winFore); 
                     break;
             }
             RECT tempRect = rect;

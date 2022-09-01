@@ -36,7 +36,7 @@ extern HINSTANCE     g_hRes;
 static POINT PADDINGS = {16, 4};
 
 CDialogWithFilterableList::CDialogWithFilterableList(void* obj)
-    : ICommand(obj), m_pCmd(0)
+    : ICommand(obj), m_pCmd(nullptr), m_hFilter(nullptr), m_hResults(nullptr)
 {
 }
 

@@ -173,7 +173,7 @@ char* CEscapeUtils::Unescape(char* psz)
 std::string CEscapeUtils::EscapeString(const std::string& str)
 {
     std::string ret2;
-    int         c;
+    int         c = 0;
     int         i;
     for (i = 0; str[i]; ++i)
     {

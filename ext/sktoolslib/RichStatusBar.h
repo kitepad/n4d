@@ -42,7 +42,7 @@ class CRichStatusBarItem
 {
 public:
     /// text to show for the part.
-    std::wstring text;
+    std::wstring text      = L"";
     bool         useEditor = false;
     /// text to show if the width of the part is smaller than requested.
     /// if not set, the default text is used and cropped
@@ -50,30 +50,30 @@ public:
     /// 0 : left align
     /// 1 : center
     /// 2 : right align
-    int align;
+    int align = 0;
     /// text for the tooltip of the part
-    std::wstring tooltip;
+    std::wstring tooltip = L"";
     /// icon to show. When the text is left-aligned or centered, the icon is shown to the left,
     /// when the text is right-aligned, the icon is shown right of the text.
     /// note: the icon will be shown with the same width and height.
-    HICON icon;
+    HICON icon = nullptr;
     /// the requested width of the part, in pixels. If set to 0, the width is calculated
     /// at runtime from the text and icon. A negative value is used as padding to the
     /// calculated width.
-    int width;
+    int width = 0;
     /// if \b fixedWidth is set to true, then this sets the width for the short text
     ///int shortWidth;
     /// determines whether the part can be resized with the main window
-    bool fixedWidth;
+    bool fixedWidth = false;
     /// if set to true, the part indicates when the mouse pointer hovers over it.
     /// can be used to indicate that a click/right-click does something
-    bool hoverActive;
+    bool hoverActive = false;
     /// icon to show if the width is too small for text.
     /// if not set, the text is shown cropped
-    HICON collapsedIcon;
+    HICON collapsedIcon = nullptr;
     int  fontIdx = 0;
     bool  isChecked = false;
-    int   type; //0, text; 1, font icon; 2, image icon
+    int   type = 0; //0, text; 1, font icon; 2, image icon
 };
 
 /**
@@ -81,12 +81,8 @@ public:
  */
 struct PartWidths
 {
-    //int  shortWidth      = 0;
     int  defaultWidth    = 0;
     bool fixed           = false;
-    //bool shortened       = false;
-    //bool collapsed       = false;
-    //bool canCollapse     = false;
     int  calculatedWidth = 0;
 };
 
@@ -134,7 +130,6 @@ protected:
     LRESULT CALLBACK WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
     void             CalcRequestedWidths(int index);
     void             DrawRichText(int fontIdx, HDC hdc, const std::wstring& text, RECT& rect, UINT flags);
-    //void             DrawSizeGrip(HDC hdc, LPCRECT lpRect);
 
 private:
     std::vector<CRichStatusBarItem>  m_parts;

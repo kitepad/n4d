@@ -1070,8 +1070,8 @@ typedef CKeyList<CRegStdString> CRegStdStringList;
 
 // to avoid a C4505 compiler warning, this dummy
 // function is added.
-inline void CRegStdCompilerWarningDummyFunction()
-{
-    std::wstring(CRegStdString(L"TEST")).clear();
-    CRegStdDWORD(L"TEST");
-}
+//inline void CRegStdCompilerWarningDummyFunction()
+//{
+//    std::wstring(CRegStdString(L"TEST")).clear();
+//    CRegStdDWORD(L"TEST");
+//}

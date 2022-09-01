@@ -140,7 +140,7 @@ public:
         {
             //ScrollWindow(hwnd, cx, cy, NULL, NULL);
             //InvalidateRect(hwnd, NULL, true);
-            ScrollWindowEx(hwnd, cx, cy, NULL, NULL, NULL, NULL, SW_INVALIDATE | SW_SCROLLCHILDREN);
+            ScrollWindowEx(hwnd, cx, cy, nullptr, nullptr, nullptr, nullptr, SW_INVALIDATE | SW_SCROLLCHILDREN);
             //RECT rc; 
             //GetClientRect(hwnd, &rc);
             //rc.top = rc.top + TITLE_HEIGHT;
