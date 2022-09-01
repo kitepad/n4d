@@ -56,9 +56,9 @@ DocID                    g_currentDocId;
 size_t                   g_offsetBeforeEnd       = 0;
 sptr_t                   g_currentLine           = -1;
 bool                     g_ignore                = false;
-const long               MAX_PREV_NEXT_POSITIONS = 500;
+constexpr long           MAX_PREV_NEXT_POSITIONS = 500;
 // Only store a new position if it's more than N lines from the old one.
-const long POSITION_SAVE_GRANULARITY = 10;
+constexpr long POSITION_SAVE_GRANULARITY = 10;
 
 void AddNewPosition(DocID id, sptr_t line, sptr_t col)
 {

@@ -36,7 +36,7 @@ extern HINSTANCE     g_hRes;
 static POINT PADDINGS = {16, 4};
 
 CDialogWithFilterableList::CDialogWithFilterableList(void* obj)
-    : ICommand(obj)
+    : ICommand(obj), m_pCmd(0)
 {
 }
 
@@ -135,7 +135,6 @@ LRESULT CDialogWithFilterableList::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wPara
                 return (INT_PTR)CreateSolidBrush(CTheme::CurrentTheme().winBack);
             }
         }
-        default:
             break;
     }
     return FALSE;

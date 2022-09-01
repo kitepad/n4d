@@ -39,7 +39,7 @@ class CSettingsDlg : public CDialog
 public:
     CSettingsDlg(HWND hParent)
         : m_hParent(hParent)
-        , m_hForm(0)
+        , m_hForm(nullptr)
         , m_formWidth(0)
         , m_pMainWindow(nullptr)
     {
@@ -99,7 +99,7 @@ private:
         GetWindowRect(m_pMainWindow->m_hwnd, &rc);
         int x = rc.left + (rc.right - rc.left - cx) / 2;
         int y = rc.top + CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight;
-        SetWindowPos(*this, 0, x, y, cx, cy, SWP_SHOWWINDOW);
+        SetWindowPos(*this, nullptr, x, y, cx, cy, SWP_SHOWWINDOW);
         return FALSE;
     }
    
@@ -423,7 +423,7 @@ private:
             const auto& doc = pMainWindow->m_docManager.GetDocumentFromID(pMainWindow->GetCurrentTabId());
             ComboBox_SelectString(hLangCombo, -1, CUnicodeUtils::StdGetUnicode(doc.GetLanguage()).c_str());
         }
-        OnCommand(*this, IDC_LANGCOMBO, 0, CBN_SELCHANGE);
+        OnCommand(*this, IDC_LANGCOMBO, nullptr, CBN_SELCHANGE);
 
         int style = static_cast<int>(pMainWindow->m_editor.Scintilla().StyleAt(pMainWindow->m_editor.Scintilla().CurrentPos()));
         SelectStyle(style);
@@ -440,7 +440,7 @@ private:
             if (style == styleCombo)
             {
                 ComboBox_SetCurSel(hStyleCombo, i);
-                OnCommand(*this, IDC_STYLECOMBO, 0, CBN_SELCHANGE);
+                OnCommand(*this, IDC_STYLECOMBO, nullptr, CBN_SELCHANGE);
                 selected = true;
                 break;
             }

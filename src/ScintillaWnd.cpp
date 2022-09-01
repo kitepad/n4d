@@ -302,7 +302,7 @@ LRESULT CALLBACK CScintillaWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
                 return m_docScroll.HandleCustomDraw(wParam, reinterpret_cast<NMCSBCUSTOMDRAW*>(lParam));
             break;
         case SCN_MARGINRIGHTCLICK:
-            MessageBox(NULL, L"SCN", L"SCN", MB_OK);
+            MessageBox(nullptr, L"SCN", L"SCN", MB_OK);
             break;
         case WM_CONTEXTMENU:
             SendMessage(::GetParent(*this), WM_EDITORCONTEXTMENU, 0, lParam);

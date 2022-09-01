@@ -79,9 +79,9 @@ void CCmdPrint::Print(bool bShowDlg)
 
     HDC hdc = pDlg.hDC;
 
-    RECT  rectMargins, rectPhysMargins;
-    POINT ptPage;
-    POINT ptDpi;
+    RECT  rectMargins = {0}, rectPhysMargins = {0};
+    POINT ptPage = {0};
+    POINT ptDpi = {0};
 
     // Get printer resolution
     ptDpi.x = GetDeviceCaps(hdc, LOGPIXELSX); // dpi in X direction

@@ -500,7 +500,7 @@ void CMainWindow::HandleEditorContextMenu(LPARAM lParam)
         CheckMenuItem(popupMenu, cmdLineWrapIndent, GetInt64(DEFAULTS_SECTION, L"WrapModeIndent") ? MF_CHECKED : MF_UNCHECKED);
         CheckMenuItem(popupMenu, cmdUseTabs, GetInt64(DEFAULTS_SECTION, L"UseTabs") ? MF_CHECKED : MF_UNCHECKED);
     }
-    auto cmd = TrackPopupMenuEx(popupMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, NULL);
+    auto cmd = TrackPopupMenuEx(popupMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
     DoCommand(cmd, 0);
 }
 struct ITEMDEF
@@ -551,12 +551,12 @@ void CMainWindow::HandleTabContextMenu(LPARAM lParam)
     for (auto const& mi : tabContextMenuItems)
     {
         if (mi.cmd == 0)
-            AppendMenu(hMenu, MF_SEPARATOR, 0, 0);
+            AppendMenu(hMenu, MF_SEPARATOR, 0, nullptr);
         else
             AppendMenu(hMenu, menuItemFlags, mi.cmd, mi.label);
     }
 
-    auto cmd = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, x, y, *this, NULL);
+    auto cmd = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, x, y, *this, nullptr);
 
     switch(cmd)
     {
@@ -990,7 +990,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     POINT pt = {m_allRects.layout.left, m_allRects.layout.bottom};
                     ClientToScreen(*this, &pt);
 
-                    auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, NULL);
+                    auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
                     InvalidateRect(*this, &m_allRects.layout, FALSE);
                     if (idx > 0)
                     {
@@ -1344,7 +1344,7 @@ void CMainWindow::ShowTablistDropdown(HWND hWnd, int x, int y)
 
             CheckMenuItem(hMenu, m_selected, MF_BYPOSITION | MF_CHECKED);
 
-            auto tab      = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, x,y, *this, NULL);
+            auto tab      = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, x,y, *this, nullptr);
             if (tab > 0)
             {
                 --tab;
@@ -4574,7 +4574,7 @@ void CMainWindow::DrawTabs(HDC hdc)
     tabrc                          = m_allRects.leftRoller;
     int                       xPos = tabrc.left + 4;
     int                       mPos = tabrc.top + HeightOf(tabrc) / 2;
-    const int                 size = 5;
+    constexpr int                 size = 5;
     bool               disableLeft = m_firstVisibleItemIdx == 0;
     bool              disableRight = m_lastVisibleItemIdx >= GetItemCount() - 1;
     Gdiplus::Point    rightArrow[] = {{xPos + size * 3, mPos + size}, {xPos + size * 3, mPos - size}, {xPos + size * 5, mPos}};
@@ -4627,11 +4627,11 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     // Draw system menu icon
     CenterRectInRect(&icon_rect, &m_allRects.system);
     OffsetRect(&icon_rect, 0, -1);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, NULL);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, nullptr);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 2);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, NULL);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, nullptr);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, NULL);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, nullptr);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
 
     // Draw title text
@@ -4647,9 +4647,9 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     // Draw close button
     icon_rect = {0, 0, 11, 11};
     CenterRectInRect(&icon_rect, &m_allRects.close);
-    MoveToEx(hdc, icon_rect.left, icon_rect.top, NULL);
+    MoveToEx(hdc, icon_rect.left, icon_rect.top, nullptr);
     LineTo(hdc, icon_rect.right, icon_rect.bottom + 1);
-    MoveToEx(hdc, icon_rect.left, icon_rect.bottom, NULL);
+    MoveToEx(hdc, icon_rect.left, icon_rect.bottom, nullptr);
     LineTo(hdc, icon_rect.right, icon_rect.top);
 
     // Draw maximize button
@@ -4690,9 +4690,9 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     CenterRectInRect(&icon_rect, &m_allRects.open);
     OffsetRect(&icon_rect, 0, 1);
     Ellipse(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-    MoveToEx(hdc, icon_rect.left + 3, icon_rect.top + mid, NULL);
+    MoveToEx(hdc, icon_rect.left + 3, icon_rect.top + mid, nullptr);
     LineTo(hdc, icon_rect.right - 3, icon_rect.top + mid);
-    MoveToEx(hdc, icon_rect.left + 8, icon_rect.top + 3, NULL);
+    MoveToEx(hdc, icon_rect.left + 8, icon_rect.top + 3, nullptr);
     LineTo(hdc, icon_rect.left + 8, icon_rect.bottom - 3);
 
     DeleteObject(pen);

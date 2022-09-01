@@ -278,7 +278,7 @@ std::wstring to_bit_wstring(T number, bool trimSignificantClearBits)
     UT                                           zero = 0;
     UT                                           uNumber;
     uNumber            = UT(number);
-    const int    nBits = std::numeric_limits<UT>::digits;
+    constexpr int    nBits = std::numeric_limits<UT>::digits;
     std::wstring bs;
     bool         seenSetBit = false;
     for (int bn = nBits - 1; bn >= 0; --bn)

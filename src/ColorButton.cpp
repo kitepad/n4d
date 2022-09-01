@@ -108,7 +108,7 @@ LRESULT CALLBACK CColorButton::_ColorButtonProc(HWND hwnd, UINT message, WPARAM 
         case WM_MOUSELEAVE:
         {
             pColorButton->m_hoverColor = 0;
-            InvalidateRect(hwnd, NULL, FALSE);
+            InvalidateRect(hwnd, nullptr, FALSE);
             return 0;
         }
         case WM_MOUSEMOVE:
@@ -120,7 +120,7 @@ LRESULT CALLBACK CColorButton::_ColorButtonProc(HWND hwnd, UINT message, WPARAM 
             TrackMouseEvent(&tme);
 
             pColorButton->m_hoverColor = RGB(255, 0, 0);
-            InvalidateRect(hwnd, NULL, FALSE);
+            InvalidateRect(hwnd, nullptr, FALSE);
             return 0;
         }
         case WM_ERASEBKGND:
