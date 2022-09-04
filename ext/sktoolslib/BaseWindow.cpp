@@ -100,6 +100,8 @@ LRESULT CALLBACK CWindow::stWinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, L
                     SHSetValue(HKEY_CURRENT_USER, pWnd->sRegistryPath.c_str(), pWnd->sRegistryValue.c_str(), REG_NONE, &wpl, sizeof(wpl));
                 }
                 break;
+            default:
+                break;
         }
         return pWnd->WinMsgHandler(hwnd, uMsg, wParam, lParam);
     }

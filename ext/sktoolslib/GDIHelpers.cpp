@@ -242,7 +242,7 @@ bool GDIHelpers::ShortHexStringToCOLORREF(const std::string& s, COLORREF* clr)
 {
     if (s.length() != 3)
         return false;
-    BYTE rgb[3]; // [0]=red, [1]=green, [2]=blue
+    BYTE rgb[3] = {0,0,0}; // [0]=red, [1]=green, [2]=blue
     char dig[2];
     dig[1] = '\0';
     for (int i = 0; i < 3; ++i)

@@ -196,9 +196,7 @@ INT_PTR CALLBACK CDialog::stDlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
         return FALSE;
 
     CDialog* pWnd;
-    switch (uMsg)
-    {
-        case WM_INITDIALOG:
+    if (uMsg == WM_INITDIALOG)
         {
             // get the pointer to the window from lpCreateParams
             SetWindowLongPtr(hwndDlg, GWLP_USERDATA, lParam);
@@ -219,8 +217,6 @@ INT_PTR CALLBACK CDialog::stDlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
             SendMessage(pWnd->m_hToolTips, TTM_SETMAXTIPWIDTH, 0, 600);
             SendMessage(pWnd->m_hToolTips, TTM_ACTIVATE, TRUE, 0);
         }
-        break;
-    }
     // get the pointer to the window
     pWnd = GetObjectFromWindow(hwndDlg);
 
@@ -492,6 +488,8 @@ void CDialog::ShowEditBalloon(UINT nId, LPCWSTR title, LPCWSTR text, int icon /*
                 break;
             case TTI_NONE:
                 uType = 0;
+                break;
+            default:
                 break;
         }
         ::MessageBox(*this, text, title, uType);

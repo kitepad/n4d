@@ -518,7 +518,7 @@ int CPathUtils::PathCompareN(const std::wstring& path1, const std::wstring& path
 
 bool CPathUtils::Unzip2Folder(LPCWSTR lpZipFile, LPCWSTR lpFolder)
 {
-    IShellDispatch* pIsd;
+    IShellDispatch* pIsd = nullptr;
 
     Folder* pZippedFile  = nullptr;
     Folder* pDestination = nullptr;
