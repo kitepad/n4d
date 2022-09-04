@@ -434,22 +434,6 @@ LRESULT CFindReplaceDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
                 ListView_SetColumnWidth(hListControl, 2, newColumnWidth);
             break;
         }
-        //case WM_SIZE:
-        //{
-        //    int newWidth  = LOWORD(lParam);
-        //    int newHeight = HIWORD(lParam);
-        //    m_resizer.DoResize(newWidth, newHeight);
-        //    break;
-        //}
-        //case WM_GETMINMAXINFO:
-        //    if (!m_freeResize)
-        //    {
-        //        MINMAXINFO* mmi       = reinterpret_cast<MINMAXINFO*>(lParam);
-        //        mmi->ptMinTrackSize.x = m_resizer.GetDlgRectScreen()->right;
-        //        mmi->ptMinTrackSize.y = m_resizer.GetDlgRectScreen()->bottom;
-        //        return 0;
-        //    }
-        //    break;
         case WM_COMMAND:
             return DoCommand(LOWORD(wParam), HIWORD(wParam));
         case WM_TIMER:
@@ -507,40 +491,12 @@ LRESULT CFindReplaceDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
 
 void CFindReplaceDlg::InitSizing()
 {
-    //HWND hwndDlg = *this;
     AdjustControlSize(IDC_MATCHWORD);
     AdjustControlSize(IDC_MATCHCASE);
     AdjustControlSize(IDC_MATCHREGEX);
     AdjustControlSize(IDC_FUNCTIONS);
-    //m_resizer.Init(hwndDlg);
-    //m_resizer.UseSizeGrip(!CTheme::Instance().IsDarkTheme());
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHFORLABEL, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_REPLACEWITHLABEL, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHCOMBO, RESIZER_TOPLEFTRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_REPLACECOMBO, RESIZER_TOPLEFTRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_MATCHWORD, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_MATCHCASE, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_MATCHREGEX, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_FUNCTIONS, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_HIGHLIGHT, RESIZER_TOPLEFT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHSUBFOLDERS, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_FINDBTN, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_FINDPREVIOUS, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_FINDFILES, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHFILES, RESIZER_TOPLEFTRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SETSEARCHFOLDER, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SETSEARCHFOLDERCURRENT, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SETSEARCHFOLDERTOPARENT, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_REPLACEBTN, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_REPLACEALLBTN, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_FINDRESULTS, RESIZER_TOPLEFTBOTTOMRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHFOLDER, RESIZER_TOPLEFTRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHFOLDERFOLLOWTAB, RESIZER_TOPRIGHT);
-    //m_resizer.AddControl(hwndDlg, IDC_SEARCHINFO, RESIZER_TOPLEFT);
     m_freeResize = false;
     ShowResults(false);
-    //m_freeResize = false;
-    //m_resizer.AdjustMinMaxSize();
 }
 
 void CFindReplaceDlg::DoInitDialog(HWND hwndDlg)
@@ -906,7 +862,7 @@ LRESULT CFindReplaceDlg::DrawListItemWithMatches(NMLVCUSTOMDRAW* pLVCD)
     HWND      hListControl = pLVCD->nmcd.hdr.hwndFrom;
     const int itemIndex    = static_cast<int>(pLVCD->nmcd.dwItemSpec);
     assert(itemIndex >= 0 && itemIndex < static_cast<int>(m_searchResults.size()));
-    if (/*m_ThreadsRunning ||*/ itemIndex >= static_cast<int>(m_searchResults.size()))
+    if (itemIndex >= static_cast<int>(m_searchResults.size()))
         return CDRF_DODEFAULT;
 
     const CSearchResult& searchResult = m_searchResults[itemIndex];
@@ -931,7 +887,6 @@ LRESULT CFindReplaceDlg::DrawListItemWithMatches(NMLVCUSTOMDRAW* pLVCD)
     ListView_GetItemRect(hListControl, itemIndex, &iconRC, LVIR_ICON);
     ListView_GetItemRect(hListControl, itemIndex, &boundsRC, LVIR_BOUNDS);
 
-    //DrawListColumnBackground(pLVCD);
     int leftMargin = labelRC.left - boundsRC.left;
     if (pLVCD->iSubItem)
         leftMargin -= (iconRC.right - iconRC.left);
@@ -1217,10 +1172,6 @@ void CFindReplaceDlg::DoListItemAction(int itemIndex)
         {
             DocScrollClear(DOCSCROLLTYPE_SEARCHTEXT);
             g_searchMarkerCount = 0;
-
-            //std::wstring findText = GetDlgItemText(IDC_SEARCHCOMBO).get();
-            //UpdateSearchStrings(findText);
-            //g_findString = CUnicodeUtils::StdGetUTF8(findText);
             g_sHighlightString = g_findString;
             g_lastSelText      = g_sHighlightString;
 
@@ -1424,15 +1375,11 @@ void CFindReplaceDlg::LetUserSelectSearchFolder()
     IFileOpenDialogPtr pfd;
 
     HRESULT hr = pfd.CreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER);
-    //if (CAppUtils::FailedShowMessage(hr))
-    //    return false;
 
     // Set the dialog options, if it fails don't continue as we don't
     // know what options we're blending. Shouldn't ever fail anyway.
     DWORD dwOptions = 0;
     hr              = pfd->GetOptions(&dwOptions);
-    //if (CAppUtils::FailedShowMessage(hr))
-    //    return false;
 
     // allow the user to enter a filename that does not exist yet
     dwOptions &= ~(FOS_FILEMUSTEXIST);
@@ -1440,8 +1387,6 @@ void CFindReplaceDlg::LetUserSelectSearchFolder()
     // If we can't set our options, we have no idea what's happening
     // so don't continue.
     hr = pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
-    //if (CAppUtils::FailedShowMessage(hr))
-    //    return false;
 
     // Set the standard title.
     ResString rTitle(g_hRes, IDS_APP_TITLE);
@@ -1468,18 +1413,6 @@ void CFindReplaceDlg::LetUserSelectSearchFolder()
 
     // Show the open file dialog, not much we can do if that doesn't work.
     hr = pfd->Show(GetHwnd());
-    //if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) // Expected error
-    //    return false;
-    //else
-    //{
-    //    if (CAppUtils::FailedShowMessage(hr))
-    //        return false;
-    //}
-
-    // IShellItemPtr psiaResult;
-    // hr = pfd->GetResult(&psiaResult);
-    // if (CAppUtils::FailedShowMessage(hr))
-    //     return false;
 
     // Fetch the (possibly multiple) results. Some may possibly fail
     // but get as many as we can. We don't report partial failure.
@@ -1858,7 +1791,6 @@ void CFindReplaceDlg::SortResults()
 void CFindReplaceDlg::DoSearchAll(int id)
 {
     // Should have stopped before searching again.
-    //APPVERIFY(m_threadsRunning == 0);
     if (m_threadsRunning)
         return;
     // To prevent having each document activate the tab while searching,
@@ -2025,10 +1957,6 @@ void CFindReplaceDlg::DoSearchAll(int id)
         // Operation will be completed in OnSearchResultsReady which will be
         // called in the UI thread so screens results can be updated etc.
     }
-    //else
-    //{
-    //    APPVERIFY(false);
-    //}
 }
 
 void CFindReplaceDlg::FocusOnFirstListItem(bool keepAnyExistingSelection)
@@ -2099,8 +2027,6 @@ void CFindReplaceDlg::SearchThread(
 
     // We need a Scintilla object created on the same thread as it will be used,
     // that's why we can't use the m_searchWnd object.
-    //CScintillaWnd searchWnd(g_hRes);
-    //searchWnd.InitScratch(g_hRes);
 
     auto searchWnd = std::make_unique<CScintillaWnd>(g_hRes);
     searchWnd->InitScratch(g_hRes);
@@ -2109,7 +2035,6 @@ void CFindReplaceDlg::SearchThread(
     bool             bIsDir = false;
     std::wstring     path;
     auto         manager = std::make_unique<CDocumentManager>();
-    //CDocumentManager manager;
     bool             searchSubFoldersFlag = searchSubFolders;
 
     // Note that on some versions of Windows, e.g. Window 7, paths like "*.cpp" will
@@ -2194,9 +2119,6 @@ void CFindReplaceDlg::AcceptData()
         item.pathIndex += m_foundPaths.size();
     moveAppend(m_searchResults, m_pendingSearchResults);
     // Enable this if something suspect occurs.
-    //for (const auto& item : m_pendingSearchResults)
-    //if (item.pathIndex < 0 || item.pathIndex >= m_foundPaths.size())
-    //APPVERIFY(false);
     moveAppend(m_foundPaths, m_pendingFoundPaths);
 
     m_dataAccepted = true;
@@ -2444,7 +2366,6 @@ void CFindReplaceDlg::InitResultsList()
     m_trackingOn = true;
 
     HWND hListControl = GetDlgItem(*this, IDC_FINDRESULTS);
-    //SetWindowTheme(hListControl, L"Explorer", nullptr);
     ListView_SetItemCountEx(hListControl, 0, 0);
 
     if (m_resultsListInitialized)
@@ -2586,7 +2507,6 @@ void CFindReplaceDlg::SetSearchFolder(const std::wstring& folder)
 
 LRESULT CALLBACK CFindReplaceDlg::ListViewSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR /*dwRefData*/)
 {
-    //CFindReplaceDlg* pThis = reinterpret_cast<CFindReplaceDlg*>(dwRefData);
     switch (uMsg)
     {
         case WM_NCDESTROY:
