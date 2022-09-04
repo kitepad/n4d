@@ -325,13 +325,13 @@ private:
                         case IDC_ITALICCHECK:
                         case IDC_UNDERLINECHECK:
                         {
-                            ::FontStyle fontStyle = Fontstyle_Normal;
+                            LexerFontStyle fontStyle = Fontstyle_Normal;
                             if (Button_GetCheck(GetDlgItem(m_hForm, IDC_BOLDCHECK)) == BST_CHECKED)
-                                fontStyle = static_cast<::FontStyle>(fontStyle | Fontstyle_Bold);
+                                fontStyle = static_cast<LexerFontStyle>(fontStyle | Fontstyle_Bold);
                             if (Button_GetCheck(GetDlgItem(m_hForm, IDC_ITALICCHECK)) == BST_CHECKED)
-                                fontStyle = static_cast<::FontStyle>(fontStyle | Fontstyle_Italic);
+                                fontStyle = static_cast<LexerFontStyle>(fontStyle | Fontstyle_Italic);
                             if (Button_GetCheck(GetDlgItem(m_hForm, IDC_UNDERLINECHECK)) == BST_CHECKED)
-                                fontStyle = static_cast<::FontStyle>(fontStyle | Fontstyle_Underlined);
+                                fontStyle = static_cast<LexerFontStyle>(fontStyle | Fontstyle_Underlined);
                             CLexStyles::Instance().SetUserFontStyle(lexData.id, styleKey, fontStyle);
                             if (updateView)
                             {

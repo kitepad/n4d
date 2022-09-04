@@ -52,7 +52,7 @@ public:
     std::string                          autocompletionWords;
 };
 
-enum FontStyle
+enum LexerFontStyle
 {
     Fontstyle_Normal     = 0,
     Fontstyle_Bold       = 1,
@@ -60,18 +60,18 @@ enum FontStyle
     Fontstyle_Underlined = 4
 };
 
-class StyleData
+class LexerStyleData
 {
 public:
-    StyleData();
-    bool operator==(const StyleData& data) const = default;
-    bool operator!=(const StyleData& data) const = default;
+    LexerStyleData();
+    bool operator==(const LexerStyleData& data) const = default;
+    bool operator!=(const LexerStyleData& data) const = default;
 
     std::wstring name;
     COLORREF     foregroundColor;
     COLORREF     backgroundColor;
     std::wstring fontName;
-    FontStyle    fontStyle;
+    LexerFontStyle    fontStyle;
     int          fontSize;
     bool         eolFilled;
 };
@@ -85,7 +85,7 @@ public:
     }
     int                                id;
     std::string                        name;
-    std::unordered_map<int, StyleData> styles;
+    std::unordered_map<int, LexerStyleData> styles;
     std::map<std::string, std::string> properties;
     std::map<std::string, std::string> annotations;
 };
@@ -127,7 +127,7 @@ public:
     void        SetUserBackground(int id, int style, COLORREF clr);
     void        SetUserFont(int id, int style, const std::wstring& font);
     void        SetUserFontSize(int id, int style, int size);
-    void        SetUserFontStyle(int id, int style, FontStyle fontstyle);
+    void        SetUserFontStyle(int id, int style, LexerFontStyle fontstyle);
     void        SetUserExt(const std::wstring& ext, const std::string& lang);
     void        SetLanguageHidden(const std::wstring& lang, bool hidden);
     void        ResetUserData();
@@ -146,7 +146,7 @@ private:
     void        ParseStyle(LPCWSTR                                               styleName,
                            LPCWSTR                                               styleString,
                            const std::unordered_map<std::wstring, std::wstring>& variables,
-                           StyleData&                                            style) const;
+                           LexerStyleData&                                            style) const;
 
 private:
     bool m_bLoaded;

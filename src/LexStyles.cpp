@@ -66,7 +66,7 @@ static std::vector<LexDetectStrings> lexDetectStrings = {
     {"-Java", "#!/usr/bin/env groovy"},
     {"-JavaScript", "#!/usr/bin/env zx"}};
 
-StyleData::StyleData()
+LexerStyleData::LexerStyleData()
     : foregroundColor(fgColor)
     , backgroundColor(bgColor)
     , fontStyle(Fontstyle_Normal)
@@ -98,7 +98,7 @@ void CLexStyles::ParseStyle(
     LPCWSTR                                               /*styleName*/,
     LPCWSTR                                               styleString,
     const std::unordered_map<std::wstring, std::wstring>& variables,
-    StyleData&                                            style) const
+    LexerStyleData&                                            style) const
 {
     std::wstring v = styleString;
     ReplaceVariables(v, variables);
@@ -129,7 +129,7 @@ void CLexStyles::ParseStyle(
                 int fs;
                 if (!CAppUtils::TryParse(s.c_str(), fs, true))
                     assert(false); 
-                style.fontStyle = static_cast<FontStyle>(fs);
+                style.fontStyle = static_cast<LexerFontStyle>(fs);
             }
             break;
             case 5: // Font size
@@ -250,7 +250,7 @@ void CLexStyles::Load()
             {
                 if (_wcsnicmp(L"Style", it, 5) == 0)
                 {
-                    StyleData style;
+                    LexerStyleData style;
                     ParseStyle(it, ini->GetValue(lexerName.c_str(), it, L""), variables, style);
                     int pos;
                     if (!CAppUtils::TryParse(it + 5, pos, false))
@@ -796,12 +796,12 @@ void CLexStyles::SetUserForeground(int id, int style, COLORREF clr)
     LexerData& ld = m_userLexerData[id];
     if (ld.styles.find(style) != ld.styles.end())
     {
-        StyleData& sd      = ld.styles[style];
+        LexerStyleData& sd      = ld.styles[style];
         sd.foregroundColor = clr;
     }
     else
     {
-        StyleData sd       = m_lexerData[id].styles[style];
+        LexerStyleData sd       = m_lexerData[id].styles[style];
         sd.foregroundColor = clr;
         ld.styles[style]   = sd;
     }
@@ -812,12 +812,12 @@ void CLexStyles::SetUserBackground(int id, int style, COLORREF clr)
     LexerData& ld = m_userLexerData[id];
     if (ld.styles.find(style) != ld.styles.end())
     {
-        StyleData& sd      = ld.styles[style];
+        LexerStyleData& sd      = ld.styles[style];
         sd.backgroundColor = clr;
     }
     else
     {
-        StyleData sd       = m_lexerData[id].styles[style];
+        LexerStyleData sd       = m_lexerData[id].styles[style];
         sd.backgroundColor = clr;
         ld.styles[style]   = sd;
     }
@@ -828,12 +828,12 @@ void CLexStyles::SetUserFont(int id, int style, const std::wstring& font)
     LexerData& ld = m_userLexerData[id];
     if (ld.styles.find(style) != ld.styles.end())
     {
-        StyleData& sd = ld.styles[style];
+        LexerStyleData& sd = ld.styles[style];
         sd.fontName   = font;
     }
     else
     {
-        StyleData sd     = m_lexerData[id].styles[style];
+        LexerStyleData sd     = m_lexerData[id].styles[style];
         sd.fontName      = font;
         ld.styles[style] = sd;
     }
@@ -844,28 +844,28 @@ void CLexStyles::SetUserFontSize(int id, int style, int size)
     LexerData& ld = m_userLexerData[id];
     if (ld.styles.find(style) != ld.styles.end())
     {
-        StyleData& sd = ld.styles[style];
+        LexerStyleData& sd = ld.styles[style];
         sd.fontSize   = size;
     }
     else
     {
-        StyleData sd     = m_lexerData[id].styles[style];
+        LexerStyleData sd     = m_lexerData[id].styles[style];
         sd.fontSize      = size;
         ld.styles[style] = sd;
     }
 }
 
-void CLexStyles::SetUserFontStyle(int id, int style, FontStyle fontstyle)
+void CLexStyles::SetUserFontStyle(int id, int style, LexerFontStyle fontstyle)
 {
     LexerData& ld = m_userLexerData[id];
     if (ld.styles.find(style) != ld.styles.end())
     {
-        StyleData& sd = ld.styles[style];
+        LexerStyleData& sd = ld.styles[style];
         sd.fontStyle  = fontstyle;
     }
     else
     {
-        StyleData sd     = m_lexerData[id].styles[style];
+        LexerStyleData sd     = m_lexerData[id].styles[style];
         sd.fontStyle     = fontstyle;
         ld.styles[style] = sd;
     }
