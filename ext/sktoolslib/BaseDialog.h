@@ -30,176 +30,176 @@
 class CDialog
 {
 public:
-    static constexpr int  TITLE_HEIGHT = 40;
+    //static constexpr int  TITLE_HEIGHT = 40;
 
-    static void InitScrollInfo(HWND hwnd, int bar, HWND scrollView)
-    {
-        RECT rc = {};
-        GetClientRect(hwnd, &rc);
-        const SIZE sz = {rc.right - rc.left, rc.bottom - rc.top};
+    //static void InitScrollInfo(HWND hwnd, int bar, HWND scrollView)
+    //{
+    //    RECT rc = {};
+    //    GetClientRect(hwnd, &rc);
+    //    const SIZE sz = {rc.right - rc.left, rc.bottom - rc.top};
 
-        SCROLLINFO si = {};
-        si.cbSize     = sizeof(SCROLLINFO);
-        si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE;
-        si.nPos = si.nMin = 1;
+    //    SCROLLINFO si = {};
+    //    si.cbSize     = sizeof(SCROLLINFO);
+    //    si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE;
+    //    si.nPos = si.nMin = 1;
 
-        si.nMax  = SB_HORZ == bar ? sz.cx : sz.cy;
-        si.nPage = SB_HORZ == bar ? sz.cx : sz.cy;
-        SetScrollInfo(hwnd, bar, &si, FALSE);
+    //    si.nMax  = SB_HORZ == bar ? sz.cx : sz.cy;
+    //    si.nPage = SB_HORZ == bar ? sz.cx : sz.cy;
+    //    SetScrollInfo(hwnd, bar, &si, FALSE);
 
-        EnumChildWindows(
-        hwnd, [](HWND h, LPARAM lp) 
-            {
-                HWND newParent = (HWND)(lp);
-                HWND oldParent   = GetParent(newParent);
-                
-                if (!(h == GetDlgItem(oldParent, IDOK) || h == GetDlgItem(oldParent, IDCANCEL)))
-                {
-                    SetParent(h, newParent);
-                    RECT rc;
-                    GetWindowRect(h, &rc);
-                    OffsetRect(&rc, 0, -TITLE_HEIGHT);
-                    POINT pt(rc.left, rc.top);
-                    ScreenToClient(newParent, &pt);
-                    MoveWindow(h, pt.x, pt.y,rc.right - rc.left, rc.bottom - rc.top, TRUE);
-                }
-                return TRUE;
-            }, (LPARAM)scrollView);
-         
-    }
+    //    EnumChildWindows(
+    //    hwnd, [](HWND h, LPARAM lp) 
+    //        {
+    //            HWND newParent = (HWND)(lp);
+    //            HWND oldParent   = GetParent(newParent);
+    //            
+    //            if (!(h == GetDlgItem(oldParent, IDOK) || h == GetDlgItem(oldParent, IDCANCEL)))
+    //            {
+    //                SetParent(h, newParent);
+    //                RECT rc;
+    //                GetWindowRect(h, &rc);
+    //                OffsetRect(&rc, 0, -TITLE_HEIGHT);
+    //                POINT pt(rc.left, rc.top);
+    //                ScreenToClient(newParent, &pt);
+    //                MoveWindow(h, pt.x, pt.y,rc.right - rc.left, rc.bottom - rc.top, TRUE);
+    //            }
+    //            return TRUE;
+    //        }, (LPARAM)scrollView);
+    //     
+    //}
 
-    static int GetScrollPos(HWND hwnd, int bar, UINT code)
-    {
-        SCROLLINFO si = {};
-        si.cbSize     = sizeof(SCROLLINFO);
-        si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE | SIF_TRACKPOS;
-        GetScrollInfo(hwnd, bar, &si);
+    //static int GetScrollPos(HWND hwnd, int bar, UINT code)
+    //{
+    //    SCROLLINFO si = {};
+    //    si.cbSize     = sizeof(SCROLLINFO);
+    //    si.fMask      = SIF_PAGE | SIF_POS | SIF_RANGE | SIF_TRACKPOS;
+    //    GetScrollInfo(hwnd, bar, &si);
 
-        const int minPos = si.nMin;
-        const int maxPos = si.nMax - (si.nPage - 1);
+    //    const int minPos = si.nMin;
+    //    const int maxPos = si.nMax - (si.nPage - 1);
 
-        int result = -1;
+    //    int result = -1;
 
-        switch (code)
-        {
-            case SB_LINEUP /*SB_LINELEFT*/:
-                result = max(si.nPos - 1, minPos);
-                break;
+    //    switch (code)
+    //    {
+    //        case SB_LINEUP /*SB_LINELEFT*/:
+    //            result = max(si.nPos - 1, minPos);
+    //            break;
 
-            case SB_LINEDOWN /*SB_LINERIGHT*/:
-                result = min(si.nPos + 1, maxPos);
-                break;
+    //        case SB_LINEDOWN /*SB_LINERIGHT*/:
+    //            result = min(si.nPos + 1, maxPos);
+    //            break;
 
-            case SB_PAGEUP /*SB_PAGELEFT*/:
-                result = max(si.nPos - (int)si.nPage, minPos);
-                break;
+    //        case SB_PAGEUP /*SB_PAGELEFT*/:
+    //            result = max(si.nPos - (int)si.nPage, minPos);
+    //            break;
 
-            case SB_PAGEDOWN /*SB_PAGERIGHT*/:
-                result = min(si.nPos + (int)si.nPage, maxPos);
-                break;
+    //        case SB_PAGEDOWN /*SB_PAGERIGHT*/:
+    //            result = min(si.nPos + (int)si.nPage, maxPos);
+    //            break;
 
-            case SB_THUMBPOSITION:
-                // do nothing
-                break;
+    //        case SB_THUMBPOSITION:
+    //            // do nothing
+    //            break;
 
-            case SB_THUMBTRACK:
-                result = si.nTrackPos;
-                break;
+    //        case SB_THUMBTRACK:
+    //            result = si.nTrackPos;
+    //            break;
 
-            case SB_TOP /*SB_LEFT*/:
-                result = minPos;
-                break;
+    //        case SB_TOP /*SB_LEFT*/:
+    //            result = minPos;
+    //            break;
 
-            case SB_BOTTOM /*SB_RIGHT*/:
-                result = maxPos;
-                break;
+    //        case SB_BOTTOM /*SB_RIGHT*/:
+    //            result = maxPos;
+    //            break;
 
-            case SB_ENDSCROLL:
-                // do nothing
-                break;
-        }
+    //        case SB_ENDSCROLL:
+    //            // do nothing
+    //            break;
+    //    }
 
-        return result;
-    }
+    //    return result;
+    //}
 
-    static void ScrollClient(HWND hwnd, int bar, int pos)
-    {
-        static int s_prevx = 1;
-        static int s_prevy = 1;
+    //static void ScrollClient(HWND hwnd, int bar, int pos)
+    //{
+    //    static int s_prevx = 1;
+    //    static int s_prevy = 1;
 
-        int cx = 0;
-        int cy = 0;
+    //    int cx = 0;
+    //    int cy = 0;
 
-        int& delta = (bar == SB_HORZ ? cx : cy);
-        int& prev  = (bar == SB_HORZ ? s_prevx : s_prevy);
+    //    int& delta = (bar == SB_HORZ ? cx : cy);
+    //    int& prev  = (bar == SB_HORZ ? s_prevx : s_prevy);
 
-        delta = prev - pos;
-        prev  = pos;
+    //    delta = prev - pos;
+    //    prev  = pos;
 
-        if (cx || cy)
-        {
-            //ScrollWindow(hwnd, cx, cy, NULL, NULL);
-            //InvalidateRect(hwnd, NULL, true);
-            ScrollWindowEx(hwnd, cx, cy, nullptr, nullptr, nullptr, nullptr, SW_INVALIDATE | SW_SCROLLCHILDREN);
-            //RECT rc; 
-            //GetClientRect(hwnd, &rc);
-            //rc.top = rc.top + TITLE_HEIGHT;
-            //InvalidateRect(hwnd, NULL, TRUE);
-        }
-    }
+    //    if (cx || cy)
+    //    {
+    //        //ScrollWindow(hwnd, cx, cy, NULL, NULL);
+    //        //InvalidateRect(hwnd, NULL, true);
+    //        ScrollWindowEx(hwnd, cx, cy, nullptr, nullptr, nullptr, nullptr, SW_INVALIDATE | SW_SCROLLCHILDREN);
+    //        //RECT rc; 
+    //        //GetClientRect(hwnd, &rc);
+    //        //rc.top = rc.top + TITLE_HEIGHT;
+    //        //InvalidateRect(hwnd, NULL, TRUE);
+    //    }
+    //}
 
-    static void HandleScroll(HWND hwnd,int bar, WPARAM wParam, HWND clientHandle)
-    {
-        const int scrollPos = GetScrollPos(hwnd, bar, LOWORD(wParam));
+    //static void HandleScroll(HWND hwnd,int bar, WPARAM wParam, HWND clientHandle)
+    //{
+    //    const int scrollPos = GetScrollPos(hwnd, bar, LOWORD(wParam));
 
-        if (scrollPos == -1)
-            return;
+    //    if (scrollPos == -1)
+    //        return;
 
-        SetScrollPos(hwnd, bar, scrollPos, TRUE);
-        ScrollClient(clientHandle, bar, scrollPos);
-        //ScrollClient(GetDlgItem(hwnd, IDC_SCROLLABLECONTAINER), bar, scrollPos);
-    }
+    //    SetScrollPos(hwnd, bar, scrollPos, TRUE);
+    //    ScrollClient(clientHandle, bar, scrollPos);
+    //    //ScrollClient(GetDlgItem(hwnd, IDC_SCROLLABLECONTAINER), bar, scrollPos);
+    //}
 
-    static void HandleScrollOnSize(HWND hwnd, WPARAM wParam, LPARAM lParam, HWND clientHandle)
-    {
-        UINT state = static_cast<UINT>(wParam);
-        int  cx    = LOWORD(lParam);
-        int  cy    = HIWORD(lParam);
+    //static void HandleScrollOnSize(HWND hwnd, WPARAM wParam, LPARAM lParam, HWND clientHandle)
+    //{
+    //    UINT state = static_cast<UINT>(wParam);
+    //    int  cx    = LOWORD(lParam);
+    //    int  cy    = HIWORD(lParam);
 
-        if (state != SIZE_RESTORED && state != SIZE_MAXIMIZED)
-            return;
+    //    if (state != SIZE_RESTORED && state != SIZE_MAXIMIZED)
+    //        return;
 
-        SCROLLINFO si = {};
-        si.cbSize     = sizeof(SCROLLINFO);
+    //    SCROLLINFO si = {};
+    //    si.cbSize     = sizeof(SCROLLINFO);
 
-        const int bar[]  = {SB_HORZ, SB_VERT};
-        const int page[] = {cx, cy};
+    //    const int bar[]  = {SB_HORZ, SB_VERT};
+    //    const int page[] = {cx, cy};
 
-        for (size_t i = 0; i < ARRAYSIZE(bar); ++i)
-        {
-            si.fMask = SIF_PAGE;
-            si.nPage = page[i];
-            SetScrollInfo(hwnd, bar[i], &si, TRUE);
+    //    for (size_t i = 0; i < ARRAYSIZE(bar); ++i)
+    //    {
+    //        si.fMask = SIF_PAGE;
+    //        si.nPage = page[i];
+    //        SetScrollInfo(hwnd, bar[i], &si, TRUE);
 
-            si.fMask = SIF_RANGE | SIF_POS;
-            GetScrollInfo(hwnd, bar[i], &si);
+    //        si.fMask = SIF_RANGE | SIF_POS;
+    //        GetScrollInfo(hwnd, bar[i], &si);
 
-            const int maxScrollPos = si.nMax - (page[i] - 1);
+    //        const int maxScrollPos = si.nMax - (page[i] - 1);
 
-            // Scroll client only if scroll bar is visible and window's
-            // content is fully scrolled toward right and/or bottom side.
-            // Also, update window's content on maximize.
-            const bool needToScroll =
-                (si.nPos != si.nMin && si.nPos == maxScrollPos) ||
-                (state == SIZE_MAXIMIZED);
+    //        // Scroll client only if scroll bar is visible and window's
+    //        // content is fully scrolled toward right and/or bottom side.
+    //        // Also, update window's content on maximize.
+    //        const bool needToScroll =
+    //            (si.nPos != si.nMin && si.nPos == maxScrollPos) ||
+    //            (state == SIZE_MAXIMIZED);
 
-            if (needToScroll)
-            {
-                ScrollClient(clientHandle, bar[i], si.nPos);
-                //ScrollClient(GetDlgItem(hwnd, IDC_SCROLLABLECONTAINER), bar[i], si.nPos);
-            }
-        }
-    }
+    //        if (needToScroll)
+    //        {
+    //            ScrollClient(clientHandle, bar[i], si.nPos);
+    //            //ScrollClient(GetDlgItem(hwnd, IDC_SCROLLABLECONTAINER), bar[i], si.nPos);
+    //        }
+    //    }
+    //}
 
 public:
     CDialog()

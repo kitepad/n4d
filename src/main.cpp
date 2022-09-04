@@ -36,19 +36,19 @@ HINSTANCE   g_hRes;
 bool        firstInstance = false;
 IUIImagePtr g_emptyIcon;
 bool        g_useItemIcons = true;
-HWND        g_hMainWindow  = 0;
+HWND        g_hMainWindow  = nullptr;
 
 static void SetIcon()
 {
     HKEY hKey = nullptr;
-    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\BowPad.exe", &hKey) == ERROR_SUCCESS)
+    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe", &hKey) == ERROR_SUCCESS)
     {
         // registry key exists, which means at least one file type was associated with BowPad by the user
         RegCloseKey(hKey);
-        if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\BowPad.exe\\DefaultIcon", &hKey) != ERROR_SUCCESS)
+        if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) != ERROR_SUCCESS)
         {
             // but the default icon hasn't been set yet: set the default icon now
-            if (RegCreateKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\BowPad.exe\\DefaultIcon", &hKey) == ERROR_SUCCESS)
+            if (RegCreateKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) == ERROR_SUCCESS)
             {
                 OnOutOfScope(RegCloseKey(hKey););
                 std::wstring sIconPath = CStringUtils::Format(L"%s,-%d", CPathUtils::GetLongPathname(CPathUtils::GetModulePath()).c_str(), IDI_BOWPAD);
@@ -74,7 +74,7 @@ static void SetUserStringKey(LPCWSTR keyName, LPCWSTR subKeyName, const std::wst
     {
         std::wstring msg = CStringUtils::Format(L"Registry key '%s' (subkey: '%s') could not be set.",
                                                 keyName, subKeyName ? subKeyName : L"(none)");
-        MessageBox(nullptr, msg.c_str(), L"BowPad", MB_ICONINFORMATION);
+        MessageBox(nullptr, msg.c_str(), L"N4D", MB_ICONINFORMATION);
     }
 }
 
@@ -85,27 +85,26 @@ static void RegisterContextMenu(bool bAdd)
         auto         modulePath = CPathUtils::GetLongPathname(CPathUtils::GetModulePath());
         std::wstring sIconPath  = CStringUtils::Format(L"%s,-%d", modulePath.c_str(), IDI_BOWPAD);
         std::wstring sExePath   = CStringUtils::Format(L"%s /path:\"%%1\"", modulePath.c_str());
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\BowPad", nullptr, L"Edit in BowPad");
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\BowPad", L"Icon", sIconPath);
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\BowPad", L"MultiSelectModel", L"Player");
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\BowPad\\Command", nullptr, sExePath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\BowPad", nullptr, L"Open Folder with BowPad");
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\BowPad", L"Icon", sIconPath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\BowPad\\Command", nullptr, sExePath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\BowPad", nullptr, L"Open Folder with BowPad");
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\BowPad", L"Icon", sIconPath);
+        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", nullptr, L"Edit in N4D");
+        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", L"Icon", sIconPath);
+        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", L"MultiSelectModel", L"Player");
+        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D\\Command", nullptr, sExePath);
+        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D", nullptr, L"Open Folder with N4D");
+        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D", L"Icon", sIconPath);
+        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D\\Command", nullptr, sExePath);
+        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D", nullptr, L"Open Folder with N4D");
+        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D", L"Icon", sIconPath);
 
         sExePath = CStringUtils::Format(L"%s /path:\"%%V\"", modulePath.c_str());
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\BowPad\\Command", nullptr, sExePath);
+        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D\\Command", nullptr, sExePath);
     }
     else
     {
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\*\\shell\\BowPad");
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\shell\\BowPad");
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\Background\\shell\\BowPad");
+        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\*\\shell\\N4D");
+        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\shell\\N4D");
+        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\Background\\shell\\N4D");
     }
 }
-
 
 static void ForwardToOtherInstance(HWND hBowPadWnd, LPCTSTR lpCmdLine, CCmdLineParser& parser)
 {
@@ -244,11 +243,11 @@ static HWND FindAndWaitForBowPad()
 
 static void ShowBowPadCommandLineHelp()
 {
-    std::wstring sMessage = CStringUtils::Format(L"BowPad \nusage: BowPad.exe /path:\"PATH\" [/line:number] [/multiple]\nor: BowPad.exe PATH [/line:number] [/multiple]\nwith /multiple forcing BowPad to open a new instance even if there's already an instance running.");
-    MessageBox(nullptr, sMessage.c_str(), L"BowPad", MB_ICONINFORMATION);
+    std::wstring sMessage = CStringUtils::Format(L"N4D \nusage: n4d.exe /path:\"PATH\" [/line:number] [/nw]\nor: n4d.exe PATH [/line:number] [/nw]\nwith /nw forcing n4d to open a new instance even if there's already an instance running.");
+    MessageBox(nullptr, sMessage.c_str(), L"N4D", MB_ICONINFORMATION);
 }
 
-static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
+static void ParseCommandLine(CCmdLineParser& parser, CMainWindow* mainWindow)
 {
     if (parser.HasVal(L"path"))
     {
@@ -257,10 +256,10 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
         {
             line = parser.GetLongLongVal(L"line") - 1LL;
         }
-        mainWindow.SetFileToOpen(parser.GetVal(L"path"), line);
+        mainWindow->SetFileToOpen(parser.GetVal(L"path"), line);
         if (parser.HasKey(L"elevate") && parser.HasKey(L"savepath"))
         {
-            mainWindow.SetElevatedSave(parser.GetVal(L"path"), parser.GetVal(L"savepath"), static_cast<long>(line));
+            mainWindow->SetElevatedSave(parser.GetVal(L"path"), parser.GetVal(L"savepath"), static_cast<long>(line));
             firstInstance = false;
         }
     }
@@ -298,7 +297,7 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
                         {
                             CPathUtils::NormalizeFolderSeparators(tempPath);
                             auto path = CPathUtils::GetLongPathname(tempPath);
-                            mainWindow.SetFileToOpen(path, line);
+                            mainWindow->SetFileToOpen(path, line);
                             break;
                         }
                     }
@@ -316,12 +315,12 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
                             {
                                 CPathUtils::NormalizeFolderSeparators(tempPath);
                                 path = CPathUtils::GetLongPathname(tempPath);
-                                mainWindow.SetFileToOpen(path, line);
+                                mainWindow->SetFileToOpen(path, line);
                                 break;
                             }
                         }
                     }
-                    mainWindow.SetFileToOpen(path, line);
+                    mainWindow->SetFileToOpen(path, line);
                 }
                 else
                 {
@@ -333,15 +332,15 @@ static void ParseCommandLine(CCmdLineParser& parser, CMainWindow& mainWindow)
     }
 }
 
-int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
+int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
 {
-
     HRESULT hr = CoInitialize(nullptr);
     if (FAILED(hr))
         return -1;
     OnOutOfScope(CoUninitialize(););
 
     auto parser = std::make_unique<CCmdLineParser>(lpCmdLine);
+
     if (parser->HasKey(L"?") || parser->HasKey(L"help"))
     {
         ShowBowPadCommandLineHelp();
@@ -373,7 +372,7 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
         if (ShellExecuteEx(&shExecInfo))
             return 0;
     }
-    if (bAlreadyRunning && !parser->HasKey(L"multiple"))
+    if (bAlreadyRunning && !parser->HasKey(L"nw"))
     {
         HWND hBowPadWnd = FindAndWaitForBowPad();
         if (hBowPadWnd)
@@ -415,14 +414,14 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
         return ret;
     }
 
-    CMainWindow mainWindow(g_hRes);
-
-    if (!mainWindow.RegisterAndCreateWindow())
+    //CMainWindow mainWindow(g_hRes);
+    auto        mainWindow = std::make_unique<CMainWindow>(g_hRes);
+    if (!mainWindow->RegisterAndCreateWindow())
         return -1;
 
-    ParseCommandLine(*parser, mainWindow);
+    ParseCommandLine(*parser, mainWindow.get());
 
-    // Don't need the parser any more so don't keep it around taking up space.
+    //// Don't need the parser any more so don't keep it around taking up space.
     parser.reset();
 
     // force CWD to the install path to avoid the CWD being locked:
@@ -431,14 +430,14 @@ int bpMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     // set to that dir, that dir can't be removed or renamed due to the lock.
     ::SetCurrentDirectory(CPathUtils::GetModuleDir().c_str());
 
-    g_hMainWindow = mainWindow;
+    g_hMainWindow = *mainWindow.get();
 
     // Main message loop:
     MSG   msg = {nullptr};
     auto& kb  = CCommandHandler::Instance();
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!kb.TranslateAccelerator(mainWindow, msg.message, msg.wParam, msg.lParam) &&
+        if (!kb.TranslateAccelerator(*mainWindow.get(), msg.message, msg.wParam, msg.lParam) &&
             !CDialog::IsDialogMessage(&msg))
         {
             TranslateMessage(&msg);
@@ -467,7 +466,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE     hInstance,
     bool bAlreadyRunning = (mutexStatus == ERROR_ALREADY_EXISTS || mutexStatus == ERROR_ACCESS_DENIED);
     firstInstance        = !bAlreadyRunning;
 
-    auto mainResult = bpMain(lpCmdLine, bAlreadyRunning);
+    auto mainResult = n4dMain(lpCmdLine, bAlreadyRunning);
     Scintilla_ReleaseResources();
 
     // Be careful shutting down Scintilla's resources here if any

@@ -2099,13 +2099,17 @@ void CFindReplaceDlg::SearchThread(
 
     // We need a Scintilla object created on the same thread as it will be used,
     // that's why we can't use the m_searchWnd object.
-    CScintillaWnd searchWnd(g_hRes);
-    searchWnd.InitScratch(g_hRes);
+    //CScintillaWnd searchWnd(g_hRes);
+    //searchWnd.InitScratch(g_hRes);
+
+    auto searchWnd = std::make_unique<CScintillaWnd>(g_hRes);
+    searchWnd->InitScratch(g_hRes);
 
     CDirFileEnum     enumerator(searchPath);
     bool             bIsDir = false;
     std::wstring     path;
-    CDocumentManager manager;
+    auto         manager = std::make_unique<CDocumentManager>();
+    //CDocumentManager manager;
     bool             searchSubFoldersFlag = searchSubFolders;
 
     // Note that on some versions of Windows, e.g. Window 7, paths like "*.cpp" will
@@ -2154,17 +2158,17 @@ void CFindReplaceDlg::SearchThread(
 
         // TODO! Ideally we need a means to check for cancellation during load so that
         // BowPad doesn't appear hung while loading large files.
-        CDocument doc = manager.LoadFile(/*nullptr,*/ path, -1, false);
+        CDocument doc = manager->LoadFile(/*nullptr,*/ path, -1, false);
         // Don't crash if the document cannot be loaded. .e.g. if it is locked.
         if (doc.m_document != static_cast<Document>(0))
         {
             DocID did(1);
-            manager.AddDocumentAtEnd(doc, did);
-            OnOutOfScope(manager.RemoveDocument(did););
+            manager->AddDocumentAtEnd(doc, did);
+            OnOutOfScope(manager->RemoveDocument(did););
             if (!m_bStop)
             {
                 size_t resultSizeBefore = m_pendingSearchResults.size();
-                SearchDocument(searchWnd, DocID(), doc, searchFor, flags, exSearchFlags,
+                SearchDocument(*searchWnd.get(), DocID(), doc, searchFor, flags, exSearchFlags,
                                m_pendingSearchResults, m_pendingFoundPaths);
                 if (m_pendingSearchResults.size() - resultSizeBefore > 0)
                     m_pendingFoundPaths.push_back(std::move(path));

@@ -270,10 +270,10 @@
     <ClInclude Include="PathWatcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KeyboardShortcutHandler.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\SettingsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardShortcutHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
