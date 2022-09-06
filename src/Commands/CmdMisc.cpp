@@ -341,5 +341,5 @@ void CCmdSelectTab::OnOK()
 
 UINT CCmdSelectTab::GetFilterCUE()
 {
-    return IDS_SELECTLEXER_FILTERCUE;
+    return IDS_SELECTTAB_FILTERCUE;
 }

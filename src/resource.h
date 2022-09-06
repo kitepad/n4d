@@ -136,6 +136,7 @@
 #define IDS_SELECTENCODING_FILTERCUE    229
 #define IDS_SELECTLEXER_FILTERCUE       230
 #define IDS_APP_TITLE                   231
+#define IDS_SELECTTAB_FILTERCUE			232
 
 #define IDC_BOWPAD                      300
 #define IDC_FINDBTN                     301
