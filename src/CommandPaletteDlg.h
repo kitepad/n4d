@@ -96,7 +96,7 @@ public:
     CCommandPaletteDlg(void* obj);
     CCommandPaletteDlg() = default;
 
-    UINT GetCmdId() override { return cmdSelectLexer; }
+    UINT GetCmdId() override { return 0; }
 
 protected:
     LRESULT DoListNotify(LPNMITEMACTIVATE lpNMItemActivate);

@@ -307,6 +307,7 @@
 #define cmdFrameCaretLine               30107
 #define cmdSelectLexer                  30108
 #define cmdShowAutoComplete             30109
+#define cmdSelectTab		            30110
 
 #define IDC_STATIC                      -1
 

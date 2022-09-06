@@ -215,7 +215,6 @@ private:
     void        HandleStatusBar(WPARAM wParam, LPARAM lParam);
     LRESULT     HandleEditorEvents(const NMHDR& nmHdr, WPARAM wParam, LPARAM lParam);
     LRESULT     HandleFileTreeEvents(const NMHDR& nmHdr, WPARAM wParam, LPARAM lParam);
-    void        ShowTablistDropdown(HWND hWnd, int offsetX, int offsetY);
     int         GetZoomPC() const;
     void        SetZoomPC(int zoomPC) const;
     void        OpenFiles(const std::vector<std::wstring>& paths);

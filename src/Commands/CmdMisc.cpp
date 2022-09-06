@@ -290,3 +290,56 @@ void CCmdSelectEncoding::OnOK()
         UpdateStatusBar(true);
     }
 }
+
+CCmdSelectTab::~CCmdSelectTab()
+{
+    PostMessage(*this, WM_CLOSE, 0, 0);
+}
+
+bool CCmdSelectTab::Execute()
+{
+    ClearFilterText();
+    auto count = GetTabCount();
+    m_allResults.clear();
+    for (int i = 0; i < count; i++)
+    {
+        auto& doc = GetDocumentFromID(GetDocIDFromTabIndex(i));
+        std::wstring sTitle = L"";
+        sTitle += doc.m_path.empty() ? GetTitleForTabIndex(i) : doc.m_path;
+        if (doc.m_bNeedsSaving || doc.m_bIsDirty)
+            sTitle = L"* " + sTitle;
+
+        m_allResults.push_back(CListItem(0, false, sTitle));
+    }
+    
+    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
+
+    constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
+    RECT  rc;
+    GetClientRect(GetHwnd(), &rc);
+    POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
+    ClientToScreen(GetHwnd(), &pt);
+    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
+
+    return true;
+}
+
+CCmdSelectTab::CCmdSelectTab(void* obj)
+    : CDialogWithFilterableList(obj)
+{
+}
+
+void CCmdSelectTab::OnOK()
+{
+    auto i = ListView_GetSelectionMark(m_hResults);
+    if (i >= 0)
+    {
+        m_pCmd = nullptr;
+        TabActivateAt(i);
+    }
+}
+
+UINT CCmdSelectTab::GetFilterCUE()
+{
+    return IDS_SELECTLEXER_FILTERCUE;
+}

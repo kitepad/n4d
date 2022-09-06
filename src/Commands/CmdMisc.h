@@ -204,6 +204,24 @@ protected:
     }
 };
 
+class CCmdSelectTab : public CDialogWithFilterableList
+{
+public:
+    CCmdSelectTab(void* obj);
+    ~CCmdSelectTab();
+
+    bool Execute() override;
+    UINT GetCmdId() override { return cmdSelectTab; }
+
+protected:
+    virtual UINT GetFilterCUE();
+    virtual void OnOK();
+    virtual void DrawItemText(HDC hdc, LPRECT rc, int idx)
+    {
+        DrawText(hdc, m_results[idx].text1.c_str(), -1, rc, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
+    }
+};
+
 class CCmdEnableD2D : public ICommand
 {
 public:

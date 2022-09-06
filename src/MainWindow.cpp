@@ -959,11 +959,9 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         break;
         case WM_NCRBUTTONDOWN:
         {
-            if (m_hoveredRect == TitlebarRect::LeftRoller || m_hoveredRect == TitlebarRect::RightRoller)//PtInRect(&rc, pt))
+            if (m_hoveredRect == TitlebarRect::LeftRoller || m_hoveredRect == TitlebarRect::RightRoller)
             {
-                POINT pt = {m_allRects.leftRoller.left, m_allRects.leftRoller.bottom};
-                ClientToScreen(*this, &pt);
-                ShowTablistDropdown(*this, pt.x,pt.y);
+                DoCommand(cmdSelectTab, 0);
             }
             else if (m_hoveredRect == TitlebarRect::Text)
             {
@@ -1326,34 +1324,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
     }
 
     return 0;
-}
-
-void CMainWindow::ShowTablistDropdown(HWND hWnd, int x, int y)
-{
-    if (hWnd)
-    {
-        auto hMenu = CreatePopupMenu();
-        if (hMenu)
-        {
-            OnOutOfScope(DestroyMenu(hMenu));
-            int  tabCount = GetItemCount();
-            for (int i = 0; i < tabCount; ++i)
-            {
-                AppendMenu(hMenu, MF_STRING, i + 1, m_allTabs[i].name.c_str());
-            }
-
-            CheckMenuItem(hMenu, m_selected, MF_BYPOSITION | MF_CHECKED);
-
-            auto tab      = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, x,y, *this, nullptr);
-            if (tab > 0)
-            {
-                --tab;
-                SetSelected(tab);
-                InvalidateRect(*this, &m_allRects.leftRoller, FALSE);
-                InvalidateRect(*this, &m_allRects.rightRoller, FALSE);
-            }
-        }
-    }
 }
 
 LRESULT CMainWindow::HandleEditorEvents(const NMHDR& nmHdr, WPARAM wParam, LPARAM lParam)
