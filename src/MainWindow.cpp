@@ -1887,18 +1887,12 @@ void CMainWindow::HandleAfterInit()
         }
     }
     m_pathsToOpen.clear();
-    if (!m_elevatePath.empty())
-    {
-        ElevatedSave(m_elevatePath, m_elevateSavePath, m_initLine);
-        m_elevatePath.clear();
-        m_elevateSavePath.clear();
-    }
 
     EnsureAtLeastOneTab();
 
     CCommandHandler::Instance().AfterInit();
 
-    g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); // static_cast<int>(m_editor.Call(SCI_GETMARGINWIDTHN, SC_MARGIN_BACK, 0));
+    g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); 
 
     m_bIsAfterInit = true;
 }
@@ -2084,36 +2078,6 @@ bool CMainWindow::SaveDoc(DocID docID, const std::wstring& path)
     if (doc.m_saveCallback)
         doc.m_saveCallback();
     return true;
-}
-
-void CMainWindow::SetElevatedSave(const std::wstring& path, const std::wstring& savePath, long line)
-{
-    m_elevatePath     = path;
-    m_elevateSavePath = savePath;
-    m_initLine        = line;
-}
-
-// path is the temporary file that contains the latest document.
-// savePath is the file we want to save the temporary file over and then use.
-void CMainWindow::ElevatedSave(const std::wstring& path, const std::wstring& savePath, long line)
-{
-    std::wstring filepath = CPathUtils::GetLongPathname(path);
-    auto         docID    = m_docManager.GetIdForPath(filepath);
-    if (docID.IsValid())
-    {
-        auto tab = GetIndexFromID(docID);
-        SetSelected(tab);
-        auto& doc          = m_docManager.GetModDocumentFromID(docID);
-        doc.m_bNeedsSaving = true;
-        doc.m_path         = CPathUtils::GetLongPathname(savePath);
-        SaveCurrentTab();
-        UpdateCaptionBar();
-        UpdateStatusBar(true);
-        GoToLine(line);
-        m_fileTree.SetPath(CPathUtils::GetParentDirectory(savePath), false);
-        // delete the temp file used for the elevated save
-        DeleteFile(path.c_str());
-    }
 }
 
 void CMainWindow::EnsureAtLeastOneTab()

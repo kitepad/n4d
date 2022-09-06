@@ -169,12 +169,12 @@ public:
     UINT GetCmdId() override { return cmdConfigStyle; }
 };
 
-class CCmdSelectLexerDlg : public CDialogWithFilterableList
+class CCmdSelectLexer : public CDialogWithFilterableList
 {
 public:
-    CCmdSelectLexerDlg(void* obj);
-    CCmdSelectLexerDlg() = default;
-    
+    CCmdSelectLexer(void* obj);
+    ~CCmdSelectLexer();
+    bool Execute() override;
     UINT GetCmdId() override { return cmdSelectLexer; }
 
 protected:
@@ -186,12 +186,13 @@ protected:
     }
 };
 
-class CCmdSelectEncodingDlg : public CDialogWithFilterableList
+class CCmdSelectEncoding : public CDialogWithFilterableList
 {
 public:
-    CCmdSelectEncodingDlg(void* obj);
-    CCmdSelectEncodingDlg() = default;
+    CCmdSelectEncoding(void* obj);
+    ~CCmdSelectEncoding();
 
+    bool Execute() override;
     UINT GetCmdId() override { return cmdSelectEncoding; }
 
 protected:
@@ -201,34 +202,6 @@ protected:
     {
         DrawText(hdc, m_results[idx].text1.c_str(), -1, rc, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
     }
-};
-
-class CCmdSelectLexer : public ICommand
-{
-public:
-    CCmdSelectLexer(void* obj)
-        : ICommand(obj)
-    {
-    }
-    ~CCmdSelectLexer();
-
-    bool Execute() override;
-
-    UINT GetCmdId() override { return cmdSelectLexer; }
-};
-
-class CCmdSelectEncoding : public ICommand
-{
-public:
-    CCmdSelectEncoding(void* obj)
-        : ICommand(obj)
-    {
-    }
-    ~CCmdSelectEncoding();
-
-    bool Execute() override;
-
-    UINT GetCmdId() override { return cmdSelectEncoding; }
 };
 
 class CCmdEnableD2D : public ICommand

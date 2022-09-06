@@ -99,7 +99,6 @@ bool CCmdViewFileTree::Execute()
     return true;
 }
 
-
 CCmdWriteProtect::CCmdWriteProtect(void* obj)
     : ICommand(obj)
 {
@@ -132,63 +131,42 @@ bool CCmdAutoComplete::Execute()
     return true;
 }
 
-
-namespace
-{
-std::unique_ptr<CCmdSelectLexerDlg>    g_pSelectLexerDlg;
-std::unique_ptr<CCmdSelectEncodingDlg> g_pSelectEncodingDlg;
-} // namespace
-
 CCmdSelectLexer::~CCmdSelectLexer()
 {
-    if (g_pSelectLexerDlg != nullptr)
-    {
-        PostMessage(*g_pSelectLexerDlg, WM_CLOSE, 0, 0);
-    }
+    PostMessage(*this, WM_CLOSE, 0, 0);
 }
 
 bool CCmdSelectLexer::Execute()
 {
-    if (g_pSelectLexerDlg == nullptr)
-        g_pSelectLexerDlg = std::make_unique<CCmdSelectLexerDlg>(m_pMainWindow);
-    
-    g_pSelectLexerDlg->ClearFilterText();
-    g_pSelectLexerDlg->ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
+    ClearFilterText();
+    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
     RECT  rc;
     GetClientRect(GetHwnd(), &rc);
     POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
     ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*g_pSelectLexerDlg, nullptr, pt.x, pt.y, 720, 400, flags);
+    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
     
-
     return true;
 }
 
 CCmdSelectEncoding::~CCmdSelectEncoding()
 {
-    if (g_pSelectEncodingDlg != nullptr)
-    {
-        PostMessage(*g_pSelectEncodingDlg, WM_CLOSE, 0, 0);
-    }
+    PostMessage(*this, WM_CLOSE, 0, 0);
 }
 
 bool CCmdSelectEncoding::Execute()
 {
-    if (g_pSelectEncodingDlg == nullptr)
-        g_pSelectEncodingDlg = std::make_unique<CCmdSelectEncodingDlg>(m_pMainWindow);
-
-    g_pSelectEncodingDlg->ClearFilterText();
-    g_pSelectEncodingDlg->ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
+    ClearFilterText();
+    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
     RECT           rc;
     GetClientRect(GetHwnd(), &rc);
     POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
     ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*g_pSelectEncodingDlg, nullptr, pt.x, pt.y, 720, 400, flags);
-
+    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
 
     return true;
 }
@@ -240,7 +218,7 @@ BOOL CALLBACK EnumerateCodePage(LPTSTR lpCodePageString)
     return TRUE;
 }
 
-CCmdSelectLexerDlg::CCmdSelectLexerDlg(void* obj)
+CCmdSelectLexer::CCmdSelectLexer(void* obj)
     : CDialogWithFilterableList(obj)
 {
     const auto& lexers = CLexStyles::Instance().GetLanguages();
@@ -255,7 +233,7 @@ CCmdSelectLexerDlg::CCmdSelectLexerDlg(void* obj)
               });
 }
 
-void CCmdSelectLexerDlg::OnOK()
+void CCmdSelectLexer::OnOK()
 {
     auto i = ListView_GetSelectionMark(m_hResults);
     if (i >= 0)
@@ -274,12 +252,12 @@ void CCmdSelectLexerDlg::OnOK()
     }
 }
 
-UINT CCmdSelectLexerDlg::GetFilterCUE()
+UINT CCmdSelectLexer::GetFilterCUE()
 {
     return IDS_SELECTLEXER_FILTERCUE;
 }
 
-CCmdSelectEncodingDlg::CCmdSelectEncodingDlg(void* obj)
+CCmdSelectEncoding::CCmdSelectEncoding(void* obj)
     : CDialogWithFilterableList(obj)
 {
     if (codepages.empty())
@@ -288,12 +266,12 @@ CCmdSelectEncodingDlg::CCmdSelectEncodingDlg(void* obj)
     m_allResults = codepages;
 }
 
-UINT CCmdSelectEncodingDlg::GetFilterCUE()
+UINT CCmdSelectEncoding::GetFilterCUE()
 {
     return IDS_SELECTENCODING_FILTERCUE;
 }
 
-void CCmdSelectEncodingDlg::OnOK()
+void CCmdSelectEncoding::OnOK()
 {
     auto i = ListView_GetSelectionMark(m_hResults);
     if (i >= 0)

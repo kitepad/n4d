@@ -243,90 +243,73 @@ static HWND FindAndWaitForBowPad()
 
 static void ShowBowPadCommandLineHelp()
 {
-    std::wstring sMessage = CStringUtils::Format(L"N4D \nusage: n4d.exe /path:\"PATH\" [/line:number] [/nw]\nor: n4d.exe PATH [/line:number] [/nw]\nwith /nw forcing n4d to open a new instance even if there's already an instance running.");
+    std::wstring sMessage = CStringUtils::Format(L"N4D \nusage: n4d.exe PATH [Options]\nOptions:\n   [/n:number] goto line number\n   [/admin] Run as Administator\n   [/f] Force open a new window");
     MessageBox(nullptr, sMessage.c_str(), L"N4D", MB_ICONINFORMATION);
 }
 
 static void ParseCommandLine(CCmdLineParser& parser, CMainWindow* mainWindow)
 {
-    if (parser.HasVal(L"path"))
+    // find out if there are paths specified without the key/value pair syntax
+    int nArgs;
+
+    const std::wstring commandLine = GetCommandLineW();
+    LPWSTR*            szArgList   = CommandLineToArgvW(commandLine.c_str(), &nArgs);
+    if (szArgList)
     {
+        OnOutOfScope(LocalFree(szArgList););
         size_t line = static_cast<size_t>(-1);
-        if (parser.HasVal(L"line"))
+        if (parser.HasVal(L"n"))
         {
-            line = parser.GetLongLongVal(L"line") - 1LL;
+            line = parser.GetLongLongVal(L"n") - 1LL;
         }
-        mainWindow->SetFileToOpen(parser.GetVal(L"path"), line);
-        if (parser.HasKey(L"elevate") && parser.HasKey(L"savepath"))
-        {
-            mainWindow->SetElevatedSave(parser.GetVal(L"path"), parser.GetVal(L"savepath"), static_cast<long>(line));
-            firstInstance = false;
-        }
-    }
-    else
-    {
-        // find out if there are paths specified without the key/value pair syntax
-        int nArgs;
 
-        const std::wstring commandLine = GetCommandLineW();
-        LPWSTR*            szArgList   = CommandLineToArgvW(commandLine.c_str(), &nArgs);
-        if (szArgList)
+        bool bOmitNext = false;
+        for (int i = 1; i < nArgs; i++)
         {
-            OnOutOfScope(LocalFree(szArgList););
-            size_t line = static_cast<size_t>(-1);
-            if (parser.HasVal(L"line"))
+            if (bOmitNext)
             {
-                line = parser.GetLongLongVal(L"line") - 1LL;
+                bOmitNext = false;
+                continue;
             }
-
-            bool bOmitNext = false;
-            for (int i = 1; i < nArgs; i++)
+            if ((szArgList[i][0] != '/') && (szArgList[i][0] != '-'))
             {
-                if (bOmitNext)
+                auto pathPos = commandLine.find(szArgList[i]);
+                if (pathPos != std::wstring::npos)
                 {
-                    bOmitNext = false;
-                    continue;
+                    auto tempPath = commandLine.substr(pathPos);
+                    if (PathFileExists(tempPath.c_str()))
+                    {
+                        CPathUtils::NormalizeFolderSeparators(tempPath);
+                        auto path = CPathUtils::GetLongPathname(tempPath);
+                        mainWindow->SetFileToOpen(path, line);
+                        break;
+                    }
                 }
-                if ((szArgList[i][0] != '/') && (szArgList[i][0] != '-'))
+
+                std::wstring path = szArgList[i];
+                CPathUtils::NormalizeFolderSeparators(path);
+                path = CPathUtils::GetLongPathname(path);
+                if (!PathFileExists(path.c_str()))
                 {
-                    auto pathPos = commandLine.find(szArgList[i]);
+                    pathPos = commandLine.find(szArgList[i]);
                     if (pathPos != std::wstring::npos)
                     {
                         auto tempPath = commandLine.substr(pathPos);
                         if (PathFileExists(tempPath.c_str()))
                         {
                             CPathUtils::NormalizeFolderSeparators(tempPath);
-                            auto path = CPathUtils::GetLongPathname(tempPath);
+                            path = CPathUtils::GetLongPathname(tempPath);
                             mainWindow->SetFileToOpen(path, line);
                             break;
                         }
                     }
-
-                    std::wstring path = szArgList[i];
-                    CPathUtils::NormalizeFolderSeparators(path);
-                    path = CPathUtils::GetLongPathname(path);
-                    if (!PathFileExists(path.c_str()))
-                    {
-                        pathPos = commandLine.find(szArgList[i]);
-                        if (pathPos != std::wstring::npos)
-                        {
-                            auto tempPath = commandLine.substr(pathPos);
-                            if (PathFileExists(tempPath.c_str()))
-                            {
-                                CPathUtils::NormalizeFolderSeparators(tempPath);
-                                path = CPathUtils::GetLongPathname(tempPath);
-                                mainWindow->SetFileToOpen(path, line);
-                                break;
-                            }
-                        }
-                    }
-                    mainWindow->SetFileToOpen(path, line);
                 }
-                else
-                {
-                    if (wcscmp(&szArgList[i][1], L"z") == 0)
-                        bOmitNext = true;
-                }
+                mainWindow->SetFileToOpen(path, line);
+            }
+            else
+            {
+                if (wcscmp(&szArgList[i][1], L"z") == 0)
+                    bOmitNext = true;
             }
         }
     }
@@ -372,7 +355,7 @@ int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
         if (ShellExecuteEx(&shExecInfo))
             return 0;
     }
-    if (bAlreadyRunning && !parser->HasKey(L"nw"))
+    if (bAlreadyRunning && !parser->HasKey(L"f"))
     {
         HWND hBowPadWnd = FindAndWaitForBowPad();
         if (hBowPadWnd)
@@ -385,36 +368,6 @@ int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     CIniSettings::Instance().SetIniPath(CAppUtils::GetDataPath() + L"\\n4d.settings");
     SetIcon();
 
-    if (parser->HasKey(L"elevate") && parser->HasVal(L"savepath") && parser->HasVal(L"path"))
-    {
-        // note: MoveFileEx won't work for some reason, but
-        // writing to the target file will.
-        BOOL ret = FALSE;
-        {
-            CAutoFile hRead = CreateFile(parser->GetVal(L"path"), GENERIC_READ, FILE_SHARE_DELETE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, 0, nullptr);
-            if (hRead)
-            {
-                CAutoFile hWrite = CreateFile(parser->GetVal(L"savepath"), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-                if (hWrite)
-                {
-                    DWORD dwRead  = 0;
-                    DWORD dwWrite = 0;
-                    BYTE  buffer[4096]{};
-
-                    ret = ReadFile(hRead, buffer, sizeof(buffer) - 1, &dwRead, nullptr);
-                    while (ret && dwRead)
-                    {
-                        WriteFile(hWrite, buffer, dwRead, &dwWrite, nullptr);
-                        ret = ReadFile(hRead, buffer, sizeof(buffer) - 1, &dwRead, nullptr);
-                    }
-                }
-            }
-        }
-        DeleteFile(parser->GetVal(L"path"));
-        return ret;
-    }
-
-    //CMainWindow mainWindow(g_hRes);
     auto        mainWindow = std::make_unique<CMainWindow>(g_hRes);
     if (!mainWindow->RegisterAndCreateWindow())
         return -1;

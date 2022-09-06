@@ -138,8 +138,6 @@ public:
     bool         CloseTab(int tab, bool force = false, bool quitting = false);
     bool         CloseAllTabs(bool quitting = false);
     void         SetFileToOpen(const std::wstring& path, size_t line = static_cast<size_t>(-1));
-    void         SetElevatedSave(const std::wstring& path, const std::wstring& savePath, long line);
-    void         ElevatedSave(const std::wstring& path, const std::wstring& savePath, long line);
     void         SetInsertionIndex(int index) { m_insertionIndex = index; }
     std::wstring GetNewTabName();
     void         ShowFileTree(bool bShow);
@@ -259,8 +257,6 @@ private:
     std::unique_ptr<wchar_t[]>                      m_tooltipBuffer;
     std::list<std::wstring>                         m_clipboardHistory;
     std::map<std::wstring, size_t>                  m_pathsToOpen;
-    std::wstring                                    m_elevatePath;
-    std::wstring                                    m_elevateSavePath;
     long                                            m_initLine;
     int                                             m_insertionIndex;
     bool                                            m_inMenuLoop;
