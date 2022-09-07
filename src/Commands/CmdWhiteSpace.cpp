@@ -17,7 +17,6 @@
 
 #include "stdafx.h"
 #include "CmdWhiteSpace.h"
-#include "main.h"
 #include "IniSettings.h"
 #include "Theme.h"
 #include "ResString.h"

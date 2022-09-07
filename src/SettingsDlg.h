@@ -17,7 +17,6 @@
 #pragma once
 
 #include "MainWindow.h"
-#include "main.h"
 #include "BaseDialog.h"
 #include "Theme.h"
 #include "ColorButton.h"

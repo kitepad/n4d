@@ -15,7 +15,7 @@
 // See <http://www.gnu.org/licenses/> for a copy of the full license text
 //
 #include "stdafx.h"
-#include "main.h"
+
 #include "CmdFiles.h"
 #include "LexStyles.h"
 #include "PreserveChdir.h"

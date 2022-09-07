@@ -84,7 +84,6 @@ protected:
     // private:
     HWND m_hFilter;
     HWND m_hResults;
-
     std::vector<CListItem> m_results;
     std::vector<CListItem> m_allResults;
     ICommand*              m_pCmd;

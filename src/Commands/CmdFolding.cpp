@@ -20,7 +20,6 @@
 #include "ResString.h"
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
-#include "main.h"
 
 #include <functional>
 

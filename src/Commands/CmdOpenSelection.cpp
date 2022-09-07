@@ -17,7 +17,7 @@
 
 #include "stdafx.h"
 #include "CmdOpenselection.h"
-#include "main.h"
+
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
 #include "PathUtils.h"

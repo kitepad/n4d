@@ -16,7 +16,7 @@
 //
 
 #include "stdafx.h"
-#include "main.h"
+
 #include "MainWindow.h"
 #include "CmdLineParser.h"
 #include "BaseDialog.h"
@@ -75,34 +75,6 @@ static void SetUserStringKey(LPCWSTR keyName, LPCWSTR subKeyName, const std::wst
         std::wstring msg = CStringUtils::Format(L"Registry key '%s' (subkey: '%s') could not be set.",
                                                 keyName, subKeyName ? subKeyName : L"(none)");
         MessageBox(nullptr, msg.c_str(), L"N4D", MB_ICONINFORMATION);
-    }
-}
-
-static void RegisterContextMenu(bool bAdd)
-{
-    if (bAdd)
-    {
-        auto         modulePath = CPathUtils::GetLongPathname(CPathUtils::GetModulePath());
-        std::wstring sIconPath  = CStringUtils::Format(L"%s,-%d", modulePath.c_str(), IDI_BOWPAD);
-        std::wstring sExePath   = CStringUtils::Format(L"%s /path:\"%%1\"", modulePath.c_str());
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", nullptr, L"Edit in N4D");
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", L"Icon", sIconPath);
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D", L"MultiSelectModel", L"Player");
-        SetUserStringKey(L"Software\\Classes\\*\\shell\\N4D\\Command", nullptr, sExePath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D", nullptr, L"Open Folder with N4D");
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D", L"Icon", sIconPath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\shell\\N4D\\Command", nullptr, sExePath);
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D", nullptr, L"Open Folder with N4D");
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D", L"Icon", sIconPath);
-
-        sExePath = CStringUtils::Format(L"%s /path:\"%%V\"", modulePath.c_str());
-        SetUserStringKey(L"Software\\Classes\\Directory\\Background\\shell\\N4D\\Command", nullptr, sExePath);
-    }
-    else
-    {
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\*\\shell\\N4D");
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\shell\\N4D");
-        SHDeleteKey(HKEY_CURRENT_USER, L"Software\\Classes\\Directory\\Background\\shell\\N4D");
     }
 }
 
@@ -327,16 +299,6 @@ int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     if (parser->HasKey(L"?") || parser->HasKey(L"help"))
     {
         ShowBowPadCommandLineHelp();
-        return 0;
-    }
-    if (parser->HasKey(L"register"))
-    {
-        RegisterContextMenu(true);
-        return 0;
-    }
-    if ((parser->HasKey(L"unregister")) || (parser->HasKey(L"deregister")))
-    {
-        RegisterContextMenu(false);
         return 0;
     }
 

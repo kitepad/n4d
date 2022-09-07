@@ -17,7 +17,7 @@
 
 #include "stdafx.h"
 #include "CmdMisc.h"
-#include "main.h"
+
 #include "AppUtils.h"
 #include "Theme.h"
 #include "LexStyles.h"

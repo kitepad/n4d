@@ -17,7 +17,7 @@
 
 #include "stdafx.h"
 #include "CmdFindReplace.h"
-#include "main.h"
+
 #include "ScintillaWnd.h"
 #include "UnicodeUtils.h"
 #include "StringUtils.h"

@@ -15,7 +15,6 @@
 // See <http://www.gnu.org/licenses/> for a copy of the full license text
 //
 #include "stdafx.h"
-#include "main.h"
 #include "CommandHandler.h"
 #include "CmdBlanks.h"
 #include "CmdBookmarks.h"

@@ -16,7 +16,7 @@
 //
 #include "stdafx.h"
 #include "CmdGotoLine.h"
-#include "main.h"
+
 #include "ScintillaWnd.h"
 #include "StringUtils.h"
 #include "Theme.h"
