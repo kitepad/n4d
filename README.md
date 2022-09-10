@@ -27,6 +27,9 @@ Customize Command Palette:
 2. Add your command string to string table using command id as string id. (refer support command id in resource.h)
 3. Command string follow this pattern: {short name}###{description}. 
 
+Build Options:
+Default optimizations are favor size, if you have performance, pls use favor speed.
+
 Below is Screenshot :
 
 Dark theme:
