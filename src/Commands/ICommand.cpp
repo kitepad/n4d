@@ -122,7 +122,6 @@ std::wstring ICommand::GetTitleForDocID(DocID id) const
 void ICommand::SetCurrentTitle(LPCWSTR title) const
 {
     m_pMainWindow->SetTabTitle(m_pMainWindow->GetSelected(),title);
-    //m_pMainWindow->UpdateCaptionBar();
 }
 
 void ICommand::SetTitleForDocID(DocID id, LPCWSTR title) const
@@ -323,16 +322,6 @@ DocID ICommand::GetDocIDFromPath(LPCTSTR path) const
 {
     return m_pMainWindow->m_docManager.GetIdForPath(path);
 }
-
-//void ICommand::SetInsertionIndex(int index) const
-//{
-//    return m_pMainWindow->SetInsertionIndex(index);
-//}
-
-//std::string ICommand::GetLine(sptr_t line) const
-//{
-//    return m_pMainWindow->m_editor.GetLine(line);
-//}
 
 std::string ICommand::GetTextRange(sptr_t startPos, sptr_t endPos) const
 {

@@ -123,7 +123,6 @@ protected:
     void         GotoLine(sptr_t line) const;
     void         Center(sptr_t startPos, sptr_t endPos) const;
     void         GotoBrace() const;
-    //std::string  GetLine(sptr_t line) const;
     std::string  GetTextRange(sptr_t startPos, sptr_t endPos) const;
     size_t       FindText(const std::string& toFind, sptr_t startPos, sptr_t endPos) const;
     std::string  GetSelectedText(SelectionHandling handling) const;
@@ -141,7 +140,6 @@ protected:
     void AddAutoCompleteWords(const DocID& docID, std::map<std::string, AutoCompleteType>&& words) const;
     void AddAutoCompleteWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words) const;
 
-    //CMainWindow*   GetMainWindow() const;
     static UINT    GetTimerID() { return m_nextTimerID++; }
     int            OpenFile(LPCWSTR file, unsigned int openFlags) const;
     void           OpenFiles(const std::vector<std::wstring>& paths) const;

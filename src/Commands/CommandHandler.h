@@ -121,7 +121,7 @@ private:
     std::unordered_map<std::wstring, UINT>    m_virtKeys;
     WORD                                      m_lastKey;
     void                                      LoadUIHeaders();
-    void                                       LoadUIHeader(const char* resData, DWORD resSize);
-    void                                       Load();
-    void                                       Load(const CSimpleIni& ini);
+    void                                      LoadUIHeader(const char* resData, DWORD resSize);
+    void                                      Load();
+    void                                      Load(const CSimpleIni& ini);
 };
