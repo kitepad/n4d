@@ -22,6 +22,10 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Left parts of status bar are shown atrributs of current document, right parts are shown attributs of scintiall view.
 * config files : n4d.settings - options, n4d.shortcuts - keyboard shortcuts, n4d.styles - user defined lexer styles, n4d.snippets - auto complete for code snippet
 
+Customize Command Palette:
+1. Open n4d.rc file
+2. Add your command string to string table using command id as string id. (refer support command id in resource.h)
+3. Command string follow this pattern: {short name}###{description}. 
 
 Below is Screenshot :
 
