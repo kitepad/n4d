@@ -18,8 +18,6 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "AboutDlg.h"
-#include "SettingsDlg.h"
-
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
 #include "TempFile.h"
@@ -42,6 +40,7 @@
 #include "Monitor.h"
 #include "ResString.h"
 #include "../ext/tinyexpr/tinyexpr.h"
+#include "CmdMisc.h"
 #include <memory>
 #include <cassert>
 #include <type_traits>
@@ -364,28 +363,6 @@ void CMainWindow::About() const
     dlg.DoModal(g_hRes, IDD_ABOUTBOX, *this);
 }
 
-void CMainWindow::ShowStyleConfiguratorDlg() const
-{
-    CSettingsDlg dlg(*this);
-    dlg.DoModal(g_hRes, IDD_STYLECONFIGURATOR, m_hwnd);
-}
-
-void CMainWindow::ShowCommandPalette()
-{
-    if (!m_commandPaletteDlg)
-        m_commandPaletteDlg = std::make_unique<CCommandPaletteDlg>(*this);
-
-    RECT rect{};
-    GetClientRect(*this, &rect);
-    RECT tabrc = m_allRects.tabs;
-    constexpr UINT flags     = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
-    m_commandPaletteDlg->ShowModeless(g_hRes, IDD_COMMANDPALETTE, *this, false);
-    POINT pt((WidthOf(m_allRects.total) - 720) / 2, m_allRects.total.bottom);
-    ClientToScreen(*this, &pt);
-    SetWindowPos(*m_commandPaletteDlg, nullptr,pt.x, pt.y - 2, 720, 400,flags);
-    m_commandPaletteDlg->ClearFilterText();
-}
-
 std::wstring CMainWindow::GetAppName()
 {
     auto title = LoadResourceWString(g_hRes, IDS_APP_TITLE);
@@ -592,9 +569,9 @@ void CMainWindow::ShowSystemMenu()
     ClientToScreen(*this, &pt);
     HMENU pop = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)), 0);
 
-    UpdateMenu(pop);
-    auto cmd = TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-    DoCommand(cmd, 0);
+    //UpdateMenu(pop);
+    TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+    //DoCommand(cmd, 0);
 }
 
 LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -965,7 +942,8 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             else if (m_hoveredRect == TitlebarRect::Text)
             {
-                ShowCommandPalette();
+                //ShowCommandPalette();
+                DoCommand(cmdCommandPalette, 0);
             }
             else if (m_hoveredRect == TitlebarRect::Open)
             {
@@ -1679,12 +1657,8 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
     switch (id)
     {
         case cmdAutocMatchcase:
-        {
-            auto val = GetInt64(DEFAULTS_SECTION, L"AutoCompleteMatchCase") ? 0 : 1;
-            SetInt64(DEFAULTS_SECTION, L"AutoCompleteMatchCase", val);
-
+            SetInt64(DEFAULTS_SECTION, L"AutoCompleteMatchCase", GetInt64(DEFAULTS_SECTION, L"AutoCompleteMatchCase") ? 0 : 1);
             break;
-        }
         case cmdExit:
             PostMessage(m_hwnd, WM_CLOSE, 0, 0);
             break;
@@ -1701,17 +1675,8 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
         case cmdPasteHistory:
             PasteHistory();
             break;
-        case cmdConfigStyle:
-            ShowStyleConfiguratorDlg();
-            break;
         case cmdAbout:
             About();
-            break;
-        case cmdCommandPalette:
-            ShowCommandPalette();
-            break;
-        case cmdShowAutoComplete:
-            ShowAutoComplete();
             break;
         default:
         {

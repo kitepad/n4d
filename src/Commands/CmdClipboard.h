@@ -26,7 +26,7 @@ public:
     {
     }
 
-    virtual ~ClipboardBase() = default;
+    ~ClipboardBase() = default;
 
 protected:
     std::string GetHtmlSelection() const;

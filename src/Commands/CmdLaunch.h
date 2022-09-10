@@ -30,7 +30,7 @@ public:
         : ICommand(obj)
     {
     }
-    virtual ~LaunchBase() = default;
+    ~LaunchBase() = default;
 
 protected:
     bool Launch(const std::wstring& cmdline) const;

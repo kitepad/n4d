@@ -18,7 +18,7 @@
 #pragma once
 #include "ICommand.h"
 #include "ScintillaWnd.h"
-#include "BPBaseDialog.h"
+//#include "BPBaseDialog.h"
 
 #include <chrono>
 #include <mutex>
@@ -66,7 +66,7 @@ void findReplaceFindText(void* mainWnd);
 void findReplaceFindFile(void* mainWnd, const std::wstring& fileName);
 void findReplaceFindFunction(void* mainWnd, const std::wstring& functionName);
 
-class CFindReplaceDlg : public CBPBaseDialog
+class CFindReplaceDlg : public CDialog
     , public ICommand
 {
     // vector or deque should work here. Usage pattern suggests deque
@@ -85,6 +85,21 @@ public:
     void NotifyOnDocumentClose(DocID id);
     void NotifyOnDocumentSave(DocID id, bool saveAs);
     void OnSize();
+    static int GetMaxCount(const std::wstring& section, const std::wstring& countKey, int defaultMaxCount);
+    int        LoadData(std::vector<std::wstring>& data, int defaultMaxCount, const std::wstring& section, const std::wstring& countKey, const std::wstring& itemKeyFmt) const;
+    void       SaveData(const std::vector<std::wstring>& data, const std::wstring& section, const std::wstring& countKey, const std::wstring& itemKeyFmt) const;
+    void       SaveCombo(int comboID, std::vector<std::wstring>& data) const;
+    void       LoadCombo(int comboID, const std::vector<std::wstring>& data);
+    void       UpdateCombo(int comboId, const std::wstring& item, int maxCount);
+    bool       EnableComboBoxDeleteEvents(int comboID, bool enable);
+
+    static void FlashWindow(HWND hWnd);
+
+    static std::string UnEscape(const std::string& str);
+    static bool        ReadBase(const char* str, size_t* value, size_t base, size_t size);
+    static size_t      GetBase(char current, size_t& size) noexcept;
+
+    static LRESULT CALLBACK ComboBoxListSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
 protected: // override
     bool             Execute() override { return true; }

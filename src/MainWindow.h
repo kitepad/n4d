@@ -22,7 +22,6 @@
 #include "FileTree.h"
 #include "ProgressBar.h"
 #include "CustomTooltip.h"
-#include "CommandPaletteDlg.h"
 #include "AutoComplete.h"
 
 #include <list>
@@ -181,8 +180,7 @@ private:
     void                             OpenNewTab();
     void                             PasteHistory();
     void                             About() const;
-    void                             ShowStyleConfiguratorDlg() const;
-    void                             ShowCommandPalette();
+    //void                             ShowCommandPalette();
     bool                             HasOutsideChangesOccurred() const;
     void                             CheckForOutsideChanges();
     void                             UpdateCaptionBar();
@@ -261,7 +259,7 @@ private:
     bool                                            m_inMenuLoop;
     CScintillaWnd                                   m_scratchEditor;
     int                                             m_blockCount;
-    std::unique_ptr<CCommandPaletteDlg>             m_commandPaletteDlg;
+    //std::unique_ptr<CCommandPaletteDlg>             m_commandPaletteDlg;
     CAutoComplete                                   m_autoCompleter;
     Sci_Position                                    m_dwellStartPos;
     bool                                            m_bBlockAutoIndent;

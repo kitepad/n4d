@@ -177,7 +177,7 @@ bool CCmdFileDelete::Execute()
             std::wstring sQuestion = CStringUtils::Format(rQuestion, filename.c_str());
 
             TASKDIALOGCONFIG  tdc = {sizeof(TASKDIALOGCONFIG)};
-            TASKDIALOG_BUTTON aCustomButtons[2];
+            TASKDIALOG_BUTTON aCustomButtons[2]{};
             aCustomButtons[0].nButtonID     = 100;
             aCustomButtons[0].pszButtonText = rDelete;
             aCustomButtons[1].nButtonID     = 101;

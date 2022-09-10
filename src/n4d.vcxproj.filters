@@ -132,9 +132,6 @@
     <ClInclude Include="Commands\CmdMisc.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="ColorButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Commands\CmdComment.h">
       <Filter>Commands</Filter>
     </ClInclude>
@@ -243,16 +240,10 @@
     <ClInclude Include="..\ext\tinyexpr\tinyexpr.h">
       <Filter>tinyexpr</Filter>
     </ClInclude>
-    <ClInclude Include="BPBaseDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Commands\CmdEditSelection.h">
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="..\ext\scintilla\include\Scintilla.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandPaletteDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProgressBar.h">
@@ -268,9 +259,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PathWatcher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\SettingsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KeyboardShortcutHandler.h">
@@ -449,14 +437,8 @@
     <ClCompile Include="CustomLexers\LexSimple.cxx">
       <Filter>Lexer</Filter>
     </ClCompile>
-    <ClCompile Include="BPBaseDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CustomLexers\LexLog.cxx">
       <Filter>Lexer</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandPaletteDlg.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\Hash.cpp">
       <Filter>sktoolslib</Filter>
@@ -474,9 +456,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyboardShortcutHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

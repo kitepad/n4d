@@ -167,6 +167,7 @@ void CCommandHandler::Init(void* obj)
     Add<CCmdConfigStyle>(obj);
     Add<CCmdTabSize>(obj);
     Add<CCmdSelectTab>(obj);
+    Add<CCmdCommandPalette>(obj);
 }
 
 void CCommandHandler::ScintillaNotify(SCNotification* pScn)

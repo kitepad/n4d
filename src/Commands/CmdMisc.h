@@ -17,8 +17,147 @@
 
 #pragma once
 #include "ICommand.h"
-#include "CommandPaletteDlg.h"
 #include "Theme.h"
+
+class CmdPalData
+{
+public:
+    UINT         cmdId = 0;
+    std::wstring command;
+    std::wstring description;
+    std::wstring shortcut;
+};
+
+struct CListItem
+{
+    CListItem(UINT codepage, bool bom, const std::wstring& txt1, const std::wstring& txt2 = L"", const std::wstring& txt3 = L"")
+        : uintVal(codepage)
+        , boolVal(bom)
+        , text1(txt1)
+        , text2(txt2)
+        , text3(txt3)
+    {
+    }
+
+    CListItem() {}
+
+    UINT         uintVal = 0;
+    bool         boolVal = false;
+    std::wstring text1 = L"";
+    std::wstring text2 = L"";
+    std::wstring text3 = L"";
+};
+
+class CDialogWithFilterableList : public CDialog
+    , public ICommand
+{
+public:
+    CDialogWithFilterableList(void* obj);
+    CDialogWithFilterableList() = default;
+
+    bool Execute() override
+    {
+        return true;
+    }
+
+    virtual UINT GetCmdId() { return 0; };
+
+    void ClearFilterText();
+
+protected:
+    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+    LRESULT          DoCommand(int id, int code);
+
+    virtual void OnOK() = 0;
+    virtual UINT GetFilterCUE() = 0;
+    virtual void DrawItemText(HDC hdc, LPRECT rc, int idx) = 0;
+
+    virtual bool                    IsFiltered(std::wstring sFilterText, CListItem item);
+    virtual void                    InitResultsList() const;
+    virtual void                    FillResults(bool force);
+    virtual LRESULT                 DoListNotify(LPNMITEMACTIVATE lpNMItemActivate);
+    virtual LRESULT                 GetListItemDispInfo(NMLVDISPINFO* pDispInfo);
+    virtual void                    ResizeChildren();
+    static LRESULT CALLBACK EditSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+    static LRESULT CALLBACK ListViewSubClassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
+
+    // private:
+    HWND m_hFilter;
+    HWND m_hResults;
+    std::vector<CListItem> m_results;
+    std::vector<CListItem> m_allResults;
+    ICommand* m_pCmd;
+};
+
+class CCmdCommandPalette : public CDialogWithFilterableList
+{
+public:
+    CCmdCommandPalette(void* obj);
+    CCmdCommandPalette() = default;
+
+    UINT GetCmdId() override { return cmdCommandPalette; }
+    bool Execute() override;
+
+protected:
+    LRESULT DoListNotify(LPNMITEMACTIVATE lpNMItemActivate);
+
+    virtual bool IsFiltered(std::wstring sFilterText, CListItem item);
+    virtual UINT GetFilterCUE();
+    virtual void OnOK();
+    virtual void DrawItemText(HDC hdc, LPRECT rc, int idx);
+};
+
+enum class ColorButtonDialogResult
+{
+    None,
+    Cancel,
+    Ok
+};
+
+class CColorButton
+{
+public:
+    CColorButton();
+    virtual ~CColorButton();
+
+    BOOL ConvertToColorButton(HWND hwndParent, UINT uiCtlId);
+
+    void SetColor(COLORREF clr);
+    COLORREF GetColor() const { return m_color; }
+    COLORREF GetLastColor() const { return m_lastColor; }
+    ColorButtonDialogResult GetDialogResult() const { return m_dialogResult; }
+    void Reset()
+    {
+        m_hasLastColor = false;
+    }
+
+protected:
+
+private:
+    WNDPROC     m_pfnOrigCtlProc = nullptr;
+    COLORREF    m_color = 0;
+    HWND        m_hwnd = nullptr;
+    UINT        m_ctlId = 0;
+    bool        m_hasLastColor = false;
+    COLORREF    m_lastColor = 0;
+    COLORREF    m_hoverColor = 0;
+    std::vector<HWND> m_colorEdits;
+    ColorButtonDialogResult m_dialogResult = ColorButtonDialogResult::None;
+
+private:
+    bool ConvertToColorButton(HWND hwndCtl);
+    inline static CColorButton* GetObjectFromWindow(HWND hWnd)
+    {
+        return reinterpret_cast<CColorButton*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    }
+    static LRESULT CALLBACK _ColorButtonProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    static UINT_PTR CALLBACK CCHookProc(
+        _In_ HWND   hDlg,
+        _In_ UINT   uiMsg,
+        _In_ WPARAM wParam,
+        _In_ LPARAM lParam
+    );
+};
 
 class CCmdDelete : public ICommand
 {
@@ -151,22 +290,27 @@ public:
     UINT GetCmdId() override { return cmdAutocomplete; }
 };
 
-class CCmdConfigStyle : public ICommand
+class CCmdConfigStyle : public CDialog, public ICommand
 {
 public:
-    CCmdConfigStyle(void* obj)
-        : ICommand(obj)
-    {
-    }
+    CCmdConfigStyle(void* obj);
     ~CCmdConfigStyle() = default;
 
-    bool Execute() override
-    {
-        SendMessage(GetHwnd(), WM_COMMAND, GetCmdId(), 0);
-        return true;
-    }
-
+    bool Execute() override;
     UINT GetCmdId() override { return cmdConfigStyle; }
+protected:
+    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+private:
+    void OnSize(HWND hwnd, UINT /*state*/, int cx, int cy);
+    BOOL OnInitDialog(HWND hwnd, HWND /*hwndFocus*/, LPARAM /*lParam*/);
+    void OnCommand(HWND /*hwnd*/, int id, HWND /*hwndCtl*/, UINT msg);
+    void InitializeLexerConfiguration();
+    void SelectStyle(int style);
+    std::vector<std::wstring> m_fonts;
+    CColorButton              m_fgColor;
+    CColorButton              m_bkColor;
+    HWND m_hForm;
+    int  m_formWidth;
 };
 
 class CCmdSelectLexer : public CDialogWithFilterableList
