@@ -29,11 +29,9 @@
 constexpr int SAVED_DOC         = 0;
 constexpr int UNSAVED_DOC       = 1;
 constexpr int READONLY_DOC      = 2;
-
 constexpr int ITEM_XPADDING     = 24;
 constexpr int ITEM_YPADDING     = 2;
 constexpr int COMMAND_TIMER_ID_START = 1000;
-
 constexpr int STATUSBAR_DOC_TYPE     = 0;
 constexpr int STATUSBAR_UNICODE_TYPE = 1;
 constexpr int STATUSBAR_EOL_FORMAT   = 2;
@@ -46,7 +44,7 @@ constexpr int STATUSBAR_ZOOM         = 9;
 
 enum class TitlebarRect
 {
-    None, // Check cursor's point.y, > height (36): hover tab, < 36: hover title text 
+    None, 
     System,
     Minimize,
     Maximize,
@@ -107,7 +105,6 @@ class CMainWindow : public CWindow
     friend class ICommand;
     friend class CAutoComplete;
     friend class CAutoCompleteConfigDlg;
-    friend class CSettingsDlg;
     friend class CFileTree;
 
 public:
@@ -180,7 +177,6 @@ private:
     void                             OpenNewTab();
     void                             PasteHistory();
     void                             About() const;
-    //void                             ShowCommandPalette();
     bool                             HasOutsideChangesOccurred() const;
     void                             CheckForOutsideChanges();
     void                             UpdateCaptionBar();

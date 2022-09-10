@@ -21,10 +21,10 @@
 extern HINSTANCE g_hRes;
 extern HINSTANCE g_hInst;
 extern bool firstInstance;
-extern IUIImagePtr g_emptyIcon;
+//extern IUIImagePtr g_emptyIcon;
 extern bool g_useItemIcons;
 extern HWND g_hMainWindow;
-#define EMPTY_IMAGE (g_useItemIcons ? g_emptyIcon : nullptr)
+#define EMPTY_IMAGE (g_useItemIcons ? nullptr : nullptr)
 
 #define DEFAULTS_SECTION      L"DEFAULTS"
 #define BOOKMARKS_SECTION     L"BOOKMARKS"

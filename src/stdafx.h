@@ -28,8 +28,6 @@
 #include <memory.h>
 #include <comip.h>
 #include <comdef.h>
-
-#include "COMPtrs.h"
 #include "IniSettings.h"
 #include <shellapi.h>
 #include <Commctrl.h>
@@ -38,7 +36,6 @@
 
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "shlwapi.lib")
-
 #pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 // SDKs prior to Win10 don't have the IsWindows10OrGreater API in the versionhelpers header, so
@@ -50,8 +47,8 @@
 #    define IsWindows10OrGreater()    (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0))
 #endif
 
-#define APP_ID          L"TortoiseSVN.Tools.BowPad.1"
-#define APP_ID_ELEVATED L"TortoiseSVN.Tools.BowPad_elevated.1"
+#define APP_ID          L"Notepad4Developer.1"
+#define APP_ID_ELEVATED L"Notepad4Developer_Elevated.1"
 
 #ifdef _WIN64
 #    define LANGPLAT L"x64"
@@ -73,5 +70,12 @@
 #define WM_SCICHAR           (WM_APP + 17)
 #define WM_EDITORCONTEXTMENU (WM_APP + 18)
 #define WM_TABCONTEXTMENU    (WM_APP + 19)
+
+typedef _com_ptr_t<_com_IIID<IFileSaveDialog, &__uuidof(IFileSaveDialog)>> IFileSaveDialogPtr;
+typedef _com_ptr_t<_com_IIID<IFileOpenDialog, &__uuidof(IFileOpenDialog)>> IFileOpenDialogPtr;
+typedef _com_ptr_t<_com_IIID<IShellItem, &__uuidof(IShellItem)>> IShellItemPtr;
+typedef _com_ptr_t<_com_IIID<IShellItemArray, &__uuidof(IShellItemArray)>> IShellItemArrayPtr;
+typedef _com_ptr_t<_com_IIID<IFileOperation, &__uuidof(IFileOperation)>> IFileOperationPtr;
+typedef _com_ptr_t<_com_IIID<IContextMenu, &__uuidof(IContextMenu)>> IContextMenuPtr;
 
 #include "main.h"

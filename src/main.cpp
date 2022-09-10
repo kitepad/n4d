@@ -34,7 +34,7 @@
 HINSTANCE   g_hInst;
 HINSTANCE   g_hRes;
 bool        firstInstance = false;
-IUIImagePtr g_emptyIcon;
+//IUIImagePtr g_emptyIcon;
 bool        g_useItemIcons = true;
 HWND        g_hMainWindow  = nullptr;
 
@@ -360,7 +360,7 @@ int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
         }
     }
     CCommandHandler::ShutDown();
-    g_emptyIcon = nullptr;
+    //g_emptyIcon = nullptr;
     Animator::ShutDown();
     return static_cast<int>(msg.wParam);
 }

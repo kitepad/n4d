@@ -3997,12 +3997,12 @@ bool CMainWindow::ReloadTab(int tab, int encoding, bool dueToOutsideChanges)
     editor->Scintilla().SetReadOnly(docReload.m_bIsWriteProtected);
     RefreshAnnotations();
 
-    TBHDR tbHdr        = {};
-    tbHdr.hdr.hwndFrom = *this;
-    tbHdr.hdr.code     = TCN_RELOAD;
-    tbHdr.hdr.idFrom   = tab;
-    tbHdr.tabOrigin    = tab;
-    CCommandHandler::Instance().TabNotify(&tbHdr);
+    //TBHDR tbHdr        = {};
+    //tbHdr.hdr.hwndFrom = *this;
+    //tbHdr.hdr.code = TCN_;// TCN_RELOAD;
+    //tbHdr.hdr.idFrom   = tab;
+    //tbHdr.tabOrigin    = tab;
+    //CCommandHandler::Instance().TabNotify(&tbHdr);
     CCommandHandler::Instance().OnStylesSet();
 
     if (bReloadCurrentTab)

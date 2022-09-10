@@ -23,15 +23,15 @@
 #include <vector>
 #include <string>
 
-#define TCN_TABDROPPED        (WM_USER + 1)
-#define TCN_TABDROPPEDOUTSIDE (WM_USER + 2)
-#define TCN_TABDELETE         (WM_USER + 3)
-#define TCN_GETFOCUSEDTAB     (WM_USER + 4)
-#define TCN_ORDERCHANGED      (WM_USER + 5)
-#define TCN_REFRESH           (WM_USER + 6)
-#define TCN_GETCOLOR          (WM_USER + 7)
-#define TCN_GETDROPICON       (WM_USER + 8)
-#define TCN_RELOAD            (WM_USER + 9)
+//#define TCN_TABDROPPED        (WM_USER + 1)
+//#define TCN_TABDROPPEDOUTSIDE (WM_USER + 2)
+//#define TCN_TABDELETE         (WM_USER + 3)
+//#define TCN_GETFOCUSEDTAB     (WM_USER + 4)
+//#define TCN_ORDERCHANGED      (WM_USER + 5)
+//#define TCN_REFRESH           (WM_USER + 6)
+//#define TCN_GETCOLOR          (WM_USER + 7)
+//#define TCN_GETDROPICON       (WM_USER + 8)
+//#define TCN_RELOAD            (WM_USER + 9)
 
 struct TBHDR
 {
@@ -106,12 +106,8 @@ protected:
     bool             HasDocumentID(DocID id) const;
     const CDocument& GetDocumentFromID(DocID id) const;
     CDocument&       GetModDocumentFromID(DocID id) const;
-    void             RestoreCurrentPos(const CPosData& pos) const;
-    void             SaveCurrentPos(CPosData& pos) const;
-    bool             UpdateFileTime(CDocument& doc, bool bIncludeReadonly) const;
     int              GetStatusBarHeight();
     Scintilla::ScintillaCall& Scintilla() const;
-    LRESULT      SendMessageToMainWnd(UINT msg, WPARAM wParam, LPARAM lParam) const;
     void         UpdateStatusBar(bool bEverything) const;
     void         SetupLexerForLang(const std::string& lang) const;
     std::string  GetCurrentLanguage() const;

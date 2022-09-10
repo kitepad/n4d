@@ -393,9 +393,7 @@
     <ClInclude Include="Commands\CmdZoom.h" />
     <ClInclude Include="Commands\CommandHandler.h" />
     <ClInclude Include="Commands\ICommand.h" />
-    <ClInclude Include="COMPtrs.h" />
     <ClInclude Include="CustomTooltip.h" />
-    <ClInclude Include="DocScroll.h" />
     <ClInclude Include="Document.h" />
     <ClInclude Include="DocumentManager.h" />
     <ClInclude Include="FileTree.h" />
@@ -478,7 +476,6 @@
     <ClCompile Include="CustomLexers\LexSimple.cxx" />
     <ClCompile Include="CustomLexers\LexSnippets.cxx" />
     <ClCompile Include="CustomTooltip.cpp" />
-    <ClCompile Include="DocScroll.cpp" />
     <ClCompile Include="Document.cpp" />
     <ClCompile Include="DocumentManager.cpp" />
     <ClCompile Include="FileTree.cpp" />

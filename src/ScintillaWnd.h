@@ -18,13 +18,13 @@
 #include "BaseWindow.h"
 #include "Scintilla.h"
 #include "Document.h"
-#include "DocScroll.h"
 #include "ScrollTool.h"
 #include "AnimationManager.h"
 #include "../ext/scintilla/include/ILexer.h"
 #include "../ext/scintilla/include/ScintillaTypes.h"
 #include "../ext/scintilla/include/ScintillaCall.h"
-
+#include "coolscroll.h"
+#include <map>
 #include <vector>
 #include <unordered_map>
 
@@ -45,11 +45,28 @@ class CPosData;
 constexpr int SC_MARGE_LINENUMBER = 0;
 constexpr int SC_MARGE_SYMBOL     = 1;
 constexpr int SC_MARGE_FOLDER     = 2;
-
 constexpr int MARK_BOOKMARK       = 24;
-
 constexpr int SCN_BP_MOUSEMSG     = 4000;
+constexpr int DOCSCROLLTYPE_SELTEXT = 1;
+constexpr int DOCSCROLLTYPE_BOOKMARK = 2;
+constexpr int DOCSCROLLTYPE_SEARCHTEXT = 3;
+constexpr int DOCSCROLLTYPE_END = 4;
 
+struct LineColor
+{
+    inline LineColor(int type, size_t line) : type(type), line(line) {}
+    // Sort by type then line.
+    inline bool operator<(const LineColor& rhs) const
+    {
+        if (type != rhs.type)
+            return type < rhs.type;
+        else
+            return line < rhs.line;
+    }
+
+    int type;
+    size_t line;
+};
 
 enum class BraceMatch
 {
@@ -83,6 +100,51 @@ struct FindResult
 };
 
 class LexerData;
+
+class CDocScroll
+{
+    friend class CScintillaWnd;
+public:
+    CDocScroll();
+    ~CDocScroll();
+
+    void                        InitScintilla(CScintillaWnd* pScintilla);
+    LRESULT CALLBACK            HandleCustomDraw(WPARAM wParam, NMCSBCUSTOMDRAW* pCustDraw);
+    void                        SetTotalLines(size_t lines);
+    void                        Clear(int type);
+    void                        AddLineColor(int type, size_t line, COLORREF clr);
+    void                        RemoveLine(int type, size_t line);
+    void                        SetCurrentPos(size_t visibleLine, COLORREF clr) { m_curPosVisLine = visibleLine; m_curPosColor = clr; }
+    void                        VisibleLinesChanged();
+    bool                        IsDirty() const { return m_bDirty; }
+private:
+    void                        CalcLines();
+    void                        AnimateFraction(AnimationVariable& animVar, double endVal);
+
+
+    std::map<size_t, COLORREF>                  m_visibleLineColors[DOCSCROLLTYPE_END];
+    std::map<LineColor, COLORREF>                m_lineColors;
+    size_t                                      m_visibleLines;
+    size_t                                      m_lines;
+    size_t                                      m_curPosVisLine;
+    COLORREF                                    m_curPosColor;
+    CScintillaWnd*                              m_pScintilla;
+    bool                                        m_bDirty;
+    ULONG_PTR                                   m_gdiplusToken;
+
+    AnimationVariable                           m_animVarHL;
+    AnimationVariable                           m_animVarHR;
+    AnimationVariable                           m_animVarHT;
+    AnimationVariable                           m_animVarVL;
+    AnimationVariable                           m_animVarVR;
+    AnimationVariable                           m_animVarVT;
+    bool                                        m_bHotHL;
+    bool                                        m_bHotHR;
+    bool                                        m_bHotHT;
+    bool                                        m_bHotVL;
+    bool                                        m_bHotVR;
+    bool                                        m_bHotVT;
+};
 
 class CScintillaWnd : public CWindow
 {
@@ -173,4 +235,3 @@ private:
     AnimationVariable                m_animVarGraySel;
     AnimationVariable                m_animVarGrayLineNr;
 };
-

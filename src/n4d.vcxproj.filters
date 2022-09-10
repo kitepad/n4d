@@ -90,9 +90,6 @@
     <ClInclude Include="LexStyles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DocScroll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Commands\CommandHandler.h">
       <Filter>Commands</Filter>
     </ClInclude>
@@ -185,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="Commands\CmdOpenSelection.h">
       <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="COMPtrs.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ext\sktoolslib\Registry.h">
       <Filter>sktoolslib</Filter>
@@ -306,9 +300,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Document.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DocScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Commands\ICommand.cpp">

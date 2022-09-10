@@ -193,7 +193,7 @@
       <AdditionalIncludeDirectories>include;..\lexilla\include;lexlib;src;..\lexilla\lexlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;REGEX_MULTILINE;EnableScrollBar=CoolSB_EnableScrollBar;GetScrollInfo=CoolSB_GetScrollInfo;GetScrollPos=CoolSB_GetScrollPos;GetScrollRange=CoolSB_GetScrollRange;SetScrollInfo=CoolSB_SetScrollInfo;SetScrollPos=CoolSB_SetScrollPos;SetScrollRange=CoolSB_SetScrollRange;ShowScrollBar=CoolSB_ShowScrollBar;_WIN64;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;STATIC_BUILD;SCI_LEXER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

@@ -228,25 +228,10 @@ CDocument& ICommand::GetModDocumentFromID(DocID id) const
     return m_pMainWindow->m_docManager.GetModDocumentFromID(id);
 }
 
-void ICommand::RestoreCurrentPos(const CPosData& pos) const
-{
-    m_pMainWindow->m_editor.RestoreCurrentPos(pos);
-}
-
-void ICommand::SaveCurrentPos(CPosData& pos) const
-{
-    return m_pMainWindow->m_editor.SaveCurrentPos(pos);
-}
-
-bool ICommand::UpdateFileTime(CDocument& doc, bool bIncludeReadonly) const
-{
-    return m_pMainWindow->m_docManager.UpdateFileTime(doc, bIncludeReadonly);
-}
-
-LRESULT ICommand::SendMessageToMainWnd(UINT msg, WPARAM wParam, LPARAM lParam) const
-{
-    return ::SendMessage(*m_pMainWindow, msg, wParam, lParam);
-}
+//LRESULT ICommand::SendMessageToMainWnd(UINT msg, WPARAM wParam, LPARAM lParam) const
+//{
+//    return ::SendMessage(*m_pMainWindow, msg, wParam, lParam);
+//}
 
 void ICommand::UpdateStatusBar(bool bEverything) const
 {
