@@ -28,7 +28,7 @@ Customize Command Palette:
 3. Command string follow this pattern: {short name}###{description}. 
 
 Build Options:
-Default optimizations are favor size, if you have performance, pls use favor speed.
+Default optimizations are favor size, if you have performance issues, pls use favor speed.
 
 Below is Screenshot :
 
