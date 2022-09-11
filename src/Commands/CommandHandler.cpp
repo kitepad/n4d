@@ -287,19 +287,6 @@ void CCommandHandler::AfterInit()
     }
 }
 
-void CCommandHandler::OnTimer(UINT timerId)
-{
-    for (auto& [id, cmd] : m_commands)
-    {
-        cmd->OnTimer(timerId);
-    }
-    for (auto& [id, cmd] : m_noDeleteCommands)
-    {
-        if (cmd)
-            cmd->OnTimer(timerId);
-    }
-}
-
 void CCommandHandler::OnThemeChanged(bool bDark)
 {
     for (auto& [id, cmd] : m_commands)

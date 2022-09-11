@@ -78,7 +78,6 @@ public:
     void        OnClipboardChanged();
     void        BeforeLoad();
     void        AfterInit();
-    void        OnTimer(UINT timerId);
     void        OnThemeChanged(bool bDark);
     void        OnLangChanged();
     void        OnStylesSet();

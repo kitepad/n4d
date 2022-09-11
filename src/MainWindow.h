@@ -31,7 +31,6 @@ constexpr int UNSAVED_DOC       = 1;
 constexpr int READONLY_DOC      = 2;
 constexpr int ITEM_XPADDING     = 24;
 constexpr int ITEM_YPADDING     = 2;
-constexpr int COMMAND_TIMER_ID_START = 1000;
 constexpr int STATUSBAR_DOC_TYPE     = 0;
 constexpr int STATUSBAR_UNICODE_TYPE = 1;
 constexpr int STATUSBAR_EOL_FORMAT   = 2;
@@ -255,7 +254,6 @@ private:
     bool                                            m_inMenuLoop;
     CScintillaWnd                                   m_scratchEditor;
     int                                             m_blockCount;
-    //std::unique_ptr<CCommandPaletteDlg>             m_commandPaletteDlg;
     CAutoComplete                                   m_autoCompleter;
     Sci_Position                                    m_dwellStartPos;
     bool                                            m_bBlockAutoIndent;

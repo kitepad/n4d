@@ -20,8 +20,6 @@
 #include "LexStyles.h"
 #include "CommandHandler.h"
 
-UINT ICommand::m_nextTimerID = COMMAND_TIMER_ID_START;
-
 ICommand::ICommand(void* obj)
     : m_pMainWindow(static_cast<CMainWindow*>(obj))
 {
@@ -60,10 +58,6 @@ void ICommand::OnDocumentSave(DocID /*id*/, bool /*bSaveAs*/)
 }
 
 void ICommand::OnClipboardChanged()
-{
-}
-
-void ICommand::OnTimer(UINT /*id*/)
 {
 }
 
@@ -228,11 +222,6 @@ CDocument& ICommand::GetModDocumentFromID(DocID id) const
     return m_pMainWindow->m_docManager.GetModDocumentFromID(id);
 }
 
-//LRESULT ICommand::SendMessageToMainWnd(UINT msg, WPARAM wParam, LPARAM lParam) const
-//{
-//    return ::SendMessage(*m_pMainWindow, msg, wParam, lParam);
-//}
-
 void ICommand::UpdateStatusBar(bool bEverything) const
 {
     m_pMainWindow->UpdateStatusBar(bEverything);
@@ -363,11 +352,6 @@ std::wstring ICommand::GetFileTreePath() const
     return m_pMainWindow->GetFileTreePath();
 }
 
-void ICommand::FileTreeBlockRefresh(bool bBlock) const
-{
-    return m_pMainWindow->FileTreeBlockRefresh(bBlock);
-}
-
 void ICommand::AddAutoCompleteWords(const std::string& lang, std::map<std::string, AutoCompleteType>&& words) const
 {
     m_pMainWindow->AddAutoCompleteWords(lang, std::move(words));
@@ -391,31 +375,6 @@ void ICommand::AddAutoCompleteWords(const DocID& docID, const std::map<std::stri
 sptr_t ICommand::GetCurrentLineNumber() const
 {
     return m_pMainWindow->m_editor.GetCurrentLineNumber();
-}
-
-void ICommand::BlockAllUIUpdates(bool block) const
-{
-    m_pMainWindow->BlockAllUIUpdates(block);
-}
-
-void ICommand::ShowProgressCtrl(UINT delay) const
-{
-    m_pMainWindow->ShowProgressCtrl(delay);
-}
-
-void ICommand::HideProgressCtrl() const
-{
-    m_pMainWindow->HideProgressCtrl();
-}
-
-void ICommand::SetProgress(DWORD32 pos, DWORD32 end) const
-{
-    m_pMainWindow->SetProgress(pos, end);
-}
-
-void ICommand::SetFileTreePath(LPCWSTR path) const
-{
-    m_pMainWindow->m_fileTree.SetPath(path, true);
 }
 
 int ICommand::GetWidthToLeft(int idx)

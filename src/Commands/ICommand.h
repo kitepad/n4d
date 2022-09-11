@@ -76,7 +76,6 @@ public:
     virtual void    OnDocumentOpen(DocID id);
     virtual void    OnDocumentSave(DocID id, bool bSaveAs);
     virtual void    OnClipboardChanged();
-    virtual void    OnTimer(UINT id);
     HWND            GetHwnd() const;
     HWND            GetScintillaWnd() const;
     HWND            GetStatusbarWnd() const;
@@ -129,14 +128,12 @@ protected:
     void         ShowFileTree(bool bShow) const;
     bool         IsFileTreeShown() const;
     std::wstring GetFileTreePath() const;
-    void         FileTreeBlockRefresh(bool bBlock) const;
 
     void AddAutoCompleteWords(const std::string& lang, std::map<std::string, AutoCompleteType>&& words) const;
     void AddAutoCompleteWords(const std::string& lang, const std::map<std::string, AutoCompleteType>& words) const;
     void AddAutoCompleteWords(const DocID& docID, std::map<std::string, AutoCompleteType>&& words) const;
     void AddAutoCompleteWords(const DocID& docID, const std::map<std::string, AutoCompleteType>& words) const;
 
-    static UINT    GetTimerID() { return m_nextTimerID++; }
     int            OpenFile(LPCWSTR file, unsigned int openFlags) const;
     void           OpenFiles(const std::vector<std::wstring>& paths) const;
     void           OpenHDROP(HDROP hDrop) const;
@@ -145,13 +142,8 @@ protected:
     bool           SaveDoc(DocID docID, bool bSaveAs = false) const;
     bool           SaveDoc(DocID docID, const std::wstring& path) const;
     sptr_t         GetCurrentLineNumber() const;
-    void           BlockAllUIUpdates(bool block) const;
-    void           ShowProgressCtrl(UINT delay) const;
-    void           HideProgressCtrl() const;
-    void           SetProgress(DWORD32 pos, DWORD32 end) const;
-    void           SetFileTreePath(LPCWSTR path) const;
 
 protected:
     CMainWindow* m_pMainWindow;
-    static UINT  m_nextTimerID;
+    //static UINT  m_nextTimerID;
 };
