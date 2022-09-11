@@ -57,6 +57,15 @@ public:
 
     bool Execute() override
     {
+        ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
+
+        constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
+        RECT  rc;
+        GetClientRect(GetHwnd(), &rc);
+        POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
+        ClientToScreen(GetHwnd(), &pt);
+        SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
+
         return true;
     }
 
@@ -94,13 +103,10 @@ class CCmdCommandPalette : public CDialogWithFilterableList
 public:
     CCmdCommandPalette(void* obj);
     CCmdCommandPalette() = default;
-
     UINT GetCmdId() override { return cmdCommandPalette; }
-    bool Execute() override;
 
 protected:
     LRESULT DoListNotify(LPNMITEMACTIVATE lpNMItemActivate);
-
     virtual bool IsFiltered(std::wstring sFilterText, CListItem item);
     virtual UINT GetFilterCUE();
     virtual void OnOK();

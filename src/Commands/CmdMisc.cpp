@@ -139,15 +139,7 @@ CCmdSelectLexer::~CCmdSelectLexer()
 bool CCmdSelectLexer::Execute()
 {
     ClearFilterText();
-    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
-
-    constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
-    RECT  rc;
-    GetClientRect(GetHwnd(), &rc);
-    POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
-    ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
-    
+    CDialogWithFilterableList::Execute();
     return true;
 }
 
@@ -159,15 +151,7 @@ CCmdSelectEncoding::~CCmdSelectEncoding()
 bool CCmdSelectEncoding::Execute()
 {
     ClearFilterText();
-    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
-
-    constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
-    RECT           rc;
-    GetClientRect(GetHwnd(), &rc);
-    POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
-    ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
-
+    CDialogWithFilterableList::Execute();
     return true;
 }
 
@@ -311,16 +295,7 @@ bool CCmdSelectTab::Execute()
 
         m_allResults.push_back(CListItem(0, false, sTitle));
     }
-    
-    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
-
-    constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
-    RECT  rc;
-    GetClientRect(GetHwnd(), &rc);
-    POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
-    ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
-
+    CDialogWithFilterableList::Execute();
     return true;
 }
 
@@ -1461,18 +1436,4 @@ LRESULT CCmdCommandPalette::DoListNotify(LPNMITEMACTIVATE lpNMItemActivate)
 bool CCmdCommandPalette::IsFiltered(std::wstring sFilterText, CListItem item)
 {
     return sFilterText.empty() || StrStrIW(item.text1.c_str(), sFilterText.c_str()) || StrStrIW(item.text2.c_str(), sFilterText.c_str());
-}
-
-bool CCmdCommandPalette::Execute()
-{
-    ShowModeless(g_hRes, IDD_COMMANDPALETTE, GetHwnd(), FALSE);
-
-    constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_NOCOPYBITS;
-    RECT  rc;
-    GetClientRect(GetHwnd(), &rc);
-    POINT pt((rc.right - rc.left - 720) / 2, CTheme::CurrentTheme().tabHeight + CTheme::CurrentTheme().titleHeight);
-    ClientToScreen(GetHwnd(), &pt);
-    SetWindowPos(*this, nullptr, pt.x, pt.y, 720, 400, flags);
-
-    return true;
 }
