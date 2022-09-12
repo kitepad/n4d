@@ -21,7 +21,7 @@
 #include "StringUtils.h"
 #include <Shobjidl.h>
 #include <VersionHelpers.h>
-#include "Registry.h"
+//#include "Registry.h"
 
 class LaunchBase : public ICommand
 {
@@ -86,7 +86,14 @@ public:
         if (!succeeded)
         {
             // get the shell execute command for the new edge chrome
-            std::wstring cmd = CRegStdString(L"SOFTWARE\\Classes\\MSEdgeHTM\\shell\\open\\command\\", L"", false, HKEY_LOCAL_MACHINE);
+            TCHAR szPath[MAX_PATH];
+            DWORD dwLenPath = sizeof(szPath) / sizeof(TCHAR);
+            DWORD dwType;
+            LRESULT lResult = RegGetValue(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Classes\\MSEdgeHTM\\shell\\open\\command\\", L"", RRF_RT_REG_SZ, &dwType, szPath, &dwLenPath);
+            if (lResult != ERROR_SUCCESS)
+                return false;
+
+            std::wstring cmd(szPath);
             SearchReplace(cmd, L"%1", L"$(TAB_PATH)");
             return Launch(cmd);
         }

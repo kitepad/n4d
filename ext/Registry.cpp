@@ -92,40 +92,40 @@ void CRegRect::InternalWrite(HKEY hKey, const CRect& value)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __ATLTYPES_H__ // defines CPoint
-CRegPoint::CRegPoint(void)
-    : CRegTypedBase<CPoint, CRegBase>(CPoint(0, 0))
-{
-}
-
-CRegPoint::CRegPoint(const CString& key, const CPoint& def, bool force, HKEY base, REGSAM sam)
-    : CRegTypedBase<CPoint, CRegBase>(key, def, force, base, sam)
-{
-    read();
-}
-
-void CRegPoint::InternalRead(HKEY hKey, CPoint& value)
-{
-    DWORD size = 0;
-    DWORD type = 0;
-    m_lastError  = RegQueryValueEx(hKey, m_key, nullptr, &type, nullptr, (LPDWORD)&size);
-
-    if (m_lastError == ERROR_SUCCESS)
-    {
-        auto buffer = std::make_unique<char[]>(size);
-        if ((m_lastError = RegQueryValueEx(hKey, m_key, nullptr, &type, (BYTE*)buffer.get(), &size)) == ERROR_SUCCESS)
-        {
-            ASSERT(type == REG_BINARY);
-            value = CPoint(*(POINT*)buffer.get());
-        }
-    }
-}
-
-void CRegPoint::InternalWrite(HKEY hKey, const CPoint& value)
-{
-    m_lastError = RegSetValueEx(hKey, m_key, 0, REG_BINARY, (BYTE*)&value, sizeof(value));
-}
-#endif
+//#ifdef __ATLTYPES_H__ // defines CPoint
+//CRegPoint::CRegPoint(void)
+//    : CRegTypedBase<CPoint, CRegBase>(CPoint(0, 0))
+//{
+//}
+//
+//CRegPoint::CRegPoint(const CString& key, const CPoint& def, bool force, HKEY base, REGSAM sam)
+//    : CRegTypedBase<CPoint, CRegBase>(key, def, force, base, sam)
+//{
+//    read();
+//}
+//
+//void CRegPoint::InternalRead(HKEY hKey, CPoint& value)
+//{
+//    DWORD size = 0;
+//    DWORD type = 0;
+//    m_lastError  = RegQueryValueEx(hKey, m_key, nullptr, &type, nullptr, (LPDWORD)&size);
+//
+//    if (m_lastError == ERROR_SUCCESS)
+//    {
+//        auto buffer = std::make_unique<char[]>(size);
+//        if ((m_lastError = RegQueryValueEx(hKey, m_key, nullptr, &type, (BYTE*)buffer.get(), &size)) == ERROR_SUCCESS)
+//        {
+//            ASSERT(type == REG_BINARY);
+//            value = CPoint(*(POINT*)buffer.get());
+//        }
+//    }
+//}
+//
+//void CRegPoint::InternalWrite(HKEY hKey, const CPoint& value)
+//{
+//    m_lastError = RegSetValueEx(hKey, m_key, 0, REG_BINARY, (BYTE*)&value, sizeof(value));
+//}
+//#endif
 
 /////////////////////////////////////////////////////////////////////
 

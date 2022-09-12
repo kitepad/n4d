@@ -183,9 +183,6 @@
     <ClInclude Include="Commands\CmdOpenSelection.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="..\ext\sktoolslib\Registry.h">
-      <Filter>sktoolslib</Filter>
-    </ClInclude>
     <ClInclude Include="..\ext\sktoolslib\TempFile.h">
       <Filter>sktoolslib</Filter>
     </ClInclude>
@@ -361,9 +358,6 @@
     </ClCompile>
     <ClCompile Include="Commands\CmdLaunch.cpp">
       <Filter>Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ext\sktoolslib\Registry.cpp">
-      <Filter>sktoolslib</Filter>
     </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\TempFile.cpp">
       <Filter>sktoolslib</Filter>

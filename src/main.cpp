@@ -36,45 +36,45 @@ HINSTANCE   g_hRes;
 bool        firstInstance = false;
 HWND        g_hMainWindow  = nullptr;
 
-static void SetIcon()
-{
-    HKEY hKey = nullptr;
-    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe", &hKey) == ERROR_SUCCESS)
-    {
-        // registry key exists, which means at least one file type was associated with BowPad by the user
-        RegCloseKey(hKey);
-        if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) != ERROR_SUCCESS)
-        {
-            // but the default icon hasn't been set yet: set the default icon now
-            if (RegCreateKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) == ERROR_SUCCESS)
-            {
-                OnOutOfScope(RegCloseKey(hKey););
-                std::wstring sIconPath = CStringUtils::Format(L"%s,-%d", CPathUtils::GetLongPathname(CPathUtils::GetModulePath()).c_str(), IDI_BOWPAD);
-                if (RegSetValue(hKey, nullptr, REG_SZ, sIconPath.c_str(), 0) == ERROR_SUCCESS)
-                {
-                    // now tell the shell about the changed icon
-                    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-                }
-            }
-        }
-        else
-        {
-            RegCloseKey(hKey);
-        }
-    }
-}
-
-static void SetUserStringKey(LPCWSTR keyName, LPCWSTR subKeyName, const std::wstring& keyValue)
-{
-    DWORD dwSizeInBytes = static_cast<DWORD>((keyValue.length() + 1) * sizeof(WCHAR));
-    auto  status        = SHSetValue(HKEY_CURRENT_USER, keyName, subKeyName, REG_SZ, keyValue.c_str(), dwSizeInBytes);
-    if (status != ERROR_SUCCESS)
-    {
-        std::wstring msg = CStringUtils::Format(L"Registry key '%s' (subkey: '%s') could not be set.",
-                                                keyName, subKeyName ? subKeyName : L"(none)");
-        MessageBox(nullptr, msg.c_str(), L"N4D", MB_ICONINFORMATION);
-    }
-}
+//static void SetIcon()
+//{
+//    HKEY hKey = nullptr;
+//    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe", &hKey) == ERROR_SUCCESS)
+//    {
+//        // registry key exists, which means at least one file type was associated with BowPad by the user
+//        RegCloseKey(hKey);
+//        if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) != ERROR_SUCCESS)
+//        {
+//            // but the default icon hasn't been set yet: set the default icon now
+//            if (RegCreateKey(HKEY_CURRENT_USER, L"Software\\Classes\\Applications\\n4d.exe\\DefaultIcon", &hKey) == ERROR_SUCCESS)
+//            {
+//                OnOutOfScope(RegCloseKey(hKey););
+//                std::wstring sIconPath = CStringUtils::Format(L"%s,-%d", CPathUtils::GetLongPathname(CPathUtils::GetModulePath()).c_str(), IDI_BOWPAD);
+//                if (RegSetValue(hKey, nullptr, REG_SZ, sIconPath.c_str(), 0) == ERROR_SUCCESS)
+//                {
+//                    // now tell the shell about the changed icon
+//                    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+//                }
+//            }
+//        }
+//        else
+//        {
+//            RegCloseKey(hKey);
+//        }
+//    }
+//}
+//
+//static void SetUserStringKey(LPCWSTR keyName, LPCWSTR subKeyName, const std::wstring& keyValue)
+//{
+//    DWORD dwSizeInBytes = static_cast<DWORD>((keyValue.length() + 1) * sizeof(WCHAR));
+//    auto  status        = SHSetValue(HKEY_CURRENT_USER, keyName, subKeyName, REG_SZ, keyValue.c_str(), dwSizeInBytes);
+//    if (status != ERROR_SUCCESS)
+//    {
+//        std::wstring msg = CStringUtils::Format(L"Registry key '%s' (subkey: '%s') could not be set.",
+//                                                keyName, subKeyName ? subKeyName : L"(none)");
+//        MessageBox(nullptr, msg.c_str(), L"N4D", MB_ICONINFORMATION);
+//    }
+//}
 
 static void ForwardToOtherInstance(HWND hBowPadWnd, LPCTSTR lpCmdLine, CCmdLineParser& parser)
 {
@@ -326,7 +326,7 @@ int n4dMain(LPCTSTR lpCmdLine, bool bAlreadyRunning)
     }
 
     CIniSettings::Instance().SetIniPath(CAppUtils::GetDataPath() + L"\\n4d.settings");
-    SetIcon();
+    //SetIcon();
 
     auto        mainWindow = std::make_unique<CMainWindow>(g_hRes);
     if (!mainWindow->RegisterAndCreateWindow())

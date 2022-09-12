@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "Registry.h"
+//#include "Registry.h"
 #include <cassert>
 #include <io.h>
 #include <fcntl.h>

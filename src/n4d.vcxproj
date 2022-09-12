@@ -352,7 +352,6 @@
     <ClInclude Include="..\ext\sktoolslib\PathUtils.h" />
     <ClInclude Include="..\ext\sktoolslib\PreserveChdir.h" />
     <ClInclude Include="..\ext\sktoolslib\ProgressDlg.h" />
-    <ClInclude Include="..\ext\sktoolslib\Registry.h" />
     <ClInclude Include="..\ext\sktoolslib\ResString.h" />
     <ClInclude Include="..\ext\sktoolslib\RichStatusBar.h" />
     <ClInclude Include="..\ext\sktoolslib\ScrollTool.h" />
@@ -426,7 +425,6 @@
     <ClCompile Include="..\ext\sktoolslib\PathUtils.cpp" />
     <ClCompile Include="..\ext\sktoolslib\PreserveChdir.cpp" />
     <ClCompile Include="..\ext\sktoolslib\ProgressDlg.cpp" />
-    <ClCompile Include="..\ext\sktoolslib\Registry.cpp" />
     <ClCompile Include="..\ext\sktoolslib\RichStatusBar.cpp" />
     <ClCompile Include="..\ext\sktoolslib\ScrollTool.cpp" />
     <ClCompile Include="..\ext\sktoolslib\StringUtils.cpp" />
