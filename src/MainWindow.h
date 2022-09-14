@@ -99,6 +99,16 @@ struct ItemMetrics
     DocID   id;
 };
 
+class CAboutDlg : public CDialog
+{
+public:
+    CAboutDlg(HWND hParent);
+    ~CAboutDlg();
+
+protected:
+    LRESULT CALLBACK        DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+};
+
 class CMainWindow : public CWindow
 {
     friend class ICommand;

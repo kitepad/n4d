@@ -31,4 +31,3 @@ public:
     static bool                     TryParse(const wchar_t* s, unsigned long& result, bool emptyOk = false, unsigned long def = 0, int base = 10);
     static const char*              GetResourceData(const wchar_t * resName, int id, DWORD& resLen);
 };
-

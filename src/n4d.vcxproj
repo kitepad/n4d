@@ -363,7 +363,6 @@
     <ClInclude Include="..\ext\sktoolslib\TempFile.h" />
     <ClInclude Include="..\ext\sktoolslib\UnicodeUtils.h" />
     <ClInclude Include="..\ext\tinyexpr\tinyexpr.h" />
-    <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AppUtils.h" />
     <ClInclude Include="AutoComplete.h" />
     <ClInclude Include="Commands\CmdBlanks.h" />
@@ -446,7 +445,6 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
-    <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="AppUtils.cpp" />
     <ClCompile Include="AutoComplete.cpp" />
     <ClCompile Include="main.cpp" />

@@ -17,7 +17,6 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
-#include "AboutDlg.h"
 #include "StringUtils.h"
 #include "UnicodeUtils.h"
 #include "TempFile.h"
@@ -40,7 +39,7 @@
 #include "Monitor.h"
 #include "ResString.h"
 #include "../ext/tinyexpr/tinyexpr.h"
-#include "CmdMisc.h"
+
 #include <memory>
 #include <cassert>
 #include <type_traits>
@@ -282,6 +281,48 @@ static void UpdateMenu(HMENU menu)
     }
 }
 
+CAboutDlg::CAboutDlg(HWND /*hParent*/)
+{
+}
+
+CAboutDlg::~CAboutDlg()
+{
+}
+
+LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (uMsg)
+    {
+    case WM_INITDIALOG:
+    {
+        InitDialog(hwndDlg, IDI_BOWPAD);
+        CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
+        // initialize the controls
+        //m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, L"http://tools.stefankueng.com");
+        SetDlgItemText(hwndDlg, IDC_VERSIONLABEL, L"N4D (Notepad for Developer) 1.0.0 (64-bit)");
+    }
+    return TRUE;
+    case WM_COMMAND:
+        EndDialog(*this, LOWORD(wParam));
+        return TRUE;
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC         hdc = BeginPaint(hwndDlg, &ps);
+        RECT        rc;
+        GetClientRect(hwndDlg, &rc);
+        HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
+        FrameRect(hdc, &ps.rcPaint, hbr);
+        DeleteObject(hbr);
+        EndPaint(hwndDlg, &ps);
+        return FALSE;
+    }
+
+    default:
+        return FALSE;
+    }
+}
 
 CMainWindow::CMainWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = nullptr*/)
     : CWindow(hInst, wcx)

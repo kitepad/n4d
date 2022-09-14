@@ -162,9 +162,6 @@
     <ClInclude Include="..\ext\sktoolslib\ProgressDlg.h">
       <Filter>sktoolslib</Filter>
     </ClInclude>
-    <ClInclude Include="AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Theme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -317,9 +314,6 @@
     <ClCompile Include="..\ext\sktoolslib\IniSettings.cpp">
       <Filter>sktoolslib</Filter>
     </ClCompile>
-    <ClCompile Include="AppUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Commands\CmdComment.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
@@ -343,9 +337,6 @@
     </ClCompile>
     <ClCompile Include="..\ext\sktoolslib\ProgressDlg.cpp">
       <Filter>sktoolslib</Filter>
-    </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Theme.cpp">
       <Filter>Source Files</Filter>
@@ -441,6 +432,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyboardShortcutHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

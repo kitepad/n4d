@@ -18,26 +18,8 @@
 #include "AppUtils.h"
 #include "StringUtils.h"
 #include "PathUtils.h"
-#include "TempFile.h"
-#include "UnicodeUtils.h"
 #include "SmartHandle.h"
-#include "ProgressDlg.h"
-#include "ResString.h"
-
-#include <memory>
-#include <time.h>
-#include <ctime>
 #include <fstream>
-#include <DbgHelp.h>
-
-#pragma warning(push)
-#pragma warning(disable : 4458) // declaration of 'xxx' hides class member
-#include <gdiplus.h>
-#pragma warning(pop)
-
-#pragma comment(lib, "Urlmon.lib")
-#pragma comment(lib, "Shell32.lib")
-#pragma comment(lib, "DbgHelp.lib")
 
 CAppUtils::CAppUtils()
 {
