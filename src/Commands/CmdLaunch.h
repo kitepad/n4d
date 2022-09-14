@@ -21,7 +21,6 @@
 #include "StringUtils.h"
 #include <Shobjidl.h>
 #include <VersionHelpers.h>
-//#include "Registry.h"
 
 class LaunchBase : public ICommand
 {
@@ -164,41 +163,41 @@ public:
     UINT GetCmdId() override { return cmdLaunchExplorer; }
 };
 
-class CCmdLaunchSciter : public LaunchBase
-{
-public:
-    CCmdLaunchSciter(void* obj)
-        : LaunchBase(obj)
-    {
-    }
-    ~CCmdLaunchSciter() = default;
-
-    bool Execute() override { return Launch(L"scapp $(TAB_PATH)"); }
-    UINT GetCmdId() override { return cmdLaunchSciter; }
-};
-
-class CCmdLaunchInspector : public LaunchBase
-{
-public:
-    CCmdLaunchInspector(void* obj)
-        : LaunchBase(obj)
-    {
-    }
-    ~CCmdLaunchInspector() = default;
-
-    bool Execute() override { return Launch(L"inspector"); }
-    UINT GetCmdId() override { return cmdLaunchInspector; }
-};
-
-class CCmdLaunchSciterDebug : public LaunchBase
-{
-public:
-    CCmdLaunchSciterDebug(void* obj)
-        : LaunchBase(obj)
-    {
-    }
-    ~CCmdLaunchSciterDebug() = default;
-
-    bool Execute() override { return Launch(L"scapp \"$(TAB_PATH)\" --debug"); }
-    UINT GetCmdId() override { return cmdLaunchSciterDebug; }
-};
+//class CCmdLaunchSciter : public LaunchBase
+//{
+//public:
+//    CCmdLaunchSciter(void* obj)
+//        : LaunchBase(obj)
+//    {
+//    }
+//    ~CCmdLaunchSciter() = default;
+//
+//    bool Execute() override { return Launch(L"scapp $(TAB_PATH)"); }
+//    UINT GetCmdId() override { return cmdLaunchSciter; }
+//};
+//
+//class CCmdLaunchInspector : public LaunchBase
+//{
+//public:
+//    CCmdLaunchInspector(void* obj)
+//        : LaunchBase(obj)
+//    {
+//    }
+//    ~CCmdLaunchInspector() = default;
+//
+//    bool Execute() override { return Launch(L"inspector"); }
+//    UINT GetCmdId() override { return cmdLaunchInspector; }
+//};
+//
+//class CCmdLaunchSciterDebug : public LaunchBase
+//{
+//public:
+//    CCmdLaunchSciterDebug(void* obj)
+//        : LaunchBase(obj)
+//    {
+//    }
+//    ~CCmdLaunchSciterDebug() = default;
+//
+//    bool Execute() override { return Launch(L"scapp \"$(TAB_PATH)\" --debug"); }
+//    UINT GetCmdId() override { return cmdLaunchSciterDebug; }
+//};

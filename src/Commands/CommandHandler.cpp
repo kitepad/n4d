@@ -157,11 +157,11 @@ void CCommandHandler::Init(void* obj)
     Add<CCmdHighlightBrace>(obj);
     Add<CCmdFrameCaretLine>(obj);
     Add<CCmdLaunchEdge>(obj);
-    Add<CCmdLaunchSciter>(obj);
+    //Add<CCmdLaunchSciter>(obj);
     Add<CCmdLaunchFirefox>(obj);
     Add<CCmdLaunchChrome>(obj);
-    Add<CCmdLaunchSciterDebug>(obj);
-    Add<CCmdLaunchInspector>(obj);
+    //Add<CCmdLaunchSciterDebug>(obj);
+    //Add<CCmdLaunchInspector>(obj);
     Add<CCmdLaunchConsole>(obj);
     Add<CCmdLaunchExplorer>(obj);
     Add<CCmdConfigStyle>(obj);
