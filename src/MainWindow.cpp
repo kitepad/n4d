@@ -611,8 +611,8 @@ void CMainWindow::ShowSystemMenu()
     HMENU pop = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)), 0);
 
     //UpdateMenu(pop);
-    TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-    //DoCommand(cmd, 0);
+    auto cmd = TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+    DoCommand(cmd, 0);
 }
 
 LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

@@ -25,7 +25,6 @@ CAppUtils::CAppUtils()
 {
 }
 
-
 CAppUtils::~CAppUtils()
 {
 }
