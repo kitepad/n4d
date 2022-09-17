@@ -33,35 +33,37 @@ public:
     UINT GetCmdId() override { return cmdWhiteSpace; }
 };
 
-class CSetTabSizeDlg : public CDialog, public ICommand
+class CCmdTabSize : public CDialog, public ICommand
 {
 public:
-    CSetTabSizeDlg(void* obj)
+    CCmdTabSize(void* obj)
         : ICommand(obj)
     {
     }
-    virtual ~CSetTabSizeDlg() = default;
-    bool Execute() { return true; };
+    virtual ~CCmdTabSize() = default;
+    bool Execute() override;
+
     UINT GetCmdId() override { return cmdTabSize; }
+    void AfterInit() override;
 
 protected:
     LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
     LRESULT          DoCommand(int id, int msg);
 };
 
-class CCmdTabSize : public ICommand
-{
-public:
-
-    CCmdTabSize(void * obj);
-
-    ~CCmdTabSize() = default;
-
-    bool Execute() override;
-
-    UINT GetCmdId() override { return cmdTabSize; }
-    void AfterInit() override;
-};
+//class CCmdTabSize : public ICommand
+//{
+//public:
+//
+//    CCmdTabSize(void * obj);
+//
+//    ~CCmdTabSize() = default;
+//
+//    bool Execute() override;
+//
+//    UINT GetCmdId() override { return cmdTabSize; }
+//    void AfterInit() override;
+//};
 
 class CCmdUseTabs : public ICommand
 {

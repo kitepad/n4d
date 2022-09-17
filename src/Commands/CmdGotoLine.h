@@ -19,34 +19,51 @@
 #include "ICommand.h"
 #include "BaseDialog.h"
 
-class CGotoLineDlg : public CDialog, public ICommand
-{
-public:
-    CGotoLineDlg(void* obj)
-        : ICommand(obj)
-    {
-    }
-    virtual ~CGotoLineDlg() = default;
-    bool Execute() { return true; };
-    void UpdateLineInfo();
-    UINT GetCmdId() override { return cmdGotoLine; }
+//class CGotoLineDlg : public CDialog, public ICommand
+//{
+//public:
+//    CGotoLineDlg(void* obj)
+//        : ICommand(obj)
+//    {
+//    }
+//    virtual ~CGotoLineDlg() = default;
+//    bool Execute() { return true; };
+//    void UpdateLineInfo();
+//    UINT GetCmdId() override { return cmdGotoLine; }
+//
+//protected:
+//    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+//    LRESULT          DoCommand(int id, int msg);
+//};
 
-protected:
-    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
-    LRESULT          DoCommand(int id, int msg);
-};
+//class CCmdGotoLine : public ICommand
+//{
+//public:
+//    CCmdGotoLine(void* obj)
+//        : ICommand(obj)
+//    {
+//    }
+//
+//    ~CCmdGotoLine() = default;
+//
+//    bool Execute() override;
+//
+//    UINT GetCmdId() override { return cmdGotoLine; }
+//};
 
-class CCmdGotoLine : public ICommand
+class CCmdGotoLine : public CDialog, public ICommand
 {
 public:
     CCmdGotoLine(void* obj)
         : ICommand(obj)
     {
     }
-
-    ~CCmdGotoLine() = default;
-
+    virtual ~CCmdGotoLine() = default;
     bool Execute() override;
-
+    void UpdateLineInfo();
     UINT GetCmdId() override { return cmdGotoLine; }
+
+protected:
+    LRESULT CALLBACK DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+    LRESULT          DoCommand(int id, int msg);
 };

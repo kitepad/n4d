@@ -18,8 +18,6 @@
 #pragma once
 #include "ICommand.h"
 #include "ScintillaWnd.h"
-//#include "BPBaseDialog.h"
-
 #include <chrono>
 #include <mutex>
 #include <condition_variable>

@@ -357,7 +357,7 @@ CMainWindow::CMainWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = nullptr*/)
 extern void findReplaceFinish();
 extern void findReplaceClose();
 extern void findReplaceResize();
-extern void gotoLineClose();
+//extern void gotoLineClose();
 
 CMainWindow::~CMainWindow()
 {
@@ -820,7 +820,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         }
         case WM_NCLBUTTONDOWN:
         {
-            gotoLineClose();
+            //gotoLineClose();
             m_oldHoveredRect = m_hoveredRect;
 
             if (m_hoveredRect == TitlebarRect::Close)
@@ -1325,7 +1325,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (wParam == VK_ESCAPE)
             {
                 findReplaceClose();
-                gotoLineClose();
+                //gotoLineClose();
                 return 1;
             }
 

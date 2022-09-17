@@ -22,11 +22,6 @@
 #include "ResString.h"
 #include "MainWindow.h"
 
-namespace
-{
-std::unique_ptr<CSetTabSizeDlg> g_pTabSizeDlg;
-} // namespace
-
 CCmdWhiteSpace::CCmdWhiteSpace(void* obj)
     : ICommand(obj)
 {
@@ -49,11 +44,6 @@ void CCmdWhiteSpace::AfterInit()
 {
     auto ws = static_cast<Scintilla::WhiteSpace>(GetInt64(DEFAULTS_SECTION, L"Whitespace", 0));
     Scintilla().SetViewWS(ws);
-}
-
-CCmdTabSize::CCmdTabSize(void* obj)
-    : ICommand(obj)
-{
 }
 
 void CCmdTabSize::AfterInit()
@@ -103,7 +93,7 @@ bool CCmdUseTabs::Execute()
 }
 
 
-LRESULT CSetTabSizeDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CCmdTabSize::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
     switch (uMsg)
@@ -152,7 +142,7 @@ LRESULT CSetTabSizeDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
     return FALSE;
 }
 
-LRESULT CSetTabSizeDlg::DoCommand(int id, int /*msg*/)
+LRESULT CCmdTabSize::DoCommand(int id, int /*msg*/)
 {
     switch (id)
     {
@@ -177,10 +167,7 @@ LRESULT CSetTabSizeDlg::DoCommand(int id, int /*msg*/)
 
 bool CCmdTabSize::Execute()
 {
-    if (g_pTabSizeDlg == nullptr)
-        g_pTabSizeDlg = std::make_unique<CSetTabSizeDlg>(m_pMainWindow);
-
-    g_pTabSizeDlg->ShowModeless(g_hRes, IDD_SETTABWIDTH, GetHwnd(), FALSE);
+    ShowModeless(g_hRes, IDD_SETTABWIDTH, GetHwnd(), FALSE);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
     RECT           rc;
@@ -192,14 +179,14 @@ bool CCmdTabSize::Execute()
     RECT rcw;
     GetWindowRect(GetStatusbarWnd(), &rcw);
     POINT pt(rcw.left + dx, rcw.top);
-    SetWindowPos(*g_pTabSizeDlg, nullptr, pt.x, pt.y, dw, 30, flags | SWP_HIDEWINDOW);
+    SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_HIDEWINDOW);
 
     // Adjust control position
-    HWND edit = GetDlgItem(*g_pTabSizeDlg, IDC_TABWIDTH);
-    GetClientRect(*g_pTabSizeDlg, &rc);
+    HWND edit = GetDlgItem(*this, IDC_TABWIDTH);
+    GetClientRect(*this, &rc);
     MoveWindow(edit, rc.left + 1, rc.top + 4, rc.right - rc.left - 2, rc.bottom - rc.top - 2, FALSE);
 
-    SetWindowPos(*g_pTabSizeDlg, nullptr, pt.x, pt.y, dw, 30, flags | SWP_SHOWWINDOW);
-    SetFocus(*g_pTabSizeDlg);
+    SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_SHOWWINDOW);
+    SetFocus(*this);
     return true;
 }
