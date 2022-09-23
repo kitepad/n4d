@@ -245,6 +245,11 @@ bool CScintillaWnd::Init(HINSTANCE hInst, HWND hParent, HWND hWndAttachTo)
     m_scintilla.SetCharacterCategoryOptimization(0x10000);
     m_scintilla.SetAccessibility(Scintilla::Accessibility::Enabled);
 
+    m_scintilla.MarkerDefine(SC_MARKNUM_HISTORY_REVERTED_TO_ORIGIN, Scintilla::MarkerSymbol::LeftRect);
+    m_scintilla.MarkerDefine(SC_MARKNUM_HISTORY_SAVED, Scintilla::MarkerSymbol::LeftRect);
+    m_scintilla.MarkerDefine(SC_MARKNUM_HISTORY_MODIFIED, Scintilla::MarkerSymbol::LeftRect);
+    m_scintilla.MarkerDefine(SC_MARKNUM_HISTORY_REVERTED_TO_MODIFIED, Scintilla::MarkerSymbol::LeftRect);
+
     SetTabSettings(TabSpace::Default);
 
     SetupDefaultStyles();
@@ -1207,6 +1212,21 @@ void CScintillaWnd::SetupDefaultStyles() const
         m_scintilla.ResetElementColour(Scintilla::Element::ListBack);
         m_scintilla.ResetElementColour(Scintilla::Element::ListSelected);
         m_scintilla.ResetElementColour(Scintilla::Element::ListSelectedBack);
+    }
+
+    if (CIniSettings::Instance().GetInt64(DEFAULTS_SECTION, L"changeHistory", 1) != 0)
+    {
+        m_scintilla.MarkerSetFore(SC_MARKNUM_HISTORY_REVERTED_TO_ORIGIN, CTheme::Instance().GetThemeColor(0x40A0BF, true));
+        m_scintilla.MarkerSetBack(SC_MARKNUM_HISTORY_REVERTED_TO_ORIGIN, CTheme::Instance().GetThemeColor(0x40A0BF, true));
+
+        m_scintilla.MarkerSetFore(SC_MARKNUM_HISTORY_SAVED, CTheme::Instance().GetThemeColor(0x00A000, true));
+        m_scintilla.MarkerSetBack(SC_MARKNUM_HISTORY_SAVED, CTheme::Instance().GetThemeColor(0x00A000, true));
+
+        m_scintilla.MarkerSetFore(SC_MARKNUM_HISTORY_MODIFIED, CTheme::Instance().GetThemeColor(0xA0A000, true));
+        m_scintilla.MarkerSetBack(SC_MARKNUM_HISTORY_MODIFIED, CTheme::Instance().GetThemeColor(0x00A000, true));
+
+        m_scintilla.MarkerSetFore(SC_MARKNUM_HISTORY_REVERTED_TO_MODIFIED, CTheme::Instance().GetThemeColor(0xFF8000, true));
+        m_scintilla.MarkerSetBack(SC_MARKNUM_HISTORY_REVERTED_TO_MODIFIED, CTheme::Instance().GetThemeColor(0xFF8000, true));
     }
 }
 
@@ -2430,6 +2450,9 @@ void CScintillaWnd::ReflectEvents(SCNotification* pScn)
                 UpdateLineNumberWidth();
             }
             break;
+        case SCN_SAVEPOINTREACHED:
+            EnableChangeHistory();
+            break;
         default:
             break;
     }
@@ -2993,4 +3016,18 @@ void CDocScroll::Clear(int type)
         for (int i = 0; i < DOCSCROLLTYPE_END; ++i)
             m_visibleLineColors[i].clear();
     }
+}
+
+void CScintillaWnd::EnableChangeHistory() const
+{
+    Scintilla::ChangeHistoryOption historyOption = Scintilla::ChangeHistoryOption::Disabled;
+    int                            width = 0;
+    if (CIniSettings::Instance().GetInt64(DEFAULTS_SECTION, L"changeHistory", 1) != 0)
+    {
+        historyOption = static_cast<Scintilla::ChangeHistoryOption>(static_cast<int>(Scintilla::ChangeHistoryOption::Enabled) |
+            static_cast<int>(Scintilla::ChangeHistoryOption::Markers));
+        width = CDPIAware::Instance().Scale(*this, 2);
+    }
+    m_scintilla.SetMarginWidthN(SC_MARGE_HISTORY, width);
+    m_scintilla.SetChangeHistory(historyOption);
 }
