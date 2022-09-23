@@ -129,10 +129,11 @@ LRESULT CCmdTabSize::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             HDC         hdc = BeginPaint(hwndDlg, &ps);
             RECT        rc;
             GetClientRect(hwndDlg, &rc);
-            HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
-            rc.bottom += 1;
-            FrameRect(hdc, &rc, hbr);
-            DeleteObject(hbr);
+            //HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
+            rc.bottom -= 1;
+            //FrameRect(hdc, &rc, hbr);
+            FrameRect(hdc, &rc, GetSysColorBrush(COLOR_BTNSHADOW));
+            //DeleteObject(hbr);
             EndPaint(hwndDlg, &ps);
             return 0;
         }
@@ -167,26 +168,15 @@ LRESULT CCmdTabSize::DoCommand(int id, int /*msg*/)
 
 bool CCmdTabSize::Execute()
 {
-    ShowModeless(g_hRes, IDD_SETTABWIDTH, GetHwnd(), FALSE);
+    ShowModeless(g_hRes, IDD_SETTABWIDTH, GetHwnd(), TRUE);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
-    RECT           rc;
-    GetClientRect(GetHwnd(), &rc);
-
     // Adjust dialog position
     int  dx = GetWidthToLeft(STATUSBAR_TABSPACE); // STATUSBAR_CUR_POS = 7
     int  dw = GetWidthToLeft(STATUSBAR_TABSPACE + 1) - dx;
     RECT rcw;
     GetWindowRect(GetStatusbarWnd(), &rcw);
     POINT pt(rcw.left + dx, rcw.top);
-    SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_HIDEWINDOW);
-
-    // Adjust control position
-    HWND edit = GetDlgItem(*this, IDC_TABWIDTH);
-    GetClientRect(*this, &rc);
-    MoveWindow(edit, rc.left + 1, rc.top + 4, rc.right - rc.left - 2, rc.bottom - rc.top - 2, FALSE);
-
     SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_SHOWWINDOW);
-    SetFocus(*this);
     return true;
 }

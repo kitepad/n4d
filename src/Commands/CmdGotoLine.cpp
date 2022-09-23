@@ -203,11 +203,7 @@ LRESULT CCmdGotoLine::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
         }
         else
         {
-            //SetDlgItemText(hwndDlg, IDC_LINEINFO, lineInfo.c_str());
-            //std::wstring sLine = CStringUtils::Format(L"%Id", line);
-            //SetDlgItemText(hwndDlg, IDC_LINE, sLine.c_str());
             UpdateLineInfo();
-
             SetFocus(hwndDlg);
         }
 
@@ -221,10 +217,7 @@ LRESULT CCmdGotoLine::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
         HDC         hdc = BeginPaint(hwndDlg, &ps);
         RECT        rc;
         GetClientRect(hwndDlg, &rc);
-        HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
-        rc.bottom += 1;
-        FrameRect(hdc, &rc, hbr);
-        DeleteObject(hbr);
+        FrameRect(hdc, &rc, GetSysColorBrush(COLOR_BTNSHADOW));
         EndPaint(hwndDlg, &ps);
         return 0;
     }
@@ -273,42 +266,15 @@ LRESULT CCmdGotoLine::DoCommand(int id, int /*msg*/)
 
 bool CCmdGotoLine::Execute()
 {
-    ShowModeless(g_hRes, IDD_GOTOLINE, GetHwnd(), FALSE);
+    ShowModeless(g_hRes, IDD_GOTOLINE, GetHwnd(), TRUE);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
-    RECT           rc;
-    GetClientRect(GetHwnd(), &rc);
-
     //Adjust dialog position
     int   dx = GetWidthToLeft(STATUSBAR_CUR_POS); // STATUSBAR_CUR_POS = 7
     int   dw = GetWidthToLeft(STATUSBAR_CUR_POS + 1) - dx;
     RECT  rcw;
     GetWindowRect(GetStatusbarWnd(), &rcw);
     POINT pt(rcw.left + dx, rcw.top);
-    //ClientToScreen(GetHwnd(), &pt);
-    //pt.y = rcw.top;
-    SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_HIDEWINDOW);
-
-    //Adjust control position
-    HWND lines = GetDlgItem(*this, IDC_LINEINFO);
-    HWND line = GetDlgItem(*this, IDC_LINE);
-    HWND close = GetDlgItem(*this, IDCANCEL);
-
-    GetWindowRect(close, &rc);
-    int bw = rc.right - rc.left;
-    int bh = rc.bottom - rc.top;
-
-    int lineHeight = GetStatusBarHeight() - 6;
-    int lineWidth = (dw - 16 - bw - 8) / 2;
-    GetClientRect(*this, &rc);
-    int top = (rc.bottom - rc.top - bh) / 2;
-    MoveWindow(close, rc.right - bw - 8, top, bw, bh, FALSE);
-    top = (rc.bottom - rc.top - lineHeight) / 2;
-    MoveWindow(line, rc.left + 8, top, lineWidth, lineHeight, FALSE);
-    MoveWindow(lines, rc.left + 8 + lineWidth, top, lineWidth, lineHeight, FALSE);
-
     SetWindowPos(*this, nullptr, pt.x, pt.y, dw, 30, flags | SWP_SHOWWINDOW);
-    SetFocus(*this);
-
     return true;
 }
