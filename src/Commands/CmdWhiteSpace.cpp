@@ -129,11 +129,8 @@ LRESULT CCmdTabSize::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
             HDC         hdc = BeginPaint(hwndDlg, &ps);
             RECT        rc;
             GetClientRect(hwndDlg, &rc);
-            //HBRUSH hbr = CreateSolidBrush(CTheme::CurrentTheme().itemHover);
             rc.bottom -= 1;
-            //FrameRect(hdc, &rc, hbr);
             FrameRect(hdc, &rc, GetSysColorBrush(COLOR_BTNSHADOW));
-            //DeleteObject(hbr);
             EndPaint(hwndDlg, &ps);
             return 0;
         }

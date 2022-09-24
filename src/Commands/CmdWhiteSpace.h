@@ -51,20 +51,6 @@ protected:
     LRESULT          DoCommand(int id, int msg);
 };
 
-//class CCmdTabSize : public ICommand
-//{
-//public:
-//
-//    CCmdTabSize(void * obj);
-//
-//    ~CCmdTabSize() = default;
-//
-//    bool Execute() override;
-//
-//    UINT GetCmdId() override { return cmdTabSize; }
-//    void AfterInit() override;
-//};
-
 class CCmdUseTabs : public ICommand
 {
 public:
