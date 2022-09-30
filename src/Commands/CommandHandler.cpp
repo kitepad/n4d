@@ -157,11 +157,8 @@ void CCommandHandler::Init(void* obj)
     Add<CCmdHighlightBrace>(obj);
     Add<CCmdFrameCaretLine>(obj);
     Add<CCmdLaunchEdge>(obj);
-    //Add<CCmdLaunchSciter>(obj);
     Add<CCmdLaunchFirefox>(obj);
     Add<CCmdLaunchChrome>(obj);
-    //Add<CCmdLaunchSciterDebug>(obj);
-    //Add<CCmdLaunchInspector>(obj);
     Add<CCmdLaunchConsole>(obj);
     Add<CCmdLaunchExplorer>(obj);
     Add<CCmdConfigStyle>(obj);
@@ -455,7 +452,7 @@ std::wstring CCommandHandler::MakeShortCutKeyForAccel(const KshAccelEx& accel)
     {
         scanKey(accel.key2);
     }
-    return shortCut;   //L "(" + shortCut + L")";
+    return shortCut;   
 }
 
 static BYTE GetCtrlKeys()
@@ -510,8 +507,6 @@ void CCommandHandler::Load(const CSimpleIni& ini)
         const wchar_t* keyDataString = ini.GetValue(L"virtkeys", keyName);
         if (CAppUtils::TryParse(keyDataString, vk, false, 0, 16))
             m_virtKeys[keyName] = static_cast<UINT>(vk);
-        //else
-        //    APPVERIFYM(false, L"Invalid Virtual Key ini file. Cannot convert key '%s' to uint.", keyName);
     }
 
     CSimpleIni::TNamesDepend shortkeys;

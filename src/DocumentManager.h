@@ -16,7 +16,6 @@
 //
 #pragma once
 #include "ScintillaWnd.h"
-
 #include "Document.h"
 
 enum class DocModifiedState
@@ -91,14 +90,14 @@ public:
     const CDocument& GetDocumentFromID(DocID id) const;
     CDocument&       GetModDocumentFromID(DocID id);
 
-    CDocument        LoadFile(/*HWND hWnd, */const std::wstring& path, int encoding, bool createIfMissing);
-    bool             SaveFile(/*HWND hWnd,*/ CDocument& doc, bool& bTabMoved) const;
-    bool             SaveFile(/*HWND hWnd,*/ CDocument& doc, const std::wstring& path) const;
+    CDocument        LoadFile(const std::wstring& path, int encoding, bool createIfMissing);
+    bool             SaveFile(CDocument& doc, bool& bTabMoved) const;
+    bool             SaveFile(CDocument& doc, const std::wstring& path) const;
     static bool      UpdateFileTime(CDocument& doc, bool bIncludeReadonly);
     DocModifiedState HasFileChanged(DocID id) const;
 
 private:
-    bool SaveDoc(/*HWND hWnd, */const std::wstring& path, const CDocument& doc) const;
+    bool SaveDoc(const std::wstring& path, const CDocument& doc) const;
 
 private:
     std::map<DocID, CDocument> m_documents;

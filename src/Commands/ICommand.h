@@ -23,16 +23,6 @@
 #include <vector>
 #include <string>
 
-//#define TCN_TABDROPPED        (WM_USER + 1)
-//#define TCN_TABDROPPEDOUTSIDE (WM_USER + 2)
-//#define TCN_TABDELETE         (WM_USER + 3)
-//#define TCN_GETFOCUSEDTAB     (WM_USER + 4)
-//#define TCN_ORDERCHANGED      (WM_USER + 5)
-//#define TCN_REFRESH           (WM_USER + 6)
-//#define TCN_GETCOLOR          (WM_USER + 7)
-//#define TCN_GETDROPICON       (WM_USER + 8)
-//#define TCN_RELOAD            (WM_USER + 9)
-
 struct TBHDR
 {
     NMHDR hdr;
@@ -145,5 +135,4 @@ protected:
 
 protected:
     CMainWindow* m_pMainWindow;
-    //static UINT  m_nextTimerID;
 };
