@@ -3245,7 +3245,7 @@ void CMainWindow::OpenNewTab()
    
     m_editor.GotoLine(0);
     m_allTabs[index].id = docID;
-    
+    m_editor.EnableChangeHistory();
     HandleTabChange();
 }
 
