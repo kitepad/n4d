@@ -187,7 +187,7 @@ void CTheme::SetDarkTheme(bool b /*= true*/)
     if (IsHighContrastMode())
         return;
     m_dark = b;
-    SetInt64(DEFAULTS_SECTION, L"DarktTeme", b ? 1 : 0);
+    SetInt64(DEFAULTS_SECTION, L"DarkTheme", b ? 1 : 0);
     for (auto& [id, callBack] : m_themeChangeCallbacks)
         callBack();
 }

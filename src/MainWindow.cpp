@@ -474,9 +474,10 @@ bool CMainWindow::RegisterAndCreateWindow()
             // which will show those controls again.
             //ShowWindow(m_tabBar, SW_HIDE);
             ShowWindow(m_statusBar, SW_HIDE);
-            std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
-            CIniSettings::Instance().RestoreWindowPos(WINDOWPOS_SECTION,winPosKey.c_str(), *this, 0);
-            UpdateWindow(*this);
+            //std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
+            //CIniSettings::Instance().RestoreWindowPos(WINDOWPOS_SECTION,winPosKey.c_str(), *this, 0);
+            ShowWindow(*this, SW_SHOW);
+            //UpdateWindow(*this);
             m_editor.StartupDone();
             PostMessage(m_hwnd, WM_AFTERINIT, 0, 0);
             return true;
@@ -1239,8 +1240,8 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             bool isReady = CloseAllTabs(true);
             if (isReady)
             {
-                std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
-                CIniSettings::Instance().SaveWindowPos(WINDOWPOS_SECTION, winPosKey.c_str(), *this);
+                //std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
+                //CIniSettings::Instance().SaveWindowPos(WINDOWPOS_SECTION, winPosKey.c_str(), *this);
                 DestroyWindow(m_hwnd);
             }
             break;
@@ -1817,6 +1818,7 @@ bool CMainWindow::Initialize()
         SendMessage(m_hwnd, WM_SETREDRAW, TRUE, 0);
     }
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
+
     return true;
 }
 
@@ -1869,6 +1871,7 @@ void CMainWindow::HandleAfterInit()
     g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); 
 
     m_bIsAfterInit = true;
+    ResizeChildWindows();
 }
 
 void CMainWindow::ResizeChildWindows()

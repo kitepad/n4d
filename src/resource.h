@@ -1,25 +1,22 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by BowPad.rc
+// Used by n4d.rc
 //
 #define IDI_BOWPAD                      101
-#define IDB_EMPTY						102
-
-#define IDR_MENU						103
+#define IDB_EMPTY                       102
+#define IDR_MENU                        103
 #define IDR_LEXSTYLES                   104
 #define IDR_SHORTCUTS                   105
 #define IDR_DARKTHEME                   106
 #define IDR_SCINTILLAH                  107
 #define IDR_AUTOCOMPLETE                108
-
 #define IDD_COMMANDPALETTE              109
-#define IDD_FINDREPLACEDLG				110
-#define IDD_STYLECONFIGURATOR			111
-#define IDD_GOTOLINE					112
-#define IDD_SORTDLG						113
+#define IDD_FINDREPLACEDLG              110
+#define IDD_STYLECONFIGURATOR           111
+#define IDD_GOTOLINE                    112
+#define IDD_SORTDLG                     113
 #define IDD_ABOUTBOX                    114
 #define IDD_SETTABWIDTH                 115
-
 #define IDS_ERR_FILETOOBIG              116
 #define IDS_NEW_TABTITLE                117
 #define IDS_DOYOUWANTOSAVE              118
@@ -136,8 +133,7 @@
 #define IDS_SELECTENCODING_FILTERCUE    229
 #define IDS_SELECTLEXER_FILTERCUE       230
 #define IDS_APP_TITLE                   231
-#define IDS_SELECTTAB_FILTERCUE			232
-
+#define IDS_SELECTTAB_FILTERCUE         232
 #define IDC_BOWPAD                      300
 #define IDC_FINDBTN                     301
 #define IDC_REPLACECOMBO                302
@@ -197,7 +193,6 @@
 #define IDC_SNIPPETNAME                 356
 #define IDC_TABWIDTH                    357
 #define IDC_SORTDLG_ORDER_CHECK         358
-
 #define cmdNothing                      30000
 #define cmdCommandPalette               30001
 #define cmdExit                         30002
@@ -308,8 +303,7 @@
 #define cmdFrameCaretLine               30107
 #define cmdSelectLexer                  30108
 #define cmdShowAutoComplete             30109
-#define cmdSelectTab		            30110
-
+#define cmdSelectTab                    30110
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

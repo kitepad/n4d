@@ -38,8 +38,8 @@ public:
     __int64 GetInt64(LPCWSTR section, LPCWSTR key, __int64 defaultVal) const;
     void    SetInt64(LPCWSTR section, LPCWSTR key, __int64 value);
     void    Delete(LPCWSTR section, LPCWSTR key);
-    void    RestoreWindowPos(LPCWSTR section, LPCWSTR windowname, HWND hWnd, UINT showCmd) const;
-    void    SaveWindowPos(LPCWSTR section, LPCWSTR windowname, HWND hWnd);
+    //void    RestoreWindowPos(LPCWSTR section, LPCWSTR windowname, HWND hWnd, UINT showCmd) const;
+    //void    SaveWindowPos(LPCWSTR section, LPCWSTR windowname, HWND hWnd);
 
 private:
     CSimpleIni m_iniFile;
