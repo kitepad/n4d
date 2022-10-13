@@ -447,7 +447,6 @@ static HBRUSH darkHBR = CreateSolidBrush(RGB(0,0,0));
 bool CMainWindow::RegisterAndCreateWindow()
 {
     WNDCLASSEX wcx = {sizeof(WNDCLASSEX)}; // Set size and zero out rest.
-    //wcx.style = 0; - Don't use CS_HREDRAW or CS_VREDRAW with a Ribbon
     wcx.style                  = CS_DBLCLKS;
     wcx.lpfnWndProc            = stWinMsgHandler;
     wcx.hInstance              = hResource;
@@ -472,12 +471,8 @@ bool CMainWindow::RegisterAndCreateWindow()
             // restoring the window: those two show a white background until properly painted.
             // After restoring and showing the main window, ResizeChildControls() is called
             // which will show those controls again.
-            //ShowWindow(m_tabBar, SW_HIDE);
             ShowWindow(m_statusBar, SW_HIDE);
-            //std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
-            //CIniSettings::Instance().RestoreWindowPos(WINDOWPOS_SECTION,winPosKey.c_str(), *this, 0);
             ShowWindow(*this, SW_SHOW);
-            //UpdateWindow(*this);
             m_editor.StartupDone();
             PostMessage(m_hwnd, WM_AFTERINIT, 0, 0);
             return true;
@@ -1233,19 +1228,11 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             break;
         case WM_CLOSE:
-        {
             CCommandHandler::Instance().OnClose();
-
-            // Close all tabs, don't leave any open even a blank one.
-            bool isReady = CloseAllTabs(true);
-            if (isReady)
-            {
-                //std::wstring winPosKey = L"MainWindow_" + GetMonitorSetupHash();
-                //CIniSettings::Instance().SaveWindowPos(WINDOWPOS_SECTION, winPosKey.c_str(), *this);
+            if (CloseAllTabs(true))
                 DestroyWindow(m_hwnd);
-            }
+
             break;
-        }
         case WM_STATUSBAR_MSG:
             HandleStatusBar(wParam, lParam);
             break;
