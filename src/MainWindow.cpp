@@ -712,7 +712,10 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             
             if (m_hoveredRect == TitlebarRect::Maximize)
                 return HTMAXBUTTON;
-            return HTCAPTION;
+            if (pt.y < m_allRects.tabs.bottom)
+                return HTCAPTION;
+
+            return HTCLIENT;
             }
         case WM_NCMOUSEMOVE:
         {
