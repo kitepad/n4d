@@ -973,19 +973,18 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 auto count = m_recentFolders.size();
                 if (hMenu)
                 {
-                    OnOutOfScope(DestroyMenu(hMenu));
-
-                    auto& doc = m_docManager.GetModDocumentFromID(GetCurrentTabId());
+                    //OnOutOfScope(DestroyMenu(hMenu));
 
                     for (int i = 0; i < count; ++i)
                     {
                         std::wstring folderName = m_recentFolders[i];
-                        BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
+                        //BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
+                        BOOL         checked = m_fileTree.GetPath().compare(0, folderName.size(), folderName) == 0;
                         UINT         flags      = checked ? MF_CHECKED | MF_STRING : MF_STRING;
                         AppendMenu(hMenu, flags, i + 1, folderName.c_str());
                     }
-
-                    POINT pt = {m_allRects.layout.left, m_allRects.layout.bottom};
+                    
+                    POINT pt = {m_allRects.open.left, m_allRects.open.bottom};
                     ClientToScreen(*this, &pt);
 
                     auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
@@ -997,6 +996,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                         InvalidateRect(*this, &m_allRects.text, FALSE);
                         ShowFileTree(true);
                     }
+                    DestroyMenu(hMenu);
                 }
             }
             else if (m_hoveredRect == TitlebarRect::Tabs)
@@ -1502,7 +1502,7 @@ void CMainWindow::HandleTreePath(const std::wstring& path, bool isDir, bool isDo
         return;
     }
 
-    if (isDot && GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0)
+    if (isDot)// && GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0)
         m_fileTree.SetPath(path);
 }
 
@@ -1802,22 +1802,21 @@ void CMainWindow::HandleCreate(HWND hwnd)
 
 void CMainWindow::HandleAfterInit()
 {
+    ResizeChildWindows();
     UpdateWindow(*this);
 
     CCommandHandler::Instance().BeforeLoad();
 
     if ((m_pathsToOpen.size() == 1) && (PathIsDirectory(m_pathsToOpen.begin()->first.c_str())))
     {
-        if (!m_fileTree.GetPath().empty()) // File tree not empty: create a new empty tab first.
-            OpenNewTab();
-        m_fileTree.SetPath(m_pathsToOpen.begin()->first);
-        ShowFileTree(true);
+        OpenNewTab();
+        OpenFolder(m_pathsToOpen.begin()->first);
     }
     else if (m_pathsToOpen.size() > 0)
     {
         unsigned int openFlags = OpenFlags::AskToCreateIfMissing;
         BlockAllUIUpdates(true);
-        OnOutOfScope(BlockAllUIUpdates(false););
+        //OnOutOfScope(BlockAllUIUpdates(false););
 
         ShowProgressCtrl(static_cast<UINT>(GetInt64(DEFAULTS_SECTION, L"ProgressDelay", 1000)));
         OnOutOfScope(HideProgressCtrl());
@@ -1833,17 +1832,21 @@ void CMainWindow::HandleAfterInit()
                     GoToLine(line);
             }
         }
-    }
+        BlockAllUIUpdates(false);
+        if (IsFileTreeShown())
+        {
+            m_fileTree.SetPath(CPathUtils::GetParentDirectory(m_pathsToOpen.begin()->first));
+            m_fileTree.MarkActiveDocument(true);
+        }
+    } else
+        EnsureAtLeastOneTab();
+    
     m_pathsToOpen.clear();
-
-    EnsureAtLeastOneTab();
-
     CCommandHandler::Instance().AfterInit();
 
     g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); 
 
     m_bIsAfterInit = true;
-    ResizeChildWindows();
 }
 
 void CMainWindow::ResizeChildWindows()

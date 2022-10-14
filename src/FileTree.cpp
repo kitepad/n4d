@@ -526,18 +526,18 @@ void CFileTree::RefreshThread(HTREEITEM refreshRoot, const std::wstring& refresh
     {
         // add an entry ".." which is used to go to the
         // parent folder.
-        m_bGotoParent = GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0;
+        //m_bGotoParent = GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0;
 
-        if (refreshPath.size() > 3 && m_bGotoParent)
-        {
-            auto parentDir = L"..";// CPathUtils::GetParentDirectory(refreshPath);
-            auto fi        = std::make_unique<FileTreeItem>();
-            fi->path       = std::move(parentDir);
-            fi->isDir      = true;
-            fi->isDot      = true;
+        //if (refreshPath.size() > 3)// && m_bGotoParent)
+        //{
+        //    auto parentDir = L"..";// CPathUtils::GetParentDirectory(refreshPath);
+        //    auto fi        = std::make_unique<FileTreeItem>();
+        //    fi->path       = std::move(parentDir);
+        //    fi->isDir      = true;
+        //    fi->isDot      = true;
 
-            data->data.push_back(std::move(fi));
-        }
+        //    data->data.push_back(std::move(fi));
+        //}
     }
     CDirFileEnum enumerator(refreshPath);
     enumerator.SetAttributesToIgnore(FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DEVICE | FILE_ATTRIBUTE_REPARSE_POINT | FILE_ATTRIBUTE_VIRTUAL);
