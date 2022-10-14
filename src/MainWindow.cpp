@@ -971,33 +971,31 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             {
                 auto hMenu = CreatePopupMenu();
                 auto count = m_recentFolders.size();
-                if (hMenu)
+                //if (hMenu)
+                //{
+                for (int i = 0; i < count; ++i)
                 {
-                    //OnOutOfScope(DestroyMenu(hMenu));
-
-                    for (int i = 0; i < count; ++i)
-                    {
-                        std::wstring folderName = m_recentFolders[i];
-                        //BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
-                        BOOL         checked = m_fileTree.GetPath().compare(0, folderName.size(), folderName) == 0;
-                        UINT         flags      = checked ? MF_CHECKED | MF_STRING : MF_STRING;
-                        AppendMenu(hMenu, flags, i + 1, folderName.c_str());
-                    }
-                    
-                    POINT pt = {m_allRects.open.left, m_allRects.open.bottom};
-                    ClientToScreen(*this, &pt);
-
-                    auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-                    InvalidateRect(*this, &m_allRects.layout, FALSE);
-                    if (idx > 0)
-                    {
-                        m_fileTree.SetPath(m_recentFolders[idx - 1]);
-                        m_titleText = m_recentFolders[idx - 1];
-                        InvalidateRect(*this, &m_allRects.text, FALSE);
-                        ShowFileTree(true);
-                    }
-                    DestroyMenu(hMenu);
+                    std::wstring folderName = m_recentFolders[i];
+                    //BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
+                    BOOL         checked = m_fileTree.GetPath().compare(0, folderName.size(), folderName) == 0;
+                    UINT         flags      = checked ? MF_CHECKED | MF_STRING : MF_STRING;
+                    AppendMenu(hMenu, flags, i + 1, folderName.c_str());
                 }
+                    
+                POINT pt = {m_allRects.open.left, m_allRects.open.bottom};
+                ClientToScreen(*this, &pt);
+
+                auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+                InvalidateRect(*this, &m_allRects.layout, FALSE);
+                if (idx > 0)
+                {
+                    m_fileTree.SetPath(m_recentFolders[idx - 1]);
+                    m_titleText = m_recentFolders[idx - 1];
+                    InvalidateRect(*this, &m_allRects.text, FALSE);
+                    ShowFileTree(true);
+                }
+                DestroyMenu(hMenu);
+                //}
             }
             else if (m_hoveredRect == TitlebarRect::Tabs)
             {
@@ -1298,7 +1296,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (wParam == VK_ESCAPE)
             {
                 findReplaceClose();
-                //gotoLineClose();
                 return 1;
             }
 
@@ -1816,8 +1813,6 @@ void CMainWindow::HandleAfterInit()
     {
         unsigned int openFlags = OpenFlags::AskToCreateIfMissing;
         BlockAllUIUpdates(true);
-        //OnOutOfScope(BlockAllUIUpdates(false););
-
         ShowProgressCtrl(static_cast<UINT>(GetInt64(DEFAULTS_SECTION, L"ProgressDelay", 1000)));
         OnOutOfScope(HideProgressCtrl());
 
@@ -1843,9 +1838,7 @@ void CMainWindow::HandleAfterInit()
     
     m_pathsToOpen.clear();
     CCommandHandler::Instance().AfterInit();
-
     g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); 
-
     m_bIsAfterInit = true;
 }
 

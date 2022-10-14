@@ -522,8 +522,8 @@ void CFileTree::RefreshThread(HTREEITEM refreshRoot, const std::wstring& refresh
     data->refreshRoot = refreshRoot;
     data->data.reserve(50000);
 
-    if (refreshRoot == TVI_ROOT)
-    {
+    //if (refreshRoot == TVI_ROOT)
+    //{
         // add an entry ".." which is used to go to the
         // parent folder.
         //m_bGotoParent = GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0;
@@ -538,7 +538,7 @@ void CFileTree::RefreshThread(HTREEITEM refreshRoot, const std::wstring& refresh
 
         //    data->data.push_back(std::move(fi));
         //}
-    }
+    //}
     CDirFileEnum enumerator(refreshPath);
     enumerator.SetAttributesToIgnore(FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_DEVICE | FILE_ATTRIBUTE_REPARSE_POINT | FILE_ATTRIBUTE_VIRTUAL);
     bool         bIsDir = false;
