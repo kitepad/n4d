@@ -526,11 +526,11 @@ void CFileTree::RefreshThread(HTREEITEM refreshRoot, const std::wstring& refresh
     {
         // add an entry ".." which is used to go to the
         // parent folder.
-        m_bGotoParent = GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent") != 0;
+        m_bGotoParent = GetInt64(DEFAULTS_SECTION, L"FileTreeGotoParent", 0) != 0;
 
         if (refreshPath.size() > 3 && m_bGotoParent)
         {
-            auto parentDir = CPathUtils::GetParentDirectory(refreshPath);
+            auto parentDir = L"..";// CPathUtils::GetParentDirectory(refreshPath);
             auto fi        = std::make_unique<FileTreeItem>();
             fi->path       = std::move(parentDir);
             fi->isDir      = true;

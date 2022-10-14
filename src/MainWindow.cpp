@@ -712,44 +712,8 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             
             if (m_hoveredRect == TitlebarRect::Maximize)
                 return HTMAXBUTTON;
-
-            if (pt.y < m_allRects.tabs.bottom)
-            {
-                if (m_hoveredRect == TitlebarRect::Tabs)
-                {
-                    if (!(GetAsyncKeyState(VK_CONTROL) & 0x8000))
-                    {
-                        m_tabTip.HideTip();
-                        m_tipIdx = -1;
-                    }
-                    else 
-                        if (m_hoveredItemIdx != -1 && m_hoveredItemIdx != m_tipIdx)
-                        {
-                            //const auto& doc = m_docManager.GetDocumentFromID(m_allTabs[m_hoveredItemIdx].id);
-                            //std::wstring sTitle = doc.m_path.empty() ? m_allTabs[m_hoveredItemIdx].name : doc.m_path;
-                            std::wstring sTitle = m_allTabs[m_hoveredItemIdx].path;
-                            if (sTitle.empty())
-                                sTitle = m_allTabs[m_hoveredItemIdx].name;
-                            else
-                                sTitle += L"\\" + m_allTabs[m_hoveredItemIdx].name;
-
-                            pt.y                = m_allRects.total.bottom + 60;
-                            ClientToScreen(*this, &pt);
-                            m_tabTip.ShowTip(pt, sTitle, nullptr, sTitle);
-                            m_tipIdx = m_hoveredItemIdx;
-                        }
-                }
-                else
-                {
-                    m_tabTip.HideTip();
-                    m_tipIdx = -1;
-                }
-
-                return HTCAPTION;
+            return HTCAPTION;
             }
-
-            return HTCLIENT;
-        }
         case WM_NCMOUSEMOVE:
         {
             TitlebarRect newHoveredRect = GetHoveredRect();
@@ -795,8 +759,28 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 m_hoveredItemIdx = -1;
             }
 
-            if (!(GetAsyncKeyState(VK_CONTROL) & 0x8000))
+            if (m_hoveredItemIdx == -1 && IsWindowVisible(m_tabTip))
                 m_tabTip.HideTip();
+
+            if (m_hoveredItemIdx != -1)
+            {
+                if(!IsWindowVisible(m_tabTip) || m_hoveredItemIdx != m_tipIdx)
+                {
+                    std::wstring sTitle = m_allTabs[m_hoveredItemIdx].path;
+                    if (sTitle.empty())
+                        sTitle = m_allTabs[m_hoveredItemIdx].name;
+                    else
+                        sTitle += L"\\" + m_allTabs[m_hoveredItemIdx].name;
+
+                    POINT pt = { 0,0};
+                    
+                    pt.x = m_hoveredItemRect.right;
+                    pt.y = m_allRects.total.bottom + 60;
+                    ClientToScreen(hwnd, &pt);
+                    m_tabTip.ShowTip(pt, sTitle, nullptr, sTitle);
+                    m_tipIdx = m_hoveredItemIdx;
+                }
+            }
 
             InvalidateRect(*this, &m_allRects.total, FALSE);
 
@@ -816,7 +800,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         }
         case WM_NCLBUTTONDOWN:
         {
-            //gotoLineClose();
             m_oldHoveredRect = m_hoveredRect;
 
             if (m_hoveredRect == TitlebarRect::Close)
@@ -979,7 +962,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             else if (m_hoveredRect == TitlebarRect::Text)
             {
-                //ShowCommandPalette();
                 DoCommand(cmdCommandPalette, 0);
             }
             else if (m_hoveredRect == TitlebarRect::Open)
