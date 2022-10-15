@@ -2309,9 +2309,10 @@ void CMainWindow::UpdateCaptionBar()
         if (!elev.empty())
             sTitle += L" : ";
         sTitle += doc.m_path.empty() ? m_allTabs[idx].name : doc.m_path;
-        if (doc.m_bNeedsSaving || doc.m_bIsDirty)
-            sTitle += L" * ";
-        m_titleText = sTitle;
+        //sTitle = CPathUtils::GetParentDirectory(sTitle);
+        //if (doc.m_bNeedsSaving || doc.m_bIsDirty)
+        //    sTitle += L" * ";
+        m_titleText = CPathUtils::GetParentDirectory(sTitle); //sTitle;
     }
     else
     {
