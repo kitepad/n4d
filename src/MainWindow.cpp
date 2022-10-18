@@ -59,9 +59,10 @@ using namespace Gdiplus;
 #define FontFrom(theme) (Gdiplus::Font(theme.fontName.c_str(), (theme.fontSize - 1) * 1.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint))
 #define HeightOf(rect)         (rect.bottom - rect.top)
 #define WidthOf(rect)          (rect.right - rect.left)
-
+#define RECTF(rect) (Gdiplus::RectF(rect.left + 0.0f, rect.top + 0.0f, rect.right - rect.left + 0.0f, rect.bottom - rect.top + 0.0f))
+#define SetLayoutRect(rectf, rect)  (rectf = {rect.left + 0.0f, rect.top + 0.0f, rect.right - rect.left + 0.0f, rect.bottom - rect.top + 0.0f})
 namespace
-    {
+{
 constexpr char   URL_REG_EXPR[]      = {"\\b[A-Za-z+]{3,9}://[A-Za-z0-9_\\-+~.:?&@=/%#,;{}()[\\]|*!\\\\]+\\b"};
 constexpr size_t URL_REG_EXPR_LENGTH = _countof(URL_REG_EXPR) - 1;
 constexpr int TIMER_UPDATECHECK = 101;
@@ -140,21 +141,21 @@ inline BOOL IsLeftButtonDown()
     return (state & 0x8000);
 }
 
-static void CenterRectInRect(RECT* toCenter, const RECT* outerRect)
-{
-    int toWidth     = toCenter->right - toCenter->left;
-    int toHeight    = toCenter->bottom - toCenter->top;
-    int outerWidth  = outerRect->right - outerRect->left;
-    int outerHeight = outerRect->bottom - outerRect->top;
-
-    int paddingX = (outerWidth - toWidth) / 2;
-    int paddingY = (outerHeight - toHeight) / 2;
-
-    toCenter->left   = outerRect->left + paddingX;
-    toCenter->top    = outerRect->top + paddingY;
-    toCenter->right  = toCenter->left + toWidth;
-    toCenter->bottom = toCenter->top + toHeight;
-}
+//static void CenterRectInRect(RECT* toCenter, const RECT* outerRect)
+//{
+//    int toWidth     = toCenter->right - toCenter->left;
+//    int toHeight    = toCenter->bottom - toCenter->top;
+//    int outerWidth  = outerRect->right - outerRect->left;
+//    int outerHeight = outerRect->bottom - outerRect->top;
+//
+//    int paddingX = (outerWidth - toWidth) / 2;
+//    int paddingY = (outerHeight - toHeight) / 2;
+//
+//    toCenter->left   = outerRect->left + paddingX;
+//    toCenter->top    = outerRect->top + paddingY;
+//    toCenter->right  = toCenter->left + toWidth;
+//    toCenter->bottom = toCenter->top + toHeight;
+//}
 
 static bool ShowFileSaveDialog(HWND hParentWnd, const std::wstring& title, const std::wstring fileExt, UINT extIndex, std::wstring& path)
 {
@@ -4464,28 +4465,40 @@ void CMainWindow::DrawTabs(HDC hdc)
     }
 
     //Draw layout toggle button
-    RECT icon_rect = {0, 0, 14, 14};
-    CenterRectInRect(&icon_rect, &m_allRects.layout);
+    //RECT icon_rect = {0, 0, 14, 14};
+    //CenterRectInRect(&icon_rect, &m_allRects.layout);
 
-    if(GetHoveredRect() == TitlebarRect::Layout)
-    {
-        InflateRect(&icon_rect, 8, 6);
-        HBRUSH hoverBrush = CreateSolidBrush(theme.itemHover);
-        FillRect(hdc, &icon_rect, hoverBrush);
-        DeleteObject(hoverBrush);
-        InflateRect(&icon_rect, -8, -6);
-    }
-        
-    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.left + 6, icon_rect.bottom);
-    if (m_fileTreeVisible)
-    {
-        icon_rect.right -= 9;
-        HBRUSH hoverBrush = CreateSolidBrush(theme.winFore);
-        FillRect(hdc, &icon_rect,hoverBrush);
-        DeleteObject(hoverBrush);
-    }
-        
+    //if(GetHoveredRect() == TitlebarRect::Layout)
+    //{
+    //    InflateRect(&icon_rect, 8, 6);
+    //    HBRUSH hoverBrush = CreateSolidBrush(theme.itemHover);
+    //    FillRect(hdc, &icon_rect, hoverBrush);
+    //    DeleteObject(hoverBrush);
+    //    InflateRect(&icon_rect, -8, -6);
+    //}
+    //    
+    //Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
+    //Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.left + 6, icon_rect.bottom);
+    //if (m_fileTreeVisible)
+    //{
+    //    icon_rect.right -= 9;
+    //    HBRUSH hoverBrush = CreateSolidBrush(theme.winFore);
+    //    FillRect(hdc, &icon_rect,hoverBrush);
+    //    DeleteObject(hoverBrush);
+    //}
+
+    brush.SetColor(ColorFrom(theme.winFore));
+    Gdiplus::Font       iconFont1(m_iconFontName.c_str(), 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
+    StringFormat format;
+    format.SetAlignment(StringAlignmentCenter);
+    format.SetLineAlignment(StringAlignmentCenter);
+    Gdiplus::RectF layoutRect;
+
+    // Draw layout button
+    SetLayoutRect(layoutRect, m_allRects.layout);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(m_fileTreeVisible ? L"\uE127" : L"\uE126", 1, & iconFont1, layoutRect, & format, & brush);
+
     //Draw tab bar scroll arrow
     tabrc                          = m_allRects.leftRoller;
     int                       xPos = tabrc.left + 4;
@@ -4509,6 +4522,7 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     RECT   titlebarRect = m_allRects.total;
     titlebarRect.bottom -= theme.tabHeight;
     FillRect(hdc, &titlebarRect, bg_brush);
+    DeleteObject(bg_brush);
     HBRUSH      hoverBrush  = CreateSolidBrush(theme.itemHover);
 
     switch (m_hoveredRect)
@@ -4534,84 +4548,50 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     }
       
     DeleteObject(hoverBrush);
-
+    
     /* Start to draw all title bar buttons */
-    HPEN pen = CreatePen(PS_SOLID, 1, theme.winFore);
-    SelectObject(hdc, pen);
-    RECT icon_rect   = {0,0,14,14};
-
-    // Draw system menu icon
-    CenterRectInRect(&icon_rect, &m_allRects.system);
-    OffsetRect(&icon_rect, 0, -1);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, nullptr);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 2);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, nullptr);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, nullptr);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
-
-    // Draw title text
-    SetBkColor(hdc, theme.winBack);
-    SetTextColor(hdc, theme.winFore);
-    RECT rc   = m_allRects.text;
-    rc.left = m_allRects.total.left + m_allRects.total.right - m_allRects.theme.left;
-    icon_rect = {0, 0, rc.right - rc.left, rc.bottom - rc.top};
-    CenterRectInRect(&icon_rect, &rc);
-    icon_rect.top += 6;
-    DrawText(hdc, m_titleText.c_str(), -1, &icon_rect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
+    
+    Gdiplus::Graphics   graphics(hdc);
+    Gdiplus::SolidBrush brush(ColorFrom(theme.winFore));
+    Gdiplus::Font       iconFont1(m_iconFontName.c_str(), 8.2f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
+    StringFormat format;
+    format.SetAlignment(StringAlignmentCenter);
+    format.SetLineAlignment(StringAlignmentCenter);
+    Gdiplus::RectF layoutRect;
 
     // Draw close button
-    icon_rect = {0, 0, 11, 11};
-    CenterRectInRect(&icon_rect, &m_allRects.close);
-    MoveToEx(hdc, icon_rect.left, icon_rect.top, nullptr);
-    LineTo(hdc, icon_rect.right, icon_rect.bottom + 1);
-    MoveToEx(hdc, icon_rect.left, icon_rect.bottom, nullptr);
-    LineTo(hdc, icon_rect.right, icon_rect.top);
-
+    SetLayoutRect(layoutRect, m_allRects.close);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(L"\uE8BB", 1, &iconFont1, layoutRect, &format, &brush);
     // Draw maximize button
-    icon_rect = {0, 0, 12, 12};
-    CenterRectInRect(&icon_rect, &m_allRects.maximize);
-
-    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
-    if (IsMaximized(m_hwnd))
-    {
-        OffsetRect(&icon_rect, -2, 3);
-        Rectangle(hdc, icon_rect.left + 5, icon_rect.top - 4, icon_rect.right + 5, icon_rect.bottom - 4);
-        FillRect(hdc, &icon_rect, bg_brush);
-    }
-    
-    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-    DeleteObject(bg_brush);
-
+    SetLayoutRect(layoutRect, m_allRects.maximize);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(IsMaximized(m_hwnd) ? L"\uE923" : L"\uE922", 1, &iconFont1, layoutRect, &format, &brush);
     // Draw minimized button
-    icon_rect = {0, 0, 14, 1};
-    CenterRectInRect(&icon_rect, &m_allRects.minimize);
-    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
+    SetLayoutRect(layoutRect, m_allRects.minimize);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(L"\uE921", 1, &iconFont1, layoutRect, &format, &brush);
+
+    // Draw system menu icon
+    Gdiplus::Font       iconFont2(m_iconFontName.c_str(), 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
+    SetLayoutRect(layoutRect, m_allRects.system);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(L"\uEDE3", -1, &iconFont2, layoutRect, &format, &brush);
 
     //Draw Theme
-    icon_rect = {0, 0, 15, 15};
-    CenterRectInRect(&icon_rect, &m_allRects.theme);
-    int mid = (icon_rect.right - icon_rect.left) / 2;
-    HBRUSH hbr      = CreateSolidBrush(CTheme::CurrentTheme().winFore);
-    auto   oldBrush = SelectObject(hdc, hbr);
-    Pie(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom, icon_rect.left + mid, icon_rect.top, icon_rect.left + mid, icon_rect.bottom);
-    SelectObject(hdc, oldBrush);
-    DeleteObject(hbr);
-    SetArcDirection(hdc, AD_CLOCKWISE);
-    Pie(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom, icon_rect.left + mid, icon_rect.top, icon_rect.left + mid, icon_rect.bottom);
+    SetLayoutRect(layoutRect, m_allRects.theme);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(CTheme::Instance().IsDarkTheme() ? L"\uE706" : L"\uE708", 1, &iconFont2, layoutRect, &format, &brush);
 
     //Draw open file/folder button
-    icon_rect = {0, 0, 17, 17};
-    mid   = (icon_rect.right - icon_rect.left) / 2;
-    CenterRectInRect(&icon_rect, &m_allRects.open);
-    OffsetRect(&icon_rect, 0, 1);
-    Ellipse(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-    MoveToEx(hdc, icon_rect.left + 3, icon_rect.top + mid, nullptr);
-    LineTo(hdc, icon_rect.right - 3, icon_rect.top + mid);
-    MoveToEx(hdc, icon_rect.left + 8, icon_rect.top + 3, nullptr);
-    LineTo(hdc, icon_rect.left + 8, icon_rect.bottom - 3);
+    SetLayoutRect(layoutRect, m_allRects.open);
+    layoutRect.Y += 2.0f;
+    graphics.DrawString(L"\uECCD", 1, &iconFont2, layoutRect, &format, &brush);
 
-    DeleteObject(pen);
+    // Draw title text
+    Gdiplus::Font       textFont(m_fontName.c_str(), 10.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
+    SetLayoutRect(layoutRect, m_allRects.text);
+    graphics.DrawString(m_titleText.c_str(), -1, &textFont, layoutRect, &format, &brush);
 }
 
 int CMainWindow::GetSelected() const

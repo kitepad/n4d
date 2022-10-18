@@ -290,4 +290,5 @@ private:
     std::vector<std::wstring>   m_recentFolders;
     int                         m_tipIdx = -1;        
     ULONG_PTR                   m_gdiplusToken;
+    std::wstring                m_iconFontName        =L"Segoe Fluent Icons";
 };
