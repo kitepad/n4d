@@ -5,19 +5,19 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Custom Draw title bar and tab bar
 * UI change for some dialogs, such as Find/Replace, Goto Line, Change Tab width, style configurator, about box and etc.
 * UI change for encoding selection, lexer selection, command palette.
-* Launch command for sciter.js app, inspector
-* Open Folder command to show folder in file tree
+* Launch command for sciter.js app, inspector (Removed)
+* Add Open Folder command to show folder content in file tree
 * Remove editor config, plugin, spell checker, language support
 * Update scintilla to 5.30
-* Show tooltip for tabs by VK_CONTROL is keydown
+* Show tooltip for tabs when mouse on tab
 * Input goto line when left click on line info of status bar
 * Change tab width by right click on tab width of status bar
 * Change encoding/style by left click on encoding/style info of status bar.
 * Show options menu when right click on margin or right click with VK_CONTROL down on editor.
-* Left click with VK_CONTROL on add button (left of title bar) to open folder
-* First item of FileTree is changed to show current folder name with RED color and BOLD font
-* Left button of tab bar is used to toggle file tree, right click to show recent opened folders, maybe changed in the future.
-* Show all opened files when right click on tab scroll arrow, maybe changed to show as lexer selection dialog in the furtue.
+* Left click with VK_CONTROL on add button (left of title bar) to open folder, right click to show recent opened folders
+* First item of FileTree is changed to show current folder name with RED color and BOLD font (Removed)
+* Left button of tab bar is used to toggle file tree
+* Show all opened files when right click on tab scroll arrow with filterable dialog.
 * Toggle all fold when clicked with VK_CONTROL in folding margin
 * Left parts of status bar are shown atrributs of current document, right parts are shown attributs of scintiall view.
 * config files : n4d.settings - options, n4d.shortcuts - keyboard shortcuts, n4d.styles - user defined lexer styles, n4d.snippets - auto complete for code snippet
