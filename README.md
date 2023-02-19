@@ -8,7 +8,7 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Launch command for sciter.js app, inspector (Removed)
 * Add Open Folder command to show folder content in file tree
 * Remove editor config, plugin, spell checker, language support
-* Update scintilla to 5.30
+* Update scintilla to 5.33
 * Show tooltip for tabs when mouse on tab
 * Input goto line when left click on line info of status bar
 * Change tab width by right click on tab width of status bar
