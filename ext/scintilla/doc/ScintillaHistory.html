@@ -571,9 +571,162 @@
 	<td>Christian Schmitz</td>
 	<td>Michael Berlenz</td>
 	<td>Jacky Yang</td>
+      </tr><tr>
+	<td>Reinhard Nißl</td>
+	<td>Ferdinand Oeinck</td>
+	<td>Michael Heath</td>
+	<td>Enrico Tröger</td>
     </tr>
     </table>
     <h2>Releases</h2>
+    <h3>
+       <a href="https://www.scintilla.org/scintilla533.zip">Release 5.3.3</a>
+    </h3>
+    <ul>
+	<li>
+	Released 8 February 2023.
+	</li>
+	<li>
+	Fix SCI_LINESJOIN bug where carriage returns were incorrectly retained.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2372/">Bug #2372</a>.
+	</li>
+	<li>
+	Fix SCI_VERTICALCENTRECARET to update the vertical scroll position.
+	</li>
+	<li>
+	When an autocompletion list is shown in response to SCN_CHARADDED, do not process character as fill-up or stop.
+	This avoids closing immediately when a character may both trigger and finish autocompletion.
+	</li>
+	<li>
+	On Cocoa fix character input bug where dotless 'i' and some other extended
+	Latin characters could not be entered.
+	The change also stops SCI_ASSIGNCMDKEY from working with these characters
+	on Cocoa.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2374/">Bug #2374</a>.
+	</li>
+	<li>
+	On GTK, support IME context.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1476/">Feature #1476</a>.
+	</li>
+	<li>
+	On GTK on Win32, fix scrolling speed to not be too fast.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2375/">Bug #2375</a>.
+	</li>
+	<li>
+	On Qt, fix indicator drawing past left of text pane over margin.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2373/">Bug #2373</a>,
+	<a href="https://sourceforge.net/p/scintilla/bugs/1956/">Bug #1956</a>.
+	</li>
+	<li>
+	On Qt, allow scrolling with mouse wheel when scroll bar hidden.
+	</li>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scintilla532.zip">Release 5.3.2</a>
+    </h3>
+    <ul>
+	<li>
+	Released 6 December 2022.
+	</li>
+	<li>
+	Add SCI_REPLACETARGETMINIMAL to change text without causing unchanged prefix and suffix
+	to be marked as modified in change history.
+	</li>
+	<li>
+	Draw background colour for EOL annotations with standard and boxed visuals.
+	</li>
+	<li>
+	Add SCI_GETSTYLEDTEXTFULL to support 64-bit document positions on Win32 replacing
+	SCI_GETSTYLEDTEXT which is not safe for huge documents.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1455/">Feature #1455</a>.
+	</li>
+	<li>
+	Send SCN_AUTOCCOMPLETED for SCI_AUTOCSHOW
+	triggering insertion because of SCI_AUTOCSETCHOOSESINGLE mode.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1459/">Feature #1459</a>.
+	</li>
+	<li>
+	Change 'paragraph up' commands SCI_PARAUP and SCI_PARAUPEXTEND to
+	go to the start position of the paragraph containing the caret.
+	Only if the caret is already at the start of the paragraph will it go to the start
+	of the previous paragraph.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2363/">Bug #2363</a>.
+	</li>
+	<li>
+	Change release compilation optimization option to favour speed over space.
+	-O2 for MSVC and -O3 for gcc and clang.
+	</li>
+	<li>
+	On Win32, avoid blurry display with DirectWrite in GDI scaling mode.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2344/">Bug #2344</a>.
+	</li>
+	<li>
+	On Win32, use the top-level window to find the monitor for DirectWrite rendering parameters.
+	Temporarily switch DPI awareness to find correct monitor in GDI scaling mode.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2344/">Bug #2344</a>.
+	</li>
+	<li>
+	On Qt, implement SCI_SETRECTANGULARSELECTIONMODIFIER for all platforms.
+	</li>
+	<li>
+	On Qt, allow string form XPM images for SCI_REGISTERIMAGE.
+	</li>
+    </ul>
+    <h3>
+       <a href="https://www.scintilla.org/scintilla531.zip">Release 5.3.1</a>
+    </h3>
+    <ul>
+	<li>
+	Released 12 October 2022.
+	</li>
+	<li>
+	Added SCI_STYLESETINVISIBLEREPRESENTATION to make it easier to edit around invisible text.
+	This also allows representing long lexemes with a single character to provide a summarized view.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1453/">Feature #1453</a>.
+	</li>
+	<li>
+	Removed NotifyLexerChanged notification from DocWatcher.
+	This is a private interface but could be used by independent platform layers
+	and was exposed by ScintillaDocument in the Qt implementation of ScintillaEdit.
+	</li>
+	<li>
+	Draw lines more consistently in SC_PHASES_TWO and SC_PHASES_ONE modes by
+	clipping drawing to just the line rectangle.
+	This stops drawing some extreme ascenders, descenders and portions of indicators which
+	may appear and then disappear depending on which lines were drawn.
+	</li>
+	<li>
+	Draw SC_MARK_BAR markers underneath other markers
+	as they often cover multiple lines for change history and other markers mark individual lines.
+	</li>
+	<li>
+	Enlarge point and point top indicators and scale to be larger with larger text.
+	</li>
+	<li>
+	Suppress change history background line shading when printing.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2358/">Bug #2358</a>.
+	</li>
+	<li>
+	Make SCI_LINESCROLL more accurate when width of space not integer.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2357/">Bug #2357</a>.
+	</li>
+	<li>
+	On Win32 implement horizontal scrolling mouse wheel.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1450/">Feature #1450</a>.
+	</li>
+	<li>
+	On Win32 implement horizontal scrolling with Shift + mouse wheel.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/749/">Feature #749</a>,
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1451/">Feature #1451</a>.
+	</li>
+	<li>
+	On Win32 ensure page and step clicks on horizontal scroll bar do not overshoot document width.
+	</li>
+	<li>
+	On GTK, fix bug where there were too many or too few lines when wrapping.
+	<a href="https://sourceforge.net/p/scintilla/bugs/2349/">Bug #2349</a>.
+	</li>
+    </ul>
     <h3>
        <a href="https://www.scintilla.org/scintilla530.zip">Release 5.3.0</a>
     </h3>
@@ -1875,7 +2028,7 @@
 	</li>
  	<li>
 	SciTE supports changing caret style via caret.style property.
-	<a href="https://sourceforge.net/p/scintilla/feature-requests/1264/">Feature #1624</a>.
+	<a href="https://sourceforge.net/p/scintilla/feature-requests/1264/">Feature #1264</a>.
 	</li>
  	<li>
 	Lexer added for .NET's Common Intermediate Language CIL.
@@ -2374,15 +2527,15 @@
 	</li>
 	<li>
 	Minor undefined behaviour fixed.
-	<a href="https://sourceforge.net/p/scintilla/bugs/1978">Bug #1978</a>.
+	<a href="https://sourceforge.net/p/scintilla/bugs/1978/">Bug #1978</a>.
 	</li>
 	<li>
 	On Cocoa, improve scrolling on macOS 10.12.
-	<a href="https://sourceforge.net/p/scintilla/bugs/1885">Bug #1885</a>.
+	<a href="https://sourceforge.net/p/scintilla/bugs/1885/">Bug #1885</a>.
 	</li>
 	<li>
 	On Cocoa, fix line selection by clicking in the margin when scrolled.
-	<a href="https://sourceforge.net/p/scintilla/bugs/1971">Bug #1971</a>.
+	<a href="https://sourceforge.net/p/scintilla/bugs/1971/">Bug #1971</a>.
 	</li>
     </ul>
     <h3>
@@ -2467,7 +2620,7 @@
 	</li>
 	<li>
 	On GTK+ fix drawing problems including incorrect scrollbar redrawing and flickering of text.
-	<a href="https://sourceforge.net/p/scintilla/bugs/1876">Bug #1876</a>.
+	<a href="https://sourceforge.net/p/scintilla/bugs/1876/">Bug #1876</a>.
 	</li>
 	<li>
 	On Linux, both for GTK+ and Qt, the default modifier key for rectangular selection is now Alt.
@@ -2478,7 +2631,7 @@
 	<li>
 	On Cocoa, fix doCommandBySelector but avoid double effect of 'delete'
 	key.
-	<a href="https://sourceforge.net/p/scintilla/bugs/1958">Bug #1958</a>.
+	<a href="https://sourceforge.net/p/scintilla/bugs/1958/">Bug #1958</a>.
 	</li>
 	<li>
 	On Qt, the updateUi signal includes the 'updated' flags.

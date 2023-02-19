@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by n4d.rc
 //
+#define IDCANCEL2                       3
 #define IDI_BOWPAD                      101
 #define IDB_EMPTY                       102
 #define IDR_MENU                        103
@@ -134,6 +135,8 @@
 #define IDS_SELECTLEXER_FILTERCUE       230
 #define IDS_APP_TITLE                   231
 #define IDS_SELECTTAB_FILTERCUE         232
+#define IDB_QUICKBAR_DARK               267
+#define IDB_QUICKBAR_LIGHT              268
 #define IDC_BOWPAD                      300
 #define IDC_FINDBTN                     301
 #define IDC_REPLACECOMBO                302
@@ -179,6 +182,7 @@
 #define IDC_SORTDLG_CASE_CHECK          342
 #define IDC_FINDPREVIOUS                343
 #define IDC_SEARCHFORLABEL              344
+#define IDC_FINDPREVIOUS2               344
 #define IDC_REPLACEWITHLABEL            345
 #define IDC_SORTORDERLABEL              346
 #define IDC_SCINTILLA                   347
@@ -304,6 +308,7 @@
 #define cmdSelectLexer                  30108
 #define cmdShowAutoComplete             30109
 #define cmdSelectTab                    30110
+#define cmdOpenRecent                   30111
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -311,7 +316,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        267
+#define _APS_NEXT_RESOURCE_VALUE        269
 #define _APS_NEXT_COMMAND_VALUE         32896
 #define _APS_NEXT_CONTROL_VALUE         1141
 #define _APS_NEXT_SYMED_VALUE           110

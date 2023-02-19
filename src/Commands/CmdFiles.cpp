@@ -120,12 +120,6 @@ bool CCmdOpen::Execute()
         return CPathUtils::PathCompare(lhs, rhs) < 0;
     });
 
-    //SetFileTreePath(paths[0].c_str());
-    //ShowFileTree(true);
-    //if (paths.size() == 1)
-    //    return true;
-    // TODO by kitepad, Open Folder's end.
-
     // treat opening a single file differently so we can pass OpenFlags.
     if (paths.size() == 1)
         OpenFile(paths[0].c_str(), OpenFlags::AddToMRU | OpenFlags::AskToCreateIfMissing);

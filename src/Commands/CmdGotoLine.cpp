@@ -114,7 +114,7 @@ LRESULT CCmdGotoLine::DoCommand(int id, int /*msg*/)
 
 bool CCmdGotoLine::Execute()
 {
-    ShowModeless(g_hRes, IDD_GOTOLINE, GetHwnd(), TRUE);
+    ShowModeless(g_hRes, IDD_GOTOLINE, *m_pMainWindow);
 
     constexpr UINT flags = SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_NOCOPYBITS;
     //Adjust dialog position

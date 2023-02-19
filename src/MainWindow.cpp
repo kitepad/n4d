@@ -59,24 +59,24 @@ using namespace Gdiplus;
 #define FontFrom(theme) (Gdiplus::Font(theme.fontName.c_str(), (theme.fontSize - 1) * 1.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint))
 #define HeightOf(rect)         (rect.bottom - rect.top)
 #define WidthOf(rect)          (rect.right - rect.left)
-#define RECTF(rect) (Gdiplus::RectF(rect.left + 0.0f, rect.top + 0.0f, rect.right - rect.left + 0.0f, rect.bottom - rect.top + 0.0f))
-#define SetLayoutRect(rectf, rect)  (rectf = {rect.left + 0.0f, rect.top + 0.0f, rect.right - rect.left + 0.0f, rect.bottom - rect.top + 0.0f})
+
 namespace
 {
-constexpr char   URL_REG_EXPR[]      = {"\\b[A-Za-z+]{3,9}://[A-Za-z0-9_\\-+~.:?&@=/%#,;{}()[\\]|*!\\\\]+\\b"};
-constexpr size_t URL_REG_EXPR_LENGTH = _countof(URL_REG_EXPR) - 1;
-constexpr int TIMER_UPDATECHECK = 101;
-constexpr int TIMER_SELCHANGE   = 102;
-constexpr int TIMER_CHECKLINES  = 103;
-constexpr int TIMER_DWELLEND    = 104;
+    constexpr char   URL_REG_EXPR[]      = {"\\b[A-Za-z+]{3,9}://[A-Za-z0-9_\\-+~.:?&@=/%#,;{}()[\\]|*!\\\\]+\\b"};
+    constexpr size_t URL_REG_EXPR_LENGTH = _countof(URL_REG_EXPR) - 1;
+    constexpr int TIMER_UPDATECHECK = 101;
+    constexpr int TIMER_SELCHANGE   = 102;
+    constexpr int TIMER_CHECKLINES  = 103;
+    constexpr int TIMER_DWELLEND    = 104;
+    constexpr int RECENTS_LENGTH    = 10;
 
-ResponseToOutsideModifiedFile responseToOutsideModifiedFile      = ResponseToOutsideModifiedFile::Reload;
-BOOL                          responseToOutsideModifiedFileDoAll = FALSE;
-bool                          doModifiedAll                      = FALSE;
+    ResponseToOutsideModifiedFile responseToOutsideModifiedFile      = ResponseToOutsideModifiedFile::Reload;
+    BOOL                          responseToOutsideModifiedFileDoAll = FALSE;
+    bool                          doModifiedAll                      = FALSE;
 
-bool               doCloseAll         = false;
-BOOL               closeAllDoAll      = FALSE;
-ResponseToCloseTab responseToCloseTab = ResponseToCloseTab::CloseWithoutSaving;
+    bool               doCloseAll         = false;
+    BOOL               closeAllDoAll      = FALSE;
+    ResponseToCloseTab responseToCloseTab = ResponseToCloseTab::CloseWithoutSaving;
 } // namespace
 
 inline void GetRoundRectPath(Gdiplus::GraphicsPath* pPath, Rect r, int dia)
@@ -141,21 +141,21 @@ inline BOOL IsLeftButtonDown()
     return (state & 0x8000);
 }
 
-//static void CenterRectInRect(RECT* toCenter, const RECT* outerRect)
-//{
-//    int toWidth     = toCenter->right - toCenter->left;
-//    int toHeight    = toCenter->bottom - toCenter->top;
-//    int outerWidth  = outerRect->right - outerRect->left;
-//    int outerHeight = outerRect->bottom - outerRect->top;
-//
-//    int paddingX = (outerWidth - toWidth) / 2;
-//    int paddingY = (outerHeight - toHeight) / 2;
-//
-//    toCenter->left   = outerRect->left + paddingX;
-//    toCenter->top    = outerRect->top + paddingY;
-//    toCenter->right  = toCenter->left + toWidth;
-//    toCenter->bottom = toCenter->top + toHeight;
-//}
+static void CenterRectInRect(RECT* toCenter, const RECT* outerRect)
+{
+    int toWidth     = toCenter->right - toCenter->left;
+    int toHeight    = toCenter->bottom - toCenter->top;
+    int outerWidth  = outerRect->right - outerRect->left;
+    int outerHeight = outerRect->bottom - outerRect->top;
+
+    int paddingX = (outerWidth - toWidth) / 2;
+    int paddingY = (outerHeight - toHeight) / 2;
+
+    toCenter->left   = outerRect->left + paddingX;
+    toCenter->top    = outerRect->top + paddingY;
+    toCenter->right  = toCenter->left + toWidth;
+    toCenter->bottom = toCenter->top + toHeight;
+}
 
 static bool ShowFileSaveDialog(HWND hParentWnd, const std::wstring& title, const std::wstring fileExt, UINT extIndex, std::wstring& path)
 {
@@ -300,7 +300,6 @@ LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
         InitDialog(hwndDlg, IDI_BOWPAD);
         CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
         // initialize the controls
-        //m_link.ConvertStaticToHyperlink(hwndDlg, IDC_WEBLINK, L"http://tools.stefankueng.com");
         SetDlgItemText(hwndDlg, IDC_VERSIONLABEL, L"N4D (Notepad for Developer) 1.0.0 (64-bit)");
     }
     return TRUE;
@@ -346,7 +345,6 @@ CMainWindow::CMainWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = nullptr*/)
     , m_bBlockAutoIndent(false)
     , m_lastCheckedLine(0)
     , m_newCount(0)
-    , m_tabTip(hResource)
 {
     m_fileTreeVisible = GetInt64(DEFAULTS_SECTION,L"FileTreeVisible", 0) != 0;
     m_scratchEditor.InitScratch(g_hRes);
@@ -358,7 +356,6 @@ CMainWindow::CMainWindow(HINSTANCE hInst, const WNDCLASSEX* wcx /* = nullptr*/)
 extern void findReplaceFinish();
 extern void findReplaceClose();
 extern void findReplaceResize();
-//extern void gotoLineClose();
 
 CMainWindow::~CMainWindow()
 {
@@ -381,13 +378,14 @@ void CMainWindow::UpdateTitlebarRects()
     m_allRects.close    = {right - h1 - iconWidth, rc.top, right, vsPos};
     m_allRects.maximize = {m_allRects.close.left - h1 - iconWidth, rc.top, m_allRects.close.left, vsPos};
     m_allRects.minimize = {m_allRects.maximize.left - h1 - iconWidth, rc.top, m_allRects.maximize.left, vsPos};
-    m_allRects.theme    = {m_allRects.minimize.left - h1 - iconWidth, rc.top, m_allRects.minimize.left, vsPos};
-    m_allRects.open = {m_allRects.system.right, rc.top, m_allRects.system.right + h1, vsPos};
-    m_allRects.text = {m_allRects.open.right, rc.top, m_allRects.theme.left, vsPos};
-    m_allRects.layout      = {left, vsPos, left + h2, vsPos + h2};
-    m_allRects.leftRoller  = {right - h2, vsPos, right - h2 / 2, vsPos + h2};
-    m_allRects.rightRoller = {right - h2 / 2, vsPos, right, vsPos + h2};
-    m_allRects.tabs        = {left + h2, vsPos, right - h2, vsPos + h2};
+    RECT rcqbar;
+    GetWindowRect(m_quickbar, &rcqbar);
+    m_allRects.text = { m_allRects.system.right + WidthOf(rcqbar), rc.top, m_allRects.minimize.left, vsPos };
+    m_allRects.leftRoller = { left, vsPos,  left + h2 / 2, vsPos + h2 };
+    m_allRects.showMore = { right - h2, vsPos, right, vsPos + h2 };
+    m_allRects.rightRoller = { left + h2 / 2, vsPos, left + h2, vsPos + h2 };
+    m_allRects.tabs = { left + h2, vsPos, right - h2, vsPos + h2 };
+
 }
 
 TitlebarRects CMainWindow::GetTitlebarRects(bool flag) // TRUE : force to invalidate all rects
@@ -607,7 +605,6 @@ void CMainWindow::ShowSystemMenu()
     ClientToScreen(*this, &pt);
     HMENU pop = GetSubMenu(LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU)), 0);
 
-    //UpdateMenu(pop);
     auto cmd = TrackPopupMenuEx(pop, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
     DoCommand(cmd, 0);
 }
@@ -763,12 +760,12 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 m_hoveredItemIdx = -1;
             }
 
-            if (m_hoveredItemIdx == -1 && IsWindowVisible(m_tabTip))
-                m_tabTip.HideTip();
+            if (m_hoveredItemIdx == -1 && IsWindowVisible(m_custToolTip))
+                m_custToolTip.HideTip();
 
             if (m_hoveredItemIdx != -1)
             {
-                if(!IsWindowVisible(m_tabTip) || m_hoveredItemIdx != m_tipIdx)
+                if(!IsWindowVisible(m_custToolTip) || m_hoveredItemIdx != m_tipIdx)
                 {
                     std::wstring sTitle = m_allTabs[m_hoveredItemIdx].path;
                     if (sTitle.empty())
@@ -781,7 +778,8 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     pt.x = m_hoveredItemRect.right;
                     pt.y = m_allRects.total.bottom + 60;
                     ClientToScreen(hwnd, &pt);
-                    m_tabTip.ShowTip(pt, sTitle, nullptr, sTitle);
+
+                    m_custToolTip.ShowTip(pt, sTitle, nullptr, sTitle);
                     m_tipIdx = m_hoveredItemIdx;
                 }
             }
@@ -796,7 +794,8 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             {
                 m_hoveredRect = TitlebarRect::None;
             }
-            m_tabTip.HideTip();
+
+            m_custToolTip.HideTip();
             m_hoveredItemIdx = -1;
             InvalidateRect(*this, &m_allRects.total, FALSE);
 
@@ -820,17 +819,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             {
                 int mode = IsMaximized(*this) ? SW_NORMAL : SW_MAXIMIZE;
                 ShowWindow(*this, mode);
-                return 0;
-            }
-            else if (m_hoveredRect == TitlebarRect::Theme)
-            {
-                DoCommand(cmdToggleTheme, 0);
-                return 0;
-            }
-            else if (m_hoveredRect == TitlebarRect::Open)
-            {
-                UINT cmd = (GetAsyncKeyState(VK_CONTROL) & 0x8000) ? cmdOpenFolder : cmdOpen;
-                DoCommand(cmd, 0);
                 return 0;
             }
             else if (m_hoveredRect == TitlebarRect::LeftRoller)
@@ -858,9 +846,9 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 ShowSystemMenu();
                 return 0;
             }
-            else if (m_hoveredRect == TitlebarRect::Layout)
+            else if (m_hoveredRect == TitlebarRect::ShowMore)
             {
-                ShowFileTree(!m_fileTreeVisible);
+                DoCommand(cmdSelectTab, 0);
                 return 0;
             }
             else if (m_hoveredRect == TitlebarRect::Tabs)
@@ -960,43 +948,9 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         break;
         case WM_NCRBUTTONDOWN:
         {
-            if (m_hoveredRect == TitlebarRect::LeftRoller || m_hoveredRect == TitlebarRect::RightRoller)
-            {
-                DoCommand(cmdSelectTab, 0);
-            }
-            else if (m_hoveredRect == TitlebarRect::Text)
+            if (m_hoveredRect == TitlebarRect::Text)
             {
                 DoCommand(cmdCommandPalette, 0);
-            }
-            else if (m_hoveredRect == TitlebarRect::Open)
-            {
-                auto hMenu = CreatePopupMenu();
-                auto count = m_recentFolders.size();
-                //if (hMenu)
-                //{
-                for (int i = 0; i < count; ++i)
-                {
-                    std::wstring folderName = m_recentFolders[i];
-                    //BOOL         checked    = doc.m_path.compare(0, folderName.size(), folderName) == 0;
-                    BOOL         checked = m_fileTree.GetPath().compare(0, folderName.size(), folderName) == 0;
-                    UINT         flags      = checked ? MF_CHECKED | MF_STRING : MF_STRING;
-                    AppendMenu(hMenu, flags, i + 1, folderName.c_str());
-                }
-                    
-                POINT pt = {m_allRects.open.left, m_allRects.open.bottom};
-                ClientToScreen(*this, &pt);
-
-                auto idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-                InvalidateRect(*this, &m_allRects.layout, FALSE);
-                if (idx > 0)
-                {
-                    m_fileTree.SetPath(m_recentFolders[idx - 1]);
-                    m_titleText = m_recentFolders[idx - 1];
-                    InvalidateRect(*this, &m_allRects.text, FALSE);
-                    ShowFileTree(true);
-                }
-                DestroyMenu(hMenu);
-                //}
             }
             else if (m_hoveredRect == TitlebarRect::Tabs)
             {
@@ -1099,18 +1053,40 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
 
             if (pnmHdr == nullptr)
                 return 0;
+            
             const NMHDR& nmHdr = *pnmHdr;
 
-            switch (nmHdr.code)
+            if (nmHdr.code == TTN_GETDISPINFO)
             {
-                case TTN_GETDISPINFO:
+                LPNMTTDISPINFO lpNmtdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
+                HandleGetDispInfo(static_cast<int>(nmHdr.idFrom), lpNmtdi);
+            }
+
+            if (nmHdr.hwndFrom == m_quickbar)
+            {
+                if (nmHdr.code == static_cast<UINT>(TBN_GETINFOTIP))
                 {
-                    LPNMTTDISPINFO lpNmtdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
-                    HandleGetDispInfo(static_cast<int>(nmHdr.idFrom), lpNmtdi);
+                    LPNMTBGETINFOTIP pInfo = reinterpret_cast<LPNMTBGETINFOTIP>(lParam);
+                    auto sRes = LoadResourceWString(g_hRes, pInfo->iItem);
+                    auto idx = sRes.find(L"###");
+                    bool found = idx != std::wstring::npos;
+                    std::wstring tip = found ? sRes.substr(0, idx) : sRes;
+                    if (!tip.empty())
+                    {
+                        POINT pos;
+                        GetCursorPos(&pos);
+                        pos.y += CTheme::CurrentTheme().titleHeight * 2;
+                        m_custToolTip.ShowTip(pos, tip, nullptr, tip);
+                    }
+
+                    return 0;
                 }
-                break;
-                default:
-                    break;
+
+                if (nmHdr.code == static_cast<UINT>(NM_CUSTOMDRAW))
+                {
+                    LPNMTBCUSTOMDRAW pCustomDraw = (LPNMTBCUSTOMDRAW)pnmHdr;
+                    return HandleQuickbarCustomDraw(pCustomDraw);
+                }
             }
 
             if (nmHdr.idFrom == reinterpret_cast<UINT_PTR>(&m_editor) || nmHdr.hwndFrom == m_editor)
@@ -1688,6 +1664,52 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
         case cmdAbout:
             About();
             break;
+        case cmdOpenRecent: // Open popup menu to list recent opened files/folders
+            { 
+                auto count = m_recents.size();
+
+                if (count > 0)
+                {
+                    auto hMenu = CreatePopupMenu();
+                    for (int i = 0; i < count; ++i)
+                    {
+                        std::wstring folderName = m_recents[i];
+                        AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
+                        if (PathIsDirectory(folderName.c_str()))
+                        {
+                            HIMAGELIST images = CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages;
+                           
+                            HICON icon = ImageList_GetIcon(images, 3, ILD_TRANSPARENT); // icon index 3 is open folder.
+                            ICONINFO iconInfo;
+                            ::GetIconInfo(icon, &iconInfo);
+                            ::DeleteObject(iconInfo.hbmMask);
+                            ::DestroyIcon(icon);
+
+                            SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, iconInfo.hbmColor, iconInfo.hbmColor);
+                        }
+                    }
+                    
+                    POINT pt = { m_allRects.system.right, m_allRects.system.bottom };
+                    ClientToScreen(*this, &pt);
+
+                    int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+                    if (idx > 0)
+                    {
+                        if (PathIsDirectory(m_recents[idx - 1].c_str()))
+                        {
+                            m_fileTree.SetPath(m_recents[idx - 1]);
+                            m_titleText = m_recents[idx - 1];
+                            SendMessage(*this, WM_SETTEXT, 0, 0);
+                            ShowFileTree(true);
+                        }
+                        else
+                            OpenFile(m_recents[idx - 1].c_str(), OpenFlags::AskToCreateIfMissing);
+                    }
+                    DestroyMenu(hMenu);
+                }
+                break;
+            }
+            
         default:
         {
             ICommand* pCmd = CCommandHandler::Instance().GetCommand(id);
@@ -1725,7 +1747,6 @@ bool CMainWindow::Initialize()
     m_progressBar.Init(hResource, *this);
     static ResString rsClickToCopy(g_hRes, 0);//IDS_CLICKTOCOPYTOCLIPBOARD);
     m_custToolTip.Init(m_editor, *this, rsClickToCopy);
-    m_tabTip.Init(*this, *this, rsClickToCopy);
 
     // Tell UAC that lower integrity processes are allowed to send WM_COPYDATA messages to this process (or window)
     HMODULE hDll = GetModuleHandle(TEXT("user32.dll"));
@@ -1787,6 +1808,45 @@ bool CMainWindow::Initialize()
         SetWindowPos(m_fileTree, nullptr, 0, topPos, treeWidth ? treeWidth - 3 : 0, height, flags);
         SendMessage(m_hwnd, WM_SETREDRAW, TRUE, 0);
     }
+
+    ////Init and setup quickbar
+    // Declare and initialize local constants.
+    const int numButtons = 11;
+    const int bitmapSize = 20;
+
+    const DWORD buttonStyles = TBSTYLE_BUTTON;
+    const DWORD tbStyles = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN;
+    // Create the toolbar.
+    m_quickbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, tbStyles, 0, 0, 0, 0, m_hwnd, NULL, g_hInst, NULL);
+    m_darkImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, numButtons, 0);
+    m_lightImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, numButtons, 0);
+    ImageList_AddMasked(m_darkImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_QUICKBAR_DARK)), RGB(192, 192, 192));
+    ImageList_AddMasked(m_lightImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_QUICKBAR_LIGHT)), RGB(192, 192, 192));
+
+    //  Set the image list.
+    SendMessage(m_quickbar, TB_SETIMAGELIST, 0, (LPARAM)(CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages));
+
+    // Declare and Add buttons to quickbar.
+    TBBUTTON tbButtons[numButtons] =
+    {
+        {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
+        {0, cmdOpenRecent, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {1, cmdNew, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {2, cmdOpen, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {3, cmdOpenFolder, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {4, cmdSave, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {5, cmdPrint, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
+        {6, cmdConfigStyle, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {7, cmdToggleTheme, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {8, cmdFileTree, TBSTATE_ENABLED, buttonStyles | TBSTYLE_CHECK, {0}, 0, cmdFileTree},
+    };
+
+    SendMessage(m_quickbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+    SendMessage(m_quickbar, TB_ADDBUTTONS, (WPARAM)numButtons, (LPARAM)&tbButtons);
+    SendMessage(m_quickbar, TB_CHECKBUTTON, cmdFileTree, m_fileTreeVisible);
+
+    //Refresh titlebar
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
 
     return true;
@@ -1842,6 +1902,33 @@ void CMainWindow::HandleAfterInit()
     g_marginWidth = m_editor.Scintilla().MarginWidthN(SC_MARGIN_BACK); 
     m_bIsAfterInit = true;
 }
+/// Utility method to calculate toolbar size in actually.
+static auto getQuickbarSize = [](HWND quickbar) -> SIZE {
+    int count = static_cast<int>(SendMessage(quickbar, TB_BUTTONCOUNT, 0, 0));
+
+    SIZE   sz;
+    ZeroMemory(&sz, sizeof(sz));
+
+    LPARAM lparam = reinterpret_cast<LPARAM>(&sz);
+    SendMessage(quickbar, TB_GETMAXSIZE, 0, lparam);
+
+    // This fixes a Windows bug calculating the size when TBSTYLE_DROPDOWN is used.
+    int cxMaxSize = 0;
+    int cyMaxSize = 0;
+    for (int i = 0; i < count; ++i)
+    {
+        RECT   itemRect;
+        WPARAM wparam = static_cast<WPARAM>(i);
+        lparam = reinterpret_cast<LPARAM>(&itemRect);
+        SendMessage(quickbar, TB_GETITEMRECT, wparam, lparam);
+        cxMaxSize += WidthOf(itemRect);
+        cyMaxSize += HeightOf(itemRect);
+    }
+
+    sz.cx = cxMaxSize;
+
+    return sz;
+};
 
 void CMainWindow::ResizeChildWindows()
 {
@@ -1863,8 +1950,10 @@ void CMainWindow::ResizeChildWindows()
         const int height      = HeightOf(rect) - tabbarHeight - titlebarHeight - stHeight;
         const int topPos         = rect.top + titlebarHeight + tabbarHeight;
         const int width          = rect.right - rect.left;
-
-        HDWP hDwp = BeginDeferWindowPos(3);
+        const SIZE qbarSize     = getQuickbarSize(m_quickbar);
+        int pos = rect.top + (titlebarHeight - qbarSize.cy) / 2 + 2;
+        HDWP hDwp = BeginDeferWindowPos(4);
+        DeferWindowPos(hDwp, m_quickbar, nullptr, GetTitlebarRects().system.right, pos, qbarSize.cx, titlebarHeight - 3, flags);
         DeferWindowPos(hDwp, m_statusBar, nullptr, rect.left, rect.bottom - stHeight, width, stHeight, flags);
         DeferWindowPos(hDwp, m_editor, nullptr, rect.left + treeWidth, topPos, width - treeWidth, height, flags);
         DeferWindowPos(hDwp, m_fileTree, nullptr, rect.left, topPos, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
@@ -2310,10 +2399,7 @@ void CMainWindow::UpdateCaptionBar()
         if (!elev.empty())
             sTitle += L" : ";
         sTitle += doc.m_path.empty() ? m_allTabs[idx].name : doc.m_path;
-        //sTitle = CPathUtils::GetParentDirectory(sTitle);
-        //if (doc.m_bNeedsSaving || doc.m_bIsDirty)
-        //    sTitle += L" * ";
-        m_titleText = CPathUtils::GetParentDirectory(sTitle); //sTitle;
+        m_titleText = CPathUtils::GetParentDirectory(sTitle); 
     }
     else
     {
@@ -2322,7 +2408,7 @@ void CMainWindow::UpdateCaptionBar()
         m_titleText = appName;
     }
 
-    InvalidateRect(*this, &m_allRects.text, true);
+    SendMessage(*this, WM_SETTEXT, 0, 0);
 }
 
 void CMainWindow::UpdateTab(DocID docID)
@@ -3308,7 +3394,6 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
         m_allTabs[index].id = docID;
         UpdateTab(docID);
         UpdateStatusBar(true);
-        
         SetSelected(index);
         CCommandHandler::Instance().OnDocumentOpen(docID);
 
@@ -3453,11 +3538,18 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
                 m_fileTree.SetPath(CPathUtils::GetParentDirectory(filepath), false);
                 ResizeChildWindows();
             }
-
+            
             UpdateTab(id);
             CCommandHandler::Instance().OnDocumentOpen(id);
         }
         m_editor.EnableChangeHistory();
+
+        if (std::find(m_recents.begin(), m_recents.end(), filepath) == m_recents.end())
+        {
+            if (m_recents.size() > RECENTS_LENGTH - 1)
+                m_recents.erase(m_recents.begin());
+            m_recents.push_back(filepath);
+        }
     }
     m_insertionIndex = -1;
     
@@ -4123,7 +4215,7 @@ void CMainWindow::ShowFileTree(bool bShow)
     ResizeChildWindows();
     if (bShow)
         InvalidateRect(m_hwnd, nullptr, TRUE);
-
+    SendMessage(m_quickbar, TB_CHECKBUTTON, cmdFileTree, m_fileTreeVisible);
     SetInt64(DEFAULTS_SECTION, L"FileTreeVisible", m_fileTreeVisible);
 }
 
@@ -4337,14 +4429,6 @@ TitlebarRect CMainWindow::GetHoveredRect()
     {
         hoveredRect = TitlebarRect::RightRoller;
     }
-    else if (PtInRect(&m_allRects.theme, cursorPoint))
-    {
-        hoveredRect = TitlebarRect::Theme;
-    }
-    else if (PtInRect(&m_allRects.open, cursorPoint))
-    {
-        hoveredRect = TitlebarRect::Open;
-    }
     else if (PtInRect(&m_allRects.text, cursorPoint))
     {
         hoveredRect = TitlebarRect::Text;
@@ -4353,9 +4437,9 @@ TitlebarRect CMainWindow::GetHoveredRect()
     {
         hoveredRect = TitlebarRect::Tabs;
     }
-    else if (PtInRect(&m_allRects.layout, cursorPoint))
+    else if (PtInRect(&m_allRects.showMore, cursorPoint))
     {
-        hoveredRect = TitlebarRect::Layout;
+        hoveredRect = TitlebarRect::ShowMore;
     }
 
     return hoveredRect;
@@ -4392,7 +4476,7 @@ void CMainWindow::DrawTabs(HDC hdc)
     }
 
     int len  = GetItemCount();
-    int left = m_allRects.tabs.left;   
+    int left = m_allRects.tabs.left + 4;   
 
     RECT itemRect = m_allRects.tabs;
     Pen  pen(ColorFrom(theme.selFore));
@@ -4461,58 +4545,59 @@ void CMainWindow::DrawTabs(HDC hdc)
             graphics.DrawLine(&pen, iconPos.X + 6, middle + 14, iconPos.X + 11, middle + 14);
             pen.SetWidth(1);
         }
+        pos.Y += 1; // Justify text vertical position
         graphics.DrawString(text.c_str(), -1, &font, pos, &brush);
     }
 
-    //Draw layout toggle button
-    //RECT icon_rect = {0, 0, 14, 14};
-    //CenterRectInRect(&icon_rect, &m_allRects.layout);
-
-    //if(GetHoveredRect() == TitlebarRect::Layout)
-    //{
-    //    InflateRect(&icon_rect, 8, 6);
-    //    HBRUSH hoverBrush = CreateSolidBrush(theme.itemHover);
-    //    FillRect(hdc, &icon_rect, hoverBrush);
-    //    DeleteObject(hoverBrush);
-    //    InflateRect(&icon_rect, -8, -6);
-    //}
-    //    
-    //Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
-    //Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.left + 6, icon_rect.bottom);
-    //if (m_fileTreeVisible)
-    //{
-    //    icon_rect.right -= 9;
-    //    HBRUSH hoverBrush = CreateSolidBrush(theme.winFore);
-    //    FillRect(hdc, &icon_rect,hoverBrush);
-    //    DeleteObject(hoverBrush);
-    //}
-
-    brush.SetColor(ColorFrom(theme.winFore));
-    Gdiplus::Font       iconFont1(m_iconFontName.c_str(), 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
-    StringFormat format;
-    format.SetAlignment(StringAlignmentCenter);
-    format.SetLineAlignment(StringAlignmentCenter);
-    Gdiplus::RectF layoutRect;
-
-    // Draw layout button
-    SetLayoutRect(layoutRect, m_allRects.layout);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(m_fileTreeVisible ? L"\uE127" : L"\uE126", 1, & iconFont1, layoutRect, & format, & brush);
-
     //Draw tab bar scroll arrow
-    tabrc                          = m_allRects.leftRoller;
-    int                       xPos = tabrc.left + 4;
-    int                       mPos = tabrc.top + HeightOf(tabrc) / 2;
-    constexpr int                 size = 5;
+    int                       mPos = m_allRects.leftRoller.top + HeightOf(tabrc) / 2;
     bool               disableLeft = m_firstVisibleItemIdx == 0;
     bool              disableRight = m_lastVisibleItemIdx >= GetItemCount() - 1;
-    Gdiplus::Point    rightArrow[] = {{xPos + size * 3, mPos + size}, {xPos + size * 3, mPos - size}, {xPos + size * 5, mPos}};
-    Gdiplus::Point    leftArrow[]  = {{xPos + size * 2, mPos + size}, {xPos + size * 2, mPos - size}, {xPos, mPos}};
+    RECT                 arrowRect = { 0,0,10,10 };
+    RECT                 hoverRect = { 0,0,HeightOf(tabrc) / 2,HeightOf(tabrc) / 2 };
     
+    //Draw left roller
+    if (GetHoveredRect() == TitlebarRect::LeftRoller)
+    {
+        CenterRectInRect(&hoverRect, &m_allRects.leftRoller);
+        OffsetRect(&hoverRect, 1,0);
+        Gdiplus::Rect r(hoverRect.left, hoverRect.top, WidthOf(hoverRect), HeightOf(hoverRect));
+        brush.SetColor(ColorFrom(theme.itemHover));
+        graphics.FillRectangle(&brush, r);
+    }
+
+    CenterRectInRect(&arrowRect, &m_allRects.leftRoller);
+    Gdiplus::Point leftArrow[] = { {arrowRect.left, mPos}, {arrowRect.right, arrowRect.top}, {arrowRect.right, arrowRect.bottom} };
     brush.SetColor(ColorFrom(disableLeft ? theme.arrowDisable : theme.arrowFore));
     graphics.FillPolygon(&brush, leftArrow, _countof(leftArrow));
+
+    //Draw right roller
+    if (GetHoveredRect() == TitlebarRect::RightRoller)
+    {
+        CenterRectInRect(&hoverRect, &m_allRects.rightRoller);
+        Gdiplus::Rect r(hoverRect.left, hoverRect.top, WidthOf(hoverRect), HeightOf(hoverRect));
+        brush.SetColor(ColorFrom(theme.itemHover));
+        graphics.FillRectangle(&brush, r);
+    }
+
+    CenterRectInRect(&arrowRect, &m_allRects.rightRoller);
+    Gdiplus::Point rightArrow[] = { {arrowRect.left, arrowRect.top}, {arrowRect.left, arrowRect.bottom}, {arrowRect.right, mPos} };
     brush.SetColor(ColorFrom(disableRight ? theme.arrowDisable : theme.arrowFore));
     graphics.FillPolygon(&brush, rightArrow, _countof(rightArrow));
+
+    //Draw show more button
+    RECT icon_rect = { 0, 0, 14, 14 };
+    CenterRectInRect(&icon_rect, &m_allRects.showMore);
+    Gdiplus::Point    downArrow[] = { {icon_rect.left + 2, icon_rect.top + 3}, {icon_rect.right - 2, icon_rect.top + 3}, {(WidthOf(icon_rect) - 4) / 2 + icon_rect.left + 2, icon_rect.bottom - 2}};
+    if (GetHoveredRect() == TitlebarRect::ShowMore)
+    {
+        InflateRect(&icon_rect, 4, 4);
+        Gdiplus::Rect r(icon_rect.left,icon_rect.top,WidthOf(icon_rect),HeightOf(icon_rect));
+        brush.SetColor(ColorFrom(theme.itemHover));
+        graphics.FillRectangle(&brush, r);
+    }
+    brush.SetColor(ColorFrom(theme.arrowFore));
+    graphics.FillPolygon(&brush, downArrow, _countof(downArrow));
 }
 
 void CMainWindow::DrawTitlebar(HDC hdc) {
@@ -4522,7 +4607,6 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     RECT   titlebarRect = m_allRects.total;
     titlebarRect.bottom -= theme.tabHeight;
     FillRect(hdc, &titlebarRect, bg_brush);
-    DeleteObject(bg_brush);
     HBRUSH      hoverBrush  = CreateSolidBrush(theme.itemHover);
 
     switch (m_hoveredRect)
@@ -4539,59 +4623,63 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
         case TitlebarRect::System:
             FillRect(hdc, &m_allRects.system, hoverBrush);
             break;
-        case TitlebarRect::Open:
-            FillRect(hdc, &m_allRects.open, hoverBrush);
-            break;
-        case TitlebarRect::Theme:
-            FillRect(hdc, &m_allRects.theme, hoverBrush);
-            break;
     }
       
     DeleteObject(hoverBrush);
-    
-    /* Start to draw all title bar buttons */
-    
-    Gdiplus::Graphics   graphics(hdc);
-    Gdiplus::SolidBrush brush(ColorFrom(theme.winFore));
-    Gdiplus::Font       iconFont1(m_iconFontName.c_str(), 8.2f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
-    StringFormat format;
-    format.SetAlignment(StringAlignmentCenter);
-    format.SetLineAlignment(StringAlignmentCenter);
-    Gdiplus::RectF layoutRect;
 
-    // Draw close button
-    SetLayoutRect(layoutRect, m_allRects.close);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(L"\uE8BB", 1, &iconFont1, layoutRect, &format, &brush);
-    // Draw maximize button
-    SetLayoutRect(layoutRect, m_allRects.maximize);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(IsMaximized(m_hwnd) ? L"\uE923" : L"\uE922", 1, &iconFont1, layoutRect, &format, &brush);
-    // Draw minimized button
-    SetLayoutRect(layoutRect, m_allRects.minimize);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(L"\uE921", 1, &iconFont1, layoutRect, &format, &brush);
+    HPEN pen = CreatePen(PS_SOLID, 1, theme.winFore);
+    SelectObject(hdc, pen);
+    RECT icon_rect = { 0,0,14,14 };
 
     // Draw system menu icon
-    Gdiplus::Font       iconFont2(m_iconFontName.c_str(), 12.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
-    SetLayoutRect(layoutRect, m_allRects.system);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(L"\uEDE3", -1, &iconFont2, layoutRect, &format, &brush);
+    CenterRectInRect(&icon_rect, &m_allRects.system);
+    OffsetRect(&icon_rect, 0, -1);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, NULL);
+    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 2);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, NULL);
+    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
+    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, NULL);
+    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
 
-    //Draw Theme
-    SetLayoutRect(layoutRect, m_allRects.theme);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(CTheme::Instance().IsDarkTheme() ? L"\uE706" : L"\uE708", 1, &iconFont2, layoutRect, &format, &brush);
+    // Draw close button
+    icon_rect = { 0, 0, 11, 11 };
+    CenterRectInRect(&icon_rect, &m_allRects.close);
+    MoveToEx(hdc, icon_rect.left, icon_rect.top, NULL);
+    LineTo(hdc, icon_rect.right, icon_rect.bottom + 1);
+    MoveToEx(hdc, icon_rect.left, icon_rect.bottom, NULL);
+    LineTo(hdc, icon_rect.right, icon_rect.top);
 
-    //Draw open file/folder button
-    SetLayoutRect(layoutRect, m_allRects.open);
-    layoutRect.Y += 2.0f;
-    graphics.DrawString(L"\uECCD", 1, &iconFont2, layoutRect, &format, &brush);
+    // Draw maximize button
+    icon_rect = { 0, 0, 12, 12 };
+    CenterRectInRect(&icon_rect, &m_allRects.maximize);
+
+    SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
+    if (IsMaximized(m_hwnd))
+    {
+        OffsetRect(&icon_rect, -1, 1);
+        Rectangle(hdc, icon_rect.left + 5, icon_rect.top - 4, icon_rect.right + 5, icon_rect.bottom - 4);
+        FillRect(hdc, &icon_rect, bg_brush);
+    }
+    
+    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
+
+    // Draw minimized button
+    icon_rect = { 0, 0, 14, 1 };
+    CenterRectInRect(&icon_rect, &m_allRects.minimize);
+    Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
 
     // Draw title text
-    Gdiplus::Font       textFont(m_fontName.c_str(), 10.0f, Gdiplus::FontStyleRegular, Gdiplus::UnitPoint);
-    SetLayoutRect(layoutRect, m_allRects.text);
-    graphics.DrawString(m_titleText.c_str(), -1, &textFont, layoutRect, &format, &brush);
+    SetBkColor(hdc, theme.winBack);
+    SetTextColor(hdc, theme.winFore);
+    RECT rc = m_allRects.text;
+    rc.left = m_allRects.system.right + getQuickbarSize(m_quickbar).cx;
+    icon_rect = { 0, 0, rc.right - rc.left, rc.bottom - rc.top };
+    CenterRectInRect(&icon_rect, &rc);
+    icon_rect.top += 8;
+    DrawText(hdc, m_titleText.c_str(), -1, &icon_rect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
+
+    DeleteObject(pen);
+    DeleteObject(bg_brush);
 }
 
 int CMainWindow::GetSelected() const
@@ -4714,13 +4802,17 @@ int CMainWindow::GetItemCount() const
 
 void CMainWindow::OpenFolder(std::wstring path)
 {
-    if(std::find(m_recentFolders.begin(), m_recentFolders.end(), path) == m_recentFolders.end())
+    if(std::find(m_recents.begin(), m_recents.end(), path) == m_recents.end())
     {
-        m_recentFolders.push_back(path);
+        if (m_recents.size() > RECENTS_LENGTH - 1)
+            m_recents.erase(m_recents.begin());
+
+        m_recents.push_back(path);
     }
 
     m_fileTree.SetPath(path.c_str());
     m_titleText = path;
+    SendMessage(*this, WM_SETTEXT, 0, 0);
     ShowFileTree(TRUE);
 }
 
@@ -4741,4 +4833,64 @@ BOOL CMainWindow::HasActiveDocument()
 const CDocument& CMainWindow::GetActiveDocument() const
 {
     return m_docManager.GetDocumentFromID(GetCurrentTabId());
+}
+
+LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw)
+{
+    HDC hdc = pCustomDraw->nmcd.hdc;
+    BOOL isDark = CTheme::Instance().IsDarkTheme();
+    THEME theme = CTheme::CurrentTheme();
+
+    if (pCustomDraw->nmcd.dwDrawStage == CDDS_PREPAINT)
+    {
+        RECT          rect;
+        GetClientRect(m_quickbar, &rect);
+        HBRUSH brush = CreateSolidBrush(theme.winBack);
+        FillRect(hdc, &rect, brush);
+        DeleteObject(brush);
+        return CDRF_NOTIFYITEMDRAW | CDRF_NOTIFYPOSTPAINT;
+    }
+    else if (pCustomDraw->nmcd.dwDrawStage == CDDS_ITEMPREPAINT)
+    {
+        RECT rc = pCustomDraw->nmcd.rc;
+        UINT  state = pCustomDraw->nmcd.uItemState;
+        UINT  item = static_cast<UINT>(pCustomDraw->nmcd.dwItemSpec);
+
+        // Calculate image position.
+        int cx = 0;
+        int cy = 0;
+        HIMAGELIST imageList = isDark ? m_darkImages : m_lightImages;
+        ImageList_GetIconSize(imageList, &cx, &cy);
+        int   pressedOffset = (state & CDIS_SELECTED) ? 1 : 0;
+        // Calculate the image position without the TBSTYLE_LIST toolbar style.
+        int xImage = (rc.right + rc.left - cx) / 2 + pressedOffset;
+        int yImage = (rc.bottom + rc.top - cy) / 2;
+
+        // Draw the button image.
+        TBBUTTON tbb;
+        ZeroMemory(&tbb, sizeof(tbb));
+        int button = static_cast<int>(SendMessage(m_quickbar, TB_COMMANDTOINDEX, item, 0));
+        WPARAM wparam = static_cast<WPARAM>(button);
+        LPARAM lparam = reinterpret_cast<LPARAM>(&tbb);
+        SendMessage(m_quickbar, TB_GETBUTTON, wparam, lparam);
+        if (((tbb.fsState & TBSTATE_CHECKED) != 0) || ((state & CDIS_HOT) != 0))
+        {
+            COLORREF clr = theme.tabHover;
+            clr = GDIHelpers::Lighter(clr, 1.5);
+            HBRUSH hoverBrush = CreateSolidBrush(isDark ? clr : theme.itemHover);
+            FillRect(hdc, &rc, hoverBrush);
+            DeleteObject(hoverBrush);
+        }
+        else
+        {
+            if (IsWindowVisible(m_custToolTip))
+                m_custToolTip.HideTip();
+        }
+
+        ImageList_Draw(imageList, tbb.iBitmap, hdc, xImage, yImage, ILD_TRANSPARENT);
+
+        return CDRF_SKIPDEFAULT;
+    }
+
+    return 0;
 }

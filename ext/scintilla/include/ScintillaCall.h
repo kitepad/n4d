@@ -71,6 +71,7 @@ public:
 	std::string StringOfRange(Span span);
 	Position ReplaceTarget(std::string_view text);
 	Position ReplaceTargetRE(std::string_view text);
+	Position ReplaceTargetMinimal(std::string_view text);
 	Position SearchInTarget(std::string_view text);
 	Span SpanSearchInTarget(std::string_view text);
 
@@ -95,6 +96,7 @@ public:
 	void SelectAll();
 	void SetSavePoint();
 	Position GetStyledText(void *tr);
+	Position GetStyledTextFull(void *tr);
 	bool CanRedo();
 	Line MarkerLineFromHandle(int markerHandle);
 	void MarkerDeleteHandle(int markerHandle);
@@ -200,6 +202,9 @@ public:
 	void StyleSetHotSpot(int style, bool hotspot);
 	void StyleSetCheckMonospaced(int style, bool checkMonospaced);
 	bool StyleGetCheckMonospaced(int style);
+	void StyleSetInvisibleRepresentation(int style, const char *representation);
+	int StyleGetInvisibleRepresentation(int style, char *representation);
+	std::string StyleGetInvisibleRepresentation(int style);
 	void SetElementColour(Scintilla::Element element, ColourAlpha colourElement);
 	ColourAlpha ElementColour(Scintilla::Element element);
 	void ResetElementColour(Scintilla::Element element);
@@ -389,6 +394,7 @@ public:
 	void TargetWholeDocument();
 	Position ReplaceTarget(Position length, const char *text);
 	Position ReplaceTargetRE(Position length, const char *text);
+	Position ReplaceTargetMinimal(Position length, const char *text);
 	Position SearchInTarget(Position length, const char *text);
 	void SetSearchFlags(Scintilla::FindOption searchFlags);
 	Scintilla::FindOption SearchFlags();

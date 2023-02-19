@@ -28,6 +28,7 @@
 #pragma warning(disable : 4458) // declaration of 'xxx' hides class member
 #include <gdiplus.h>
 #pragma warning(pop)
+#include <memory>
 #include <algorithm>
 
 constexpr COLORREF darkDisabledTextColor = 0x808080;
@@ -46,10 +47,10 @@ static BOOL GetEditBorderColor(HWND hWnd, COLORREF* pClr);
 
 static THEME darkTheme  = {RGB(0x10, 0x10, 0x10), RGB(0xEF, 0xEF, 0xEF), RGB(0x10, 0x10, 0x10), 
     RGB(0xA6, 0xAB, 0xAF), RGB(0x32, 0x32, 0x32), RGB(0xFF, 0xFF, 0xFF), RGB(0xEF, 0xEF, 0xEF), 
-    RGB(0x6C, 0x71, 0x76), RGB(0x30, 0x60, 0xE8), RGB(0x32, 0x32, 0x32), L"Tahoma", 13, 32, 36};
+    RGB(0x6C, 0x71, 0x76), RGB(0x30, 0x60, 0xE8), RGB(0x32, 0x32, 0x32), L"Tahoma", 12, 36, 36};
 static THEME lightTheme = {RGB(0xF0, 0xF0, 0xF0), RGB(0x10, 0x10, 0x10), RGB(0xF0, 0xF0, 0xF0), 
     RGB(0x10, 0x10, 0x10), RGB(0x80, 0x80, 0x80), RGB(0xDF, 0xDF, 0xDF), RGB(0x40, 0x40, 0x40), 
-    RGB(0x8F, 0x8F, 0x8F), RGB(0x40, 0x40, 0xF0), RGB(0xAD, 0xAD, 0xAD), L"Tahoma", 13, 32, 36};
+    RGB(0x8F, 0x8F, 0x8F), RGB(0x40, 0x40, 0xF0), RGB(0xAD, 0xAD, 0xAD), L"Tahoma", 12, 36, 36};
 
 THEME CTheme::CurrentTheme()
 {
@@ -750,7 +751,7 @@ LRESULT CTheme::ButtonSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                             if (CTheme::Instance().IsDarkTheme())
                                 cr = CurrentTheme().itemHover;
                             cr |= 0xff000000;
-
+                            
                             auto                  myPen      = std::make_unique<Gdiplus::Pen>(Gdiplus::Color(cr), 1.0f);
                             auto                  myGraphics = std::make_unique<Gdiplus::Graphics>(hdcPaint);
                             int                   iY         = RECTHEIGHT(rcDraw) / 2;

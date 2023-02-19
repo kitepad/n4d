@@ -269,21 +269,22 @@
       <AdditionalIncludeDirectories>$(IntDir);..\ext\sktoolslib;..\ext\scintilla\include;..\ext\lexilla\include;..\ext\lexilla\lexlib;..\ext\coolsb;Commands;$(ProjectDir);last</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Msimg32.lib;Imm32.lib;Propsys.lib;uchardet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msimg32.lib;Imm32.lib;Propsys.lib;compact_enc_det.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
       <CETCompat>true</CETCompat>
       <Profile>true</Profile>
-      <AdditionalLibraryDirectories>..\obj\uchardet\Release_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\obj\compact_enc_det\Release_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(IntDir);last</AdditionalIncludeDirectories>
@@ -497,6 +498,8 @@
   <ItemGroup>
     <Image Include="res\n4d.ico" />
     <Image Include="res\empty.bmp" />
+    <Image Include="res\quickbar_dark.bmp" />
+    <Image Include="res\quickbar_light.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\AutoComplete.ini" />

@@ -1617,7 +1617,9 @@ void CFindReplaceDlg::DoReplace(int id)
                 auto targetEnd   = Scintilla().TargetEnd();
                 if (id == IDC_REPLACEBTN)
                     Center(targetStart, targetEnd);
-                if ((targetEnd > targetStart || sReplaceString.empty()) && (targetStart != targetEnd) && !g_findString.contains('$'))
+
+                //if ((targetEnd > targetStart || sReplaceString.empty()) && (targetStart != targetEnd) && !g_findString.contains('$'))
+                if ((targetEnd > targetStart || sReplaceString.empty()) && (targetStart != targetEnd) && (g_findString.find('$') == std::string::npos))
                     Scintilla().SetTargetStart(targetEnd);
                 else
                     Scintilla().SetTargetStart(targetEnd + 1);

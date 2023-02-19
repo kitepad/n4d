@@ -48,14 +48,12 @@ enum class TitlebarRect
     Minimize,
     Maximize,
     Close,
-    Theme,
+//    Theme,
     LeftRoller,
     RightRoller,
     Tabs,
     Text,
-    Layout,
-    Save,
-    Open,
+    ShowMore,
 };
 
 struct TitlebarRects
@@ -63,16 +61,13 @@ struct TitlebarRects
     RECT total;
     RECT system;
     RECT text;
-    RECT theme;
     RECT minimize;
     RECT maximize;
     RECT close;
     RECT leftRoller;
     RECT rightRoller;
     RECT tabs;
-    RECT open;
-    RECT layout;
-    RECT save;
+    RECT showMore;
 };
 
 enum class ResponseToOutsideModifiedFile
@@ -97,6 +92,12 @@ struct ItemMetrics
     int     height = 0;
     int     state = 0;
     DocID   id;
+};
+
+struct RECENT
+{
+    std::wstring path;
+    bool         isFolder = false; //true: folder, false: file
 };
 
 class CAboutDlg : public CDialog
@@ -218,6 +219,7 @@ private:
     void        HandleStatusBar(WPARAM wParam, LPARAM lParam);
     LRESULT     HandleEditorEvents(const NMHDR& nmHdr, WPARAM wParam, LPARAM lParam);
     LRESULT     HandleFileTreeEvents(const NMHDR& nmHdr, WPARAM wParam, LPARAM lParam);
+    LRESULT     HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw);
     int         GetZoomPC() const;
     void        SetZoomPC(int zoomPC) const;
     void        OpenFiles(const std::vector<std::wstring>& paths);
@@ -250,7 +252,8 @@ private:
     CFileTree                                       m_fileTree;
     CProgressBar                                    m_progressBar;
     CCustomToolTip                                  m_custToolTip;
-    CCustomToolTip                                  m_tabTip;
+    //CCustomToolTip                                  m_tabTip;
+    //CCustomToolTip                                  m_quickbarTip;
     int                                             m_treeWidth;
     bool                                            m_bDragging;
     POINT                                           m_oldPt;
@@ -287,8 +290,10 @@ private:
     std::wstring                m_fontName            = L"Tahoma";
     std::wstring                m_titleText           = L"";
     std::vector<ItemMetrics>    m_allTabs;
-    std::vector<std::wstring>   m_recentFolders;
+    std::vector<std::wstring>   m_recents;
     int                         m_tipIdx = -1;        
     ULONG_PTR                   m_gdiplusToken;
-    std::wstring                m_iconFontName        =L"Segoe Fluent Icons";
+    HWND       m_quickbar;
+    HIMAGELIST m_darkImages = nullptr;
+    HIMAGELIST m_lightImages = nullptr;
 };
