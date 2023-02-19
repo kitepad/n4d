@@ -33,8 +33,8 @@ Below is Screenshot :
 
 Dark theme:
 
-![image](https://user-images.githubusercontent.com/28701482/184499462-af0cbeff-1369-49ca-b020-04e8d7857559.png)
+![image](https://user-images.githubusercontent.com/28701482/219947679-1442ab44-2783-4a9a-bdba-4130f230f88f.png)
 
 Light theme:
+![image](https://user-images.githubusercontent.com/28701482/219947715-ada36d03-088a-4057-8c47-332293d17bb4.png)
 
-![image](https://user-images.githubusercontent.com/28701482/184500277-6fa317c9-9f14-4510-ac26-84ccae5d3ac8.png)
