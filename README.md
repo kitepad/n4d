@@ -2,7 +2,7 @@
 N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 
 * Remove Ribbon UI, instead by operate using Keyboard and Popupmenu 
-* Custom Draw title bar and tab bar
+* Custom Draw title bar and tab bar, quickbar
 * UI change for some dialogs, such as Find/Replace, Goto Line, Change Tab width, style configurator, about box and etc.
 * UI change for encoding selection, lexer selection, command palette.
 * Launch command for sciter.js app, inspector (Removed)
@@ -14,10 +14,9 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Change tab width by right click on tab width of status bar
 * Change encoding/style by left click on encoding/style info of status bar.
 * Show options menu when right click on margin or right click with VK_CONTROL down on editor.
-* Left click with VK_CONTROL on add button (left of title bar) to open folder, right click to show recent opened folders
-* First item of FileTree is changed to show current folder name with RED color and BOLD font (Removed)
-* Left button of tab bar is used to toggle file tree
-* Show all opened files when right click on tab scroll arrow with filterable dialog.
+* Add toolbar in titlebar as quickbar, and show tooltip for button when mouse on button of quickbar
+* Right button of tab bar is used to show all opened files using filterable dialog.
+* Add recents menu (Not implemented for recents persitent and load) 
 * Toggle all fold when clicked with VK_CONTROL in folding margin
 * Left parts of status bar are shown atrributs of current document, right parts are shown attributs of scintiall view.
 * config files : n4d.settings - options, n4d.shortcuts - keyboard shortcuts, n4d.styles - user defined lexer styles, n4d.snippets - auto complete for code snippet
