@@ -1,13 +1,13 @@
-I will not publish any binary build from now. You should clone this repository and build it by yourself.
-Build tool: Visual Studio 2022 Community.
-Windows SDK version : 10.0 (latest installed version)
-Platform toolset : Visual Studio 2022 (v143)
-C++ Lanuage Standard : ISO C++20 Standard.
-Tested OS: Windows 11 insider build 22000 above.
-
 # Notepad for Developer - N4D
 N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 
+# I will not publish any binary build from now. You should clone this repository and build it by yourself.
+* Build tool: Visual Studio 2022 Community.
+* Windows SDK version : 10.0 (latest installed version)
+* Platform toolset : Visual Studio 2022 (v143)
+* C++ Lanuage Standard : ISO C++20 Standard.
+* Tested OS: Windows 11 insider build 22000 above.
+# Changed from BowPad
 * Remove Ribbon UI, instead by operate using Keyboard and Popupmenu 
 * Custom Draw title bar and tab bar, quickbar
 * UI change for some dialogs, such as Find/Replace, Goto Line, Change Tab width, style configurator, about box and etc.
