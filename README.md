@@ -23,7 +23,7 @@ N4D is a fork of BowPad by Stefan Kueng and modified with my favorites.
 * Show options menu when right click on margin or right click with VK_CONTROL down on editor.
 * Add toolbar in titlebar as quickbar, and show tooltip for button when mouse on button of quickbar
 * Right button of tab bar is used to show all opened files using filterable dialog.
-* Add recents menu (Not implemented for recents persitent and load) 
+* Add recents menu and load/save recents in registry. 
 * Toggle all fold when clicked with VK_CONTROL in folding margin
 * Left parts of status bar are shown atrributs of current document, right parts are shown attributs of scintiall view.
 * config files : n4d.settings - options, n4d.shortcuts - keyboard shortcuts, n4d.styles - user defined lexer styles, n4d.snippets - auto complete for code snippet
