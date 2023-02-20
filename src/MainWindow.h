@@ -245,6 +245,9 @@ private:
     DocID       GetCurrentTabId() const;
     void        OpenFolder(std::wstring path);
     void        ShowAutoComplete();
+    void        AddToRecents(std::wstring path);
+    void        SaveRecents();
+    void        ShowRecents();
 
 private:
     CRichStatusBar                                  m_statusBar;

@@ -895,6 +895,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_DESTROY:
         {
             findReplaceFinish();
+            SaveRecents();
             PostQuitMessage(0);
             return 0;
         }
@@ -921,6 +922,9 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 {
                     DefWindowProc(hwnd, uMsg, wParam, lParam);
                     InvalidateRect(*this, nullptr, FALSE);
+                    if (cmd == SC_CLOSE)
+                        SaveRecents();
+
                     return 1;
                 }
                 case SC_MOUSEMENU:
@@ -1665,50 +1669,8 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
             About();
             break;
         case cmdOpenRecent: // Open popup menu to list recent opened files/folders
-            { 
-                auto count = m_recents.size();
-
-                if (count > 0)
-                {
-                    auto hMenu = CreatePopupMenu();
-                    for (int i = 0; i < count; ++i)
-                    {
-                        std::wstring folderName = m_recents[i];
-                        AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
-                        if (PathIsDirectory(folderName.c_str()))
-                        {
-                            HIMAGELIST images = CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages;
-                           
-                            HICON icon = ImageList_GetIcon(images, 3, ILD_TRANSPARENT); // icon index 3 is open folder.
-                            ICONINFO iconInfo;
-                            ::GetIconInfo(icon, &iconInfo);
-                            ::DeleteObject(iconInfo.hbmMask);
-                            ::DestroyIcon(icon);
-
-                            SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, iconInfo.hbmColor, iconInfo.hbmColor);
-                        }
-                    }
-                    
-                    POINT pt = { m_allRects.system.right, m_allRects.system.bottom };
-                    ClientToScreen(*this, &pt);
-
-                    int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-                    if (idx > 0)
-                    {
-                        if (PathIsDirectory(m_recents[idx - 1].c_str()))
-                        {
-                            m_fileTree.SetPath(m_recents[idx - 1]);
-                            m_titleText = m_recents[idx - 1];
-                            SendMessage(*this, WM_SETTEXT, 0, 0);
-                            ShowFileTree(true);
-                        }
-                        else
-                            OpenFile(m_recents[idx - 1].c_str(), OpenFlags::AskToCreateIfMissing);
-                    }
-                    DestroyMenu(hMenu);
-                }
-                break;
-            }
+            ShowRecents();
+            break;
             
         default:
         {
@@ -1830,7 +1792,7 @@ bool CMainWindow::Initialize()
     TBBUTTON tbButtons[numButtons] =
     {
         {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
-        {0, cmdOpenRecent, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {0, cmdOpenRecent, 0, buttonStyles, {0}, 0, 0},
         {1, cmdNew, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {2, cmdOpen, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {3, cmdOpenFolder, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
@@ -1846,10 +1808,46 @@ bool CMainWindow::Initialize()
     SendMessage(m_quickbar, TB_ADDBUTTONS, (WPARAM)numButtons, (LPARAM)&tbButtons);
     SendMessage(m_quickbar, TB_CHECKBUTTON, cmdFileTree, m_fileTreeVisible);
 
+    HKEY hKey = nullptr;
+    std::wstring valueName = L"Recents";
+
+    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\n4d", &hKey) == ERROR_SUCCESS)
+        m_recents = CAppUtils::GetMultiStringValue(hKey, valueName);
+    RegCloseKey(hKey);
+
+    for (auto pItem = m_recents.begin(); pItem < m_recents.end(); pItem++)
+    {
+        std::wstring item = *pItem;
+        if(item.empty())
+            m_recents.erase(pItem);
+    }
+    if(m_recents.size() > 0)
+        SendMessage(m_quickbar, TB_SETSTATE, cmdOpenRecent, TBSTATE_ENABLED);
+
+    ///End test
     //Refresh titlebar
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
 
     return true;
+}
+
+void CMainWindow::SaveRecents()
+{
+    HKEY hKey = nullptr;
+    std::wstring valueName = L"Recents";
+
+    if (RegOpenKey(HKEY_CURRENT_USER, L"Software\\n4d", &hKey) != ERROR_SUCCESS)
+    {
+        // but the default icon hasn't been set yet: set the default icon now
+        if (RegCreateKey(HKEY_CURRENT_USER, L"Software\\n4d", &hKey) == ERROR_SUCCESS)
+        {
+            CAppUtils::SetMultiStringValue(hKey, valueName, m_recents);
+        }
+    }else
+        CAppUtils::SetMultiStringValue(hKey, valueName, m_recents);
+
+    RegCloseKey(hKey);
+
 }
 
 void CMainWindow::HandleCreate(HWND hwnd)
@@ -3543,13 +3541,7 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
             CCommandHandler::Instance().OnDocumentOpen(id);
         }
         m_editor.EnableChangeHistory();
-
-        if (std::find(m_recents.begin(), m_recents.end(), filepath) == m_recents.end())
-        {
-            if (m_recents.size() > RECENTS_LENGTH - 1)
-                m_recents.erase(m_recents.begin());
-            m_recents.push_back(filepath);
-        }
+        AddToRecents(filepath);
     }
     m_insertionIndex = -1;
     
@@ -4800,9 +4792,9 @@ int CMainWindow::GetItemCount() const
     return static_cast<int>(m_allTabs.size());
 }
 
-void CMainWindow::OpenFolder(std::wstring path)
+void CMainWindow::AddToRecents(std::wstring path)
 {
-    if(std::find(m_recents.begin(), m_recents.end(), path) == m_recents.end())
+    if (std::find(m_recents.begin(), m_recents.end(), path) == m_recents.end())
     {
         if (m_recents.size() > RECENTS_LENGTH - 1)
             m_recents.erase(m_recents.begin());
@@ -4810,6 +4802,11 @@ void CMainWindow::OpenFolder(std::wstring path)
         m_recents.push_back(path);
     }
 
+    SendMessage(m_quickbar, TB_SETSTATE, cmdOpenRecent, TBSTATE_ENABLED);
+}
+void CMainWindow::OpenFolder(std::wstring path)
+{
+    AddToRecents(path);
     m_fileTree.SetPath(path.c_str());
     m_titleText = path;
     SendMessage(*this, WM_SETTEXT, 0, 0);
@@ -4893,4 +4890,49 @@ LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw
     }
 
     return 0;
+}
+
+void CMainWindow::ShowRecents()
+{
+    auto count = m_recents.size();
+
+    if (count > 0)
+    {
+        auto hMenu = CreatePopupMenu();
+        for (int i = 0; i < count; ++i)
+        {
+            std::wstring folderName = m_recents[i];
+            AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
+            if (PathIsDirectory(folderName.c_str()))
+            {
+                HIMAGELIST images = CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages;
+
+                HICON icon = ImageList_GetIcon(images, 3, ILD_TRANSPARENT); // icon index 3 is open folder.
+                ICONINFO iconInfo;
+                ::GetIconInfo(icon, &iconInfo);
+                ::DeleteObject(iconInfo.hbmMask);
+                ::DestroyIcon(icon);
+
+                SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, iconInfo.hbmColor, iconInfo.hbmColor);
+            }
+        }
+
+        POINT pt = { m_allRects.system.right, m_allRects.system.bottom };
+        ClientToScreen(*this, &pt);
+
+        int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+        if (idx > 0)
+        {
+            if (PathIsDirectory(m_recents[idx - 1].c_str()))
+            {
+                m_fileTree.SetPath(m_recents[idx - 1]);
+                m_titleText = m_recents[idx - 1];
+                SendMessage(*this, WM_SETTEXT, 0, 0);
+                ShowFileTree(true);
+            }
+            else
+                OpenFile(m_recents[idx - 1].c_str(), OpenFlags::AskToCreateIfMissing);
+        }
+        DestroyMenu(hMenu);
+    }
 }

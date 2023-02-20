@@ -17,6 +17,9 @@
 
 #pragma once
 #include <string>
+#include <memory>           // std::unique_ptr, std::make_unique
+#include <string>           // std::wstring
+#include <vector>           // std::vector
 
 class CAppUtils
 {
@@ -24,6 +27,8 @@ public:
     CAppUtils();
     ~CAppUtils();
 
+    static std::vector<std::wstring> GetMultiStringValue(const HKEY hKey, const std::wstring& valueName);
+    static LSTATUS SetMultiStringValue(const HKEY hKey, const std::wstring& valueName, const std::vector<std::wstring>& data);
     static std::wstring             GetDataPath(HMODULE hMod = nullptr);
     static std::wstring             GetSessionID();
     static bool                     FailedShowMessage(HRESULT hr);

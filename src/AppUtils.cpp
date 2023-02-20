@@ -153,3 +153,133 @@ const char* CAppUtils::GetResourceData(const wchar_t * resName, int id, DWORD& r
     return lpResLock;
 }
 
+LSTATUS CAppUtils::SetMultiStringValue(const HKEY hKey,const std::wstring& valueName,const std::vector<std::wstring>& data)
+{
+    // First, we have to build a double-NUL-terminated multi-string from the input data
+    std::vector<wchar_t> multiString;// = BuildMultiString(data);
+
+    // Special case of the empty multi-string
+    if (data.empty())
+    {
+        // Build a vector containing just two NULs
+        multiString = std::vector<wchar_t>(2, L'\0');
+    }
+
+    // Get the total length in wchar_ts of the multi-string
+    size_t totalLen = 0;
+    for (const auto& s : data)
+    {
+        // Add one to current string's length for the terminating NUL
+        totalLen += (s.length() + 1);
+    }
+
+    // Add one for the last NUL terminator (making the whole structure double-NUL terminated)
+    totalLen++;
+
+    // Reserve room in the vector to speed up the following insertion loop
+    multiString.reserve(totalLen);
+
+    // Copy the single strings into the multi-string
+    for (const auto& s : data)
+    {
+        if (!s.empty())
+        {
+            // Copy current string's content
+            multiString.insert(multiString.end(), s.begin(), s.end());
+        }
+
+        // Don't forget to NUL-terminate the current string
+        // (or just insert L'\0' for empty strings)
+        multiString.emplace_back(L'\0');
+    }
+
+    // Add the last NUL-terminator
+    multiString.emplace_back(L'\0');
+
+    // Total size, in bytes, of the whole multi-string structure
+    const DWORD dataSize = static_cast<DWORD>(multiString.size() * sizeof(wchar_t));
+
+    LSTATUS retCode = ::RegSetValueExW(
+        hKey,
+        valueName.c_str(),
+        0, // reserved
+        REG_MULTI_SZ,
+        reinterpret_cast<const BYTE*>(multiString.data()),
+        dataSize
+    );
+
+    return retCode; //ERROR_SUCESS
+}
+
+std::vector<std::wstring> CAppUtils::GetMultiStringValue(const HKEY hKey, const std::wstring& valueName)
+{
+    // Request the size of the multi-string, in bytes
+    DWORD dataSize = 0;
+    constexpr DWORD flags = RRF_RT_REG_MULTI_SZ;
+    LSTATUS retCode = ::RegGetValueW(
+        hKey,
+        nullptr,    // no subkey
+        valueName.c_str(),
+        flags,
+        nullptr,    // type not required
+        nullptr,    // output buffer not needed now
+        &dataSize
+    );
+
+    std::vector<std::wstring> result;
+
+    if (retCode == ERROR_SUCCESS)
+    {
+        std::vector<wchar_t> data(dataSize / sizeof(wchar_t), L' ');
+
+        // Read the multi-string from the registry into the vector object
+        retCode = ::RegGetValueW(
+            hKey,
+            nullptr,    // no subkey
+            valueName.c_str(),
+            flags,
+            nullptr,    // no type required
+            data.data(),   // output buffer
+            &dataSize
+        );
+        if (retCode == ERROR_SUCCESS)
+        {
+            // Resize vector to the actual size returned by GetRegValue.
+            // Note that the vector is a vector of wchar_ts, instead the size returned by GetRegValue
+            // is in bytes, so we have to scale from bytes to wchar_t count.
+            data.resize(dataSize / sizeof(wchar_t));
+
+            // Convert the double-null-terminated string structure to a vector<wstring>,
+            // and return that back to the caller
+            //result = ParseMultiString(data);
+
+            //std::vector<std::wstring> result;
+
+            const wchar_t* currStringPtr = data.data();
+            const wchar_t* const endPtr = data.data() + data.size() - 1;
+
+            while (currStringPtr < endPtr)
+            {
+                // Current string is NUL-terminated, so get its length calling wcslen
+                const size_t currStringLength = wcslen(currStringPtr);
+
+                // Add current string to the result vector
+                if (currStringLength > 0)
+                {
+                    result.emplace_back(currStringPtr, currStringLength);
+                }
+                else
+                {
+                    // Insert empty strings, as well
+                    result.emplace_back(std::wstring{});
+                }
+
+                // Move to the next string, skipping the terminating NUL
+                currStringPtr += currStringLength + 1;
+            }
+
+        }
+    }
+
+    return result;
+}
