@@ -920,10 +920,11 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 case SC_CLOSE:
                 case SC_SIZE:
                 {
-                    DefWindowProc(hwnd, uMsg, wParam, lParam);
-                    InvalidateRect(*this, nullptr, FALSE);
                     if (cmd == SC_CLOSE)
                         SaveRecents();
+
+                    DefWindowProc(hwnd, uMsg, wParam, lParam);
+                    InvalidateRect(*this, nullptr, FALSE);
 
                     return 1;
                 }
@@ -1847,7 +1848,6 @@ void CMainWindow::SaveRecents()
         CAppUtils::SetMultiStringValue(hKey, valueName, m_recents);
 
     RegCloseKey(hKey);
-
 }
 
 void CMainWindow::HandleCreate(HWND hwnd)
@@ -1950,8 +1950,9 @@ void CMainWindow::ResizeChildWindows()
         const int width          = rect.right - rect.left;
         const SIZE qbarSize     = getQuickbarSize(m_quickbar);
         int pos = rect.top + (titlebarHeight - qbarSize.cy) / 2 + 2;
+        
         HDWP hDwp = BeginDeferWindowPos(4);
-        DeferWindowPos(hDwp, m_quickbar, nullptr, GetTitlebarRects().system.right, pos, qbarSize.cx, titlebarHeight - 3, flags);
+        DeferWindowPos(hDwp, m_quickbar, nullptr, GetTitlebarRects().system.right, pos, qbarSize.cx, titlebarHeight - pos, flags);
         DeferWindowPos(hDwp, m_statusBar, nullptr, rect.left, rect.bottom - stHeight, width, stHeight, flags);
         DeferWindowPos(hDwp, m_editor, nullptr, rect.left + treeWidth, topPos, width - treeWidth, height, flags);
         DeferWindowPos(hDwp, m_fileTree, nullptr, rect.left, topPos, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
