@@ -380,7 +380,7 @@ void CMainWindow::UpdateTitlebarRects()
     m_allRects.minimize = {m_allRects.maximize.left - h1 - iconWidth, rc.top, m_allRects.maximize.left, vsPos};
     RECT rcqbar;
     GetWindowRect(m_quickbar, &rcqbar);
-    m_allRects.text = { m_allRects.system.right + WidthOf(rcqbar), rc.top, m_allRects.minimize.left, vsPos };
+    m_allRects.text = { m_allRects.system.right, rc.top, m_allRects.minimize.left - WidthOf(rcqbar), vsPos};
     m_allRects.leftRoller = { left, vsPos,  left + h2 / 2, vsPos + h2 };
     m_allRects.showMore = { right - h2, vsPos, right, vsPos + h2 };
     m_allRects.rightRoller = { left + h2 / 2, vsPos, left + h2, vsPos + h2 };
@@ -1061,12 +1061,6 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
             
             const NMHDR& nmHdr = *pnmHdr;
 
-            if (nmHdr.code == TTN_GETDISPINFO)
-            {
-                LPNMTTDISPINFO lpNmtdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
-                HandleGetDispInfo(static_cast<int>(nmHdr.idFrom), lpNmtdi);
-            }
-
             if (nmHdr.hwndFrom == m_quickbar)
             {
                 if (nmHdr.code == static_cast<UINT>(TBN_GETINFOTIP))
@@ -1092,6 +1086,12 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                     LPNMTBCUSTOMDRAW pCustomDraw = (LPNMTBCUSTOMDRAW)pnmHdr;
                     return HandleQuickbarCustomDraw(pCustomDraw);
                 }
+            }
+
+            if (nmHdr.code == TTN_GETDISPINFO)
+            {
+                LPNMTTDISPINFO lpNmtdi = reinterpret_cast<LPNMTTDISPINFO>(lParam);
+                HandleGetDispInfo(static_cast<int>(nmHdr.idFrom), lpNmtdi);
             }
 
             if (nmHdr.idFrom == reinterpret_cast<UINT_PTR>(&m_editor) || nmHdr.hwndFrom == m_editor)
@@ -1774,41 +1774,44 @@ bool CMainWindow::Initialize()
 
     ////Init and setup quickbar
     // Declare and initialize local constants.
-    const int numButtons = 11;
+    const int numButtons = 12;
     const int bitmapSize = 20;
 
     const DWORD buttonStyles = TBSTYLE_BUTTON;
     const DWORD tbStyles = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN;
+    
+    //m_shieldImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, 4, 0);
+    //ImageList_AddMasked(m_shieldImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_SHIELDS)), RGB(192, 192, 192));
     // Create the toolbar.
     m_quickbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, tbStyles, 0, 0, 0, 0, m_hwnd, NULL, g_hInst, NULL);
-    m_darkImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, numButtons, 0);
-    m_lightImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, numButtons, 0);
-    ImageList_AddMasked(m_darkImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_QUICKBAR_DARK)), RGB(192, 192, 192));
-    ImageList_AddMasked(m_lightImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_QUICKBAR_LIGHT)), RGB(192, 192, 192));
-
-    //  Set the image list.
-    SendMessage(m_quickbar, TB_SETIMAGELIST, 0, (LPARAM)(CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages));
+    m_quickbarImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, 20, 0);
+    ImageList_AddMasked(m_quickbarImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_QUICKBAR)), RGB(192, 192, 192));
+    SendMessage(m_quickbar, TB_SETIMAGELIST, 0, (LPARAM)(m_quickbarImages));
 
     // Declare and Add buttons to quickbar.
     TBBUTTON tbButtons[numButtons] =
     {
-        {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
         {0, cmdOpenRecent, 0, buttonStyles, {0}, 0, 0},
         {1, cmdNew, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {2, cmdOpen, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {3, cmdOpenFolder, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {4, cmdSave, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
-        {5, cmdPrint, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {5, cmdSaveAs, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {6, cmdPrint, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
         {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
-        {6, cmdConfigStyle, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
-        {7, cmdToggleTheme, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
-        {8, cmdFileTree, TBSTATE_ENABLED, buttonStyles | TBSTYLE_CHECK, {0}, 0, cmdFileTree},
+        {7, cmdFileTree, TBSTATE_ENABLED, buttonStyles | TBSTYLE_CHECK, {0}, 0, 0},
+        {8, cmdToggleTheme, TBSTATE_ENABLED, buttonStyles, {0}, 0, 0},
+        {9, cmdConfigStyle, TBSTATE_ENABLED, buttonStyles , {0}, 0, 0},
+        {0, 0, 0, TBSTYLE_SEP, {0}, 0, 0},
     };
 
     SendMessage(m_quickbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
     SendMessage(m_quickbar, TB_ADDBUTTONS, (WPARAM)numButtons, (LPARAM)&tbButtons);
     SendMessage(m_quickbar, TB_CHECKBUTTON, cmdFileTree, m_fileTreeVisible);
 
+    //SendMessage(m_quickbar, TB_CHANGEBITMAP, cmdOpenRecent, 11);
+
+    //Load recents from registry
     HKEY hKey = nullptr;
     std::wstring valueName = L"Recents";
 
@@ -1825,7 +1828,7 @@ bool CMainWindow::Initialize()
     if(m_recents.size() > 0)
         SendMessage(m_quickbar, TB_SETSTATE, cmdOpenRecent, TBSTATE_ENABLED);
 
-    ///End test
+    
     //Refresh titlebar
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
 
@@ -1949,10 +1952,12 @@ void CMainWindow::ResizeChildWindows()
         const int topPos         = rect.top + titlebarHeight + tabbarHeight;
         const int width          = rect.right - rect.left;
         const SIZE qbarSize     = getQuickbarSize(m_quickbar);
-        int pos = rect.top + (titlebarHeight - qbarSize.cy) / 2 + 2;
-        
+        int yPos = rect.top + (titlebarHeight - qbarSize.cy) / 2 + 1;
+        int xPos = GetTitlebarRects().minimize.left - qbarSize.cx;
+        int qbarHeight = titlebarHeight - yPos;
+
         HDWP hDwp = BeginDeferWindowPos(4);
-        DeferWindowPos(hDwp, m_quickbar, nullptr, GetTitlebarRects().system.right, pos, qbarSize.cx, titlebarHeight - pos, flags);
+        DeferWindowPos(hDwp, m_quickbar, nullptr, xPos, yPos, qbarSize.cx, qbarHeight, flags);
         DeferWindowPos(hDwp, m_statusBar, nullptr, rect.left, rect.bottom - stHeight, width, stHeight, flags);
         DeferWindowPos(hDwp, m_editor, nullptr, rect.left + treeWidth, topPos, width - treeWidth, height, flags);
         DeferWindowPos(hDwp, m_fileTree, nullptr, rect.left, topPos, treeWidth ? treeWidth - 3 : 0, height, m_fileTreeVisible ? flags : noShowFlags);
@@ -2399,6 +2404,13 @@ void CMainWindow::UpdateCaptionBar()
             sTitle += L" : ";
         sTitle += doc.m_path.empty() ? m_allTabs[idx].name : doc.m_path;
         m_titleText = CPathUtils::GetParentDirectory(sTitle); 
+        if (doc.m_path.empty()) 
+        {
+            if (m_allTabs[m_selected].state == UNSAVED_DOC)
+                m_titleText = L"~ " + m_allTabs[m_selected].name;
+            else
+                m_titleText = m_allTabs[m_selected].name;
+        }
     }
     else
     {
@@ -3394,6 +3406,7 @@ int CMainWindow::OpenFile(const std::wstring& file, unsigned int openFlags)
         UpdateTab(docID);
         UpdateStatusBar(true);
         SetSelected(index);
+        
         CCommandHandler::Instance().OnDocumentOpen(docID);
 
         return index;
@@ -4382,6 +4395,7 @@ void CMainWindow::SetTheme(bool dark)
     DarkModeHelper::Instance().RefreshTitleBarThemeColor(*this, dark);
     CCommandHandler::Instance().OnThemeChanged(dark);
     
+    //SendMessage(m_quickbar, TB_CHANGEBITMAP, cmdOpenRecent, dark ? 11 : 0);
     RedrawWindow(*this, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
 }
 
@@ -4620,20 +4634,35 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
       
     DeleteObject(hoverBrush);
 
-    HPEN pen = CreatePen(PS_SOLID, 1, theme.winFore);
-    SelectObject(hdc, pen);
+    HPEN pen = CreatePen(PS_SOLID, 2, theme.winFore);
+    HPEN redPen = CreatePen(PS_SOLID, 2, RGB(240,0,0));
+
+    if (SysInfo::Instance().IsUACEnabled() && SysInfo::Instance().IsElevated())
+        SelectObject(hdc, redPen);
+    else
+        SelectObject(hdc, pen);
+    
     RECT icon_rect = { 0,0,14,14 };
 
     // Draw system menu icon
     CenterRectInRect(&icon_rect, &m_allRects.system);
     OffsetRect(&icon_rect, 0, -1);
+    InflateRect(&icon_rect, 4, 0);
     MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, NULL);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 2);
     MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, NULL);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
     MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, NULL);
     LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
+    //int xPos = m_allRects.system.left + (WidthOf(m_allRects.system) - 24) / 2;
+    //int yPos = m_allRects.system.top + (HeightOf(m_allRects.system) - 24) / 2 + 2;
+    //BOOL isDark = CTheme::Instance().IsDarkTheme();
+    //BOOL isAdmin = SysInfo::Instance().IsUACEnabled() && SysInfo::Instance().IsElevated();
+    //int idx = isAdmin ? (isDark ? 2 : 3) : (isDark ? 0 : 1);
+    //ImageList_Draw(m_shieldImages, idx, hdc, xPos, yPos, ILD_TRANSPARENT);
 
+    DeleteObject(redPen);
+    SelectObject(hdc, pen);
     // Draw close button
     icon_rect = { 0, 0, 11, 11 };
     CenterRectInRect(&icon_rect, &m_allRects.close);
@@ -4665,11 +4694,8 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
     SetBkColor(hdc, theme.winBack);
     SetTextColor(hdc, theme.winFore);
     RECT rc = m_allRects.text;
-    rc.left = m_allRects.system.right + getQuickbarSize(m_quickbar).cx;
-    icon_rect = { 0, 0, rc.right - rc.left, rc.bottom - rc.top };
-    CenterRectInRect(&icon_rect, &rc);
-    icon_rect.top += 8;
-    DrawText(hdc, m_titleText.c_str(), -1, &icon_rect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
+    rc.top += 11;
+    DrawText(hdc, m_titleText.c_str(), -1, &rc, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
 
     DeleteObject(pen);
     DeleteObject(bg_brush);
@@ -4857,7 +4883,7 @@ LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw
         // Calculate image position.
         int cx = 0;
         int cy = 0;
-        HIMAGELIST imageList = isDark ? m_darkImages : m_lightImages;
+        HIMAGELIST imageList = m_quickbarImages;// isDark ? m_darkImages : m_lightImages;
         ImageList_GetIconSize(imageList, &cx, &cy);
         int   pressedOffset = (state & CDIS_SELECTED) ? 1 : 0;
         // Calculate the image position without the TBSTYLE_LIST toolbar style.
@@ -4884,8 +4910,8 @@ LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw
             if (IsWindowVisible(m_custToolTip))
                 m_custToolTip.HideTip();
         }
-
-        ImageList_Draw(imageList, tbb.iBitmap, hdc, xImage, yImage, ILD_TRANSPARENT);
+        
+        ImageList_Draw(imageList, isDark ? tbb.iBitmap + 10 : tbb.iBitmap, hdc, xImage, yImage, ILD_TRANSPARENT);
 
         return CDRF_SKIPDEFAULT;
     }
@@ -4906,19 +4932,14 @@ void CMainWindow::ShowRecents()
             AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
             if (PathIsDirectory(folderName.c_str()))
             {
-                HIMAGELIST images = CTheme::Instance().IsDarkTheme() ? m_darkImages : m_lightImages;
+                BOOL isDark = CTheme::Instance().IsDarkTheme();
+                HBITMAP bitmap = LoadBitmap(g_hRes, MAKEINTRESOURCE(isDark ? IDB_FOLDER_DARK : IDB_FOLDER_LIGHT));
 
-                HICON icon = ImageList_GetIcon(images, 3, ILD_TRANSPARENT); // icon index 3 is open folder.
-                ICONINFO iconInfo;
-                ::GetIconInfo(icon, &iconInfo);
-                ::DeleteObject(iconInfo.hbmMask);
-                ::DestroyIcon(icon);
-
-                SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, iconInfo.hbmColor, iconInfo.hbmColor);
+                SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, bitmap, NULL);
             }
         }
 
-        POINT pt = { m_allRects.system.right, m_allRects.system.bottom };
+        POINT pt = { m_allRects.minimize.left - getQuickbarSize(m_quickbar).cx, m_allRects.minimize.bottom};
         ClientToScreen(*this, &pt);
 
         int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);

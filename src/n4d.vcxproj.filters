@@ -456,6 +456,21 @@
     <Image Include="res\quickbar_light.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Shields.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\quickbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Folder-light.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Folder-light.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Folder-dark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\drag.cur">

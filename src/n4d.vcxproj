@@ -496,10 +496,15 @@
     <ResourceCompile Include="n4d.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Folder-dark.bmp" />
+    <Image Include="res\Folder-light.bmp" />
+    <Image Include="res\Folder-light.png" />
     <Image Include="res\n4d.ico" />
     <Image Include="res\empty.bmp" />
+    <Image Include="res\quickbar.bmp" />
     <Image Include="res\quickbar_dark.bmp" />
     <Image Include="res\quickbar_light.bmp" />
+    <Image Include="res\Shields.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\AutoComplete.ini" />
