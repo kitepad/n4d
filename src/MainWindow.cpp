@@ -4801,7 +4801,7 @@ void CMainWindow::AddToRecents(std::wstring path)
             m_recents.erase(m_recents.begin());
 
         m_recents.push_back(path);
-    }
+    } 
 
     SendMessage(m_quickbar, TB_SETSTATE, cmdOpenRecent, TBSTATE_ENABLED);
 }
