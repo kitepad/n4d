@@ -262,7 +262,7 @@ static void UpdateMenu(HMENU menu)
             std::wstring strItem = CCommandHandler::Instance().GetCommandLabel(cmd);
             if (strItem.empty())
             {
-                int  size      = static_cast<size_t>(mii.cch) + 1;
+                auto size      = mii.cch + 1;
                 auto buf       = std::make_unique<WCHAR[]>(size);
                 mii.dwTypeData = buf.get();
                 mii.cch        = size;
@@ -1897,7 +1897,7 @@ void CMainWindow::HandleAfterInit()
 }
 /// Utility method to calculate toolbar size in actually.
 static auto getQuickbarSize = [](HWND quickbar) -> SIZE {
-    int count = static_cast<int>(SendMessage(quickbar, TB_BUTTONCOUNT, 0, 0));
+    auto count = SendMessage(quickbar, TB_BUTTONCOUNT, 0, 0);
 
     SIZE   sz;
     ZeroMemory(&sz, sizeof(sz));
@@ -2127,8 +2127,8 @@ void CMainWindow::GoToLine(size_t line)
 
 int CMainWindow::GetZoomPC() const
 {
-    int fontSize   = static_cast<int>(m_editor.Scintilla().StyleGetSize(STYLE_DEFAULT));
-    int zoom       = static_cast<int>(m_editor.Scintilla().Zoom());
+    int fontSize   = m_editor.Scintilla().StyleGetSize(STYLE_DEFAULT);
+    int zoom       = m_editor.Scintilla().Zoom();
     int zoomFactor = (fontSize + zoom) * 100 / fontSize;
     if (zoomFactor == 0)
         zoomFactor = 100;
@@ -2137,7 +2137,7 @@ int CMainWindow::GetZoomPC() const
 
 void CMainWindow::SetZoomPC(int zoomPC) const
 {
-    int fontSize = static_cast<int>(m_editor.Scintilla().StyleGetSize(STYLE_DEFAULT));
+    int fontSize = m_editor.Scintilla().StyleGetSize(STYLE_DEFAULT);
     int zoom     = (fontSize * zoomPC / 100) - fontSize;
     m_editor.Scintilla().SetZoom(zoom);
 }
@@ -2205,7 +2205,7 @@ void CMainWindow::UpdateStatusBar(bool bEverything)
                     0, 0, 2, true, true);
 
     bool usingTabs = m_editor.Scintilla().UseTabs() ? true : false;
-    int  tabSize   = static_cast<int>(m_editor.Scintilla().TabWidth());
+    int  tabSize   = m_editor.Scintilla().TabWidth();
     m_statusBar.SetPart(0,STATUSBAR_TABSPACE, usingTabs ? CStringUtils::Format(L"Tab Width: %d", tabSize) : L"Spaces",
                         L"", rsStatusTTTabSpaces, 0, 0, 2, true,true);
     m_statusBar.SetPart(0,STATUSBAR_R2L, bidi == Scintilla::Bidirectional::R2L ? L"R2L" : L"L2R",
@@ -2719,7 +2719,7 @@ void CMainWindow::HandleClipboardUpdate()
         }
     }
 
-    size_t maxsize = static_cast<size_t>(GetInt64(DEFAULTS_SECTION, L"MaxClipboardHistorySize", 20));
+    auto maxsize = static_cast<size_t>(GetInt64(DEFAULTS_SECTION, L"MaxClipboardHistorySize", 20));
     if (m_clipboardHistory.size() > maxsize)
         m_clipboardHistory.pop_back();
 }
@@ -2736,11 +2736,11 @@ void CMainWindow::PasteHistory()
                 DestroyMenu(hMenu););
             size_t pos = m_editor.Scintilla().CurrentPos();
             POINT  pt{};
-            pt.x = static_cast<LONG>(m_editor.Scintilla().PointXFromPosition(pos));
-            pt.y = static_cast<LONG>(m_editor.Scintilla().PointYFromPosition(pos));
+            pt.x = m_editor.Scintilla().PointXFromPosition(pos);
+            pt.y = m_editor.Scintilla().PointYFromPosition(pos);
             ClientToScreen(m_editor, &pt);
             int    index   = 1;
-            size_t maxsize = static_cast<size_t>(GetInt64(DEFAULTS_SECTION, L"MaxClipboardItemLength", 40));
+            auto maxsize = GetInt64(DEFAULTS_SECTION, L"MaxClipboardItemLength", 40);
             for (const auto& s : m_clipboardHistory)
             {
                 std::wstring sf = s;
@@ -2859,7 +2859,7 @@ void CMainWindow::HandleDwellStart(const SCNotification& scn, bool start)
         m_editor.Scintilla().SetWordChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.,#");
         selStart = m_editor.Scintilla().WordStartPosition(scn.position, false);
         selEnd   = m_editor.Scintilla().WordEndPosition(scn.position, false);
-        sWord    = m_editor.GetTextRange(static_cast<long>(selStart), static_cast<long>(selEnd));
+        sWord    = m_editor.GetTextRange(selStart, selEnd);
     }
     if (sWord.empty())
         return;
@@ -2912,12 +2912,12 @@ void CMainWindow::HandleDwellStart(const SCNotification& scn, bool start)
     {
         // get the word up to the closing bracket
         int maxlength = 20;
-        while ((static_cast<char>(m_editor.Scintilla().CharAt(++selEnd)) != ')') && --maxlength)
+        while ((m_editor.Scintilla().CharAt(++selEnd) != ')') && --maxlength)
         {
         }
         if (maxlength == 0)
             return;
-        sWord = m_editor.GetTextRange(static_cast<long>(selStart), static_cast<long>(selEnd));
+        sWord = m_editor.GetTextRange(selStart, selEnd);
         wWord = CUnicodeUtils::StdGetUnicode(sWord);
 
         // Grab the data the between brackets that follows the word RGB,
@@ -3002,7 +3002,7 @@ void CMainWindow::HandleDwellStart(const SCNotification& scn, bool start)
         m_editor.Scintilla().SetWordChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/!%~()^_.,");
         selStart = m_editor.Scintilla().WordStartPosition(scn.position, false);
         selEnd   = m_editor.Scintilla().WordEndPosition(scn.position, false);
-        sWord    = m_editor.GetTextRange(static_cast<long>(selStart), static_cast<long>(selEnd));
+        sWord    = m_editor.GetTextRange(selStart, selEnd);
     }
     exprValue = te_interp(sWord.c_str(), &err);
     if (err == 0)
@@ -3082,8 +3082,8 @@ bool CMainWindow::OpenUrlAtPos(Sci_Position pos)
 
     m_editor.Scintilla().SetWordChars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+.,:;?&@=/%#()");
 
-    Sci_Position startPos = static_cast<Sci_Position>(m_editor.Scintilla().WordStartPosition(pos, false));
-    Sci_Position endPos   = static_cast<Sci_Position>(m_editor.Scintilla().WordEndPosition(pos, false));
+    Scintilla::Position startPos = m_editor.Scintilla().WordStartPosition(pos, false);
+    Scintilla::Position endPos   = m_editor.Scintilla().WordEndPosition(pos, false);
 
     m_editor.Scintilla().SetTargetStart(startPos);
     m_editor.Scintilla().SetTargetEnd(endPos);
@@ -3092,11 +3092,11 @@ bool CMainWindow::OpenUrlAtPos(Sci_Position pos)
 
     m_editor.Scintilla().SetSearchFlags(Scintilla::FindOption::RegExp | Scintilla::FindOption::Cxx11RegEx);
 
-    Sci_Position posFound = static_cast<Sci_Position>(m_editor.Scintilla().SearchInTarget(URL_REG_EXPR_LENGTH, URL_REG_EXPR));
+    Scintilla::Position posFound = m_editor.Scintilla().SearchInTarget(URL_REG_EXPR_LENGTH, URL_REG_EXPR);
     if (posFound != -1)
     {
-        startPos = static_cast<Sci_Position>(m_editor.Scintilla().TargetStart());
-        endPos   = static_cast<Sci_Position>(m_editor.Scintilla().TargetEnd());
+        startPos = m_editor.Scintilla().TargetStart();
+        endPos   = m_editor.Scintilla().TargetEnd();
     }
     else
         return false;
@@ -3229,7 +3229,7 @@ void CMainWindow::IndentToLastLine() const
     while (lastLine > 0 && (m_editor.Scintilla().LineEndPosition(lastLine) - m_editor.Scintilla().PositionFromLine(lastLine)) == 0)
         lastLine--;
 
-    indentAmount = static_cast<int>(m_editor.Scintilla().LineIndentation(lastLine));
+    indentAmount = m_editor.Scintilla().LineIndentation(lastLine);
 
     if (indentAmount > 0)
     {
@@ -3274,10 +3274,10 @@ void CMainWindow::HandleAutoIndent(const SCNotification& scn) const
 {
     if (m_bBlockAutoIndent)
         return;
-    int eolMode = static_cast<int>(m_editor.Scintilla().EOLMode());
+    Scintilla::EndOfLine eolMode = m_editor.Scintilla().EOLMode();
 
-    if (((eolMode == SC_EOL_CRLF || eolMode == SC_EOL_LF) && scn.ch == '\n') ||
-        (eolMode == SC_EOL_CR && scn.ch == '\r'))
+    if (((eolMode == Scintilla::EndOfLine::CrLf || eolMode == Scintilla::EndOfLine::Lf) && scn.ch == '\n') ||
+        (eolMode == Scintilla::EndOfLine::Cr && scn.ch == '\r'))
     {
         IndentToLastLine();
     }
@@ -4867,7 +4867,7 @@ LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw
         // Draw the button image.
         TBBUTTON tbb;
         ZeroMemory(&tbb, sizeof(tbb));
-        int button = static_cast<int>(SendMessage(m_quickbar, TB_COMMANDTOINDEX, item, 0));
+        auto button = SendMessage(m_quickbar, TB_COMMANDTOINDEX, item, 0);
         WPARAM wparam = static_cast<WPARAM>(button);
         LPARAM lparam = reinterpret_cast<LPARAM>(&tbb);
         SendMessage(m_quickbar, TB_GETBUTTON, wparam, lparam);

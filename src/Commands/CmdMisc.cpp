@@ -429,7 +429,7 @@ void CCmdConfigStyle::OnCommand(HWND /*hwnd*/, int id, HWND /*hwndCtl*/, UINT ms
                     ComboBox_SetItemData(hStyleCombo, styleSel, lexId);
                 }
 
-                int style = static_cast<int>(Scintilla().StyleAt(Scintilla().CurrentPos()));
+                auto style = Scintilla().StyleAt(Scintilla().CurrentPos());
                 SelectStyle(style);
                 std::wstring exts = CLexStyles::Instance().GetUserExtensionsForLanguage(currentLang);
                 SetDlgItemText(m_hForm, IDC_EXTENSIONS, exts.c_str());
@@ -699,7 +699,7 @@ void CCmdConfigStyle::InitializeLexerConfiguration()
     }
     OnCommand(*this, IDC_LANGCOMBO, nullptr, CBN_SELCHANGE);
 
-    int style = static_cast<int>(Scintilla().StyleAt(Scintilla().CurrentPos()));
+    auto style = Scintilla().StyleAt(Scintilla().CurrentPos());
     SelectStyle(style);
 }
 
@@ -1110,8 +1110,8 @@ LRESULT CDialogWithFilterableList::DoListNotify(LPNMITEMACTIVATE lpNMItemActivat
     case LVN_GETINFOTIP:
     {
         LPNMLVGETINFOTIP tip = reinterpret_cast<LPNMLVGETINFOTIPW>(lpNMItemActivate);
-        int              itemIndex = static_cast<size_t>(tip->iItem);
-        if (itemIndex < 0 || itemIndex >= static_cast<int>(m_results.size()))
+        auto              itemIndex = tip->iItem;
+        if (itemIndex < 0 || itemIndex >= m_results.size())
         {
             assert(false);
             return 0;
@@ -1150,8 +1150,8 @@ LRESULT CDialogWithFilterableList::GetListItemDispInfo(NMLVDISPINFO* pDispInfo)
         if (pDispInfo->item.pszText == nullptr)
             return 0;
         pDispInfo->item.pszText[0] = 0;
-        int itemIndex = pDispInfo->item.iItem;
-        if (itemIndex >= static_cast<int>(m_results.size()))
+        auto itemIndex = pDispInfo->item.iItem;
+        if (itemIndex >= m_results.size())
             return 0;
 
         std::wstring sTemp;
@@ -1344,7 +1344,7 @@ CCmdCommandPalette::CCmdCommandPalette(void* obj)
         data.text2 = CCommandHandler::Instance().GetCommandDescription(cmdId);
         data.text2.erase(0, data.text2.find_first_not_of(L" "));
         data.text2.erase(data.text2.find_last_not_of(L" ") + 1);
-        data.text3 = CCommandHandler::Instance().GetShortCutStringForCommand(static_cast<WORD>(cmdId));
+        data.text3 = CCommandHandler::Instance().GetShortCutStringForCommand(cmdId);
         if (!data.text1.empty())
             m_allResults.push_back(data);
     }
@@ -1357,7 +1357,7 @@ CCmdCommandPalette::CCmdCommandPalette(void* obj)
         data.text2 = CCommandHandler::Instance().GetCommandDescription(cmdId);
         data.text2.erase(0, data.text2.find_first_not_of(L" "));
         data.text2.erase(data.text2.find_last_not_of(L" ") + 1);
-        data.text3 = CCommandHandler::Instance().GetShortCutStringForCommand(static_cast<WORD>(cmdId));
+        data.text3 = CCommandHandler::Instance().GetShortCutStringForCommand(cmdId);
         if (!data.text1.empty())
             m_allResults.push_back(data);
     }
@@ -1393,8 +1393,8 @@ LRESULT CCmdCommandPalette::DoListNotify(LPNMITEMACTIVATE lpNMItemActivate)
     case LVN_GETINFOTIP:
     {
         LPNMLVGETINFOTIP tip = reinterpret_cast<LPNMLVGETINFOTIPW>(lpNMItemActivate);
-        int              itemIndex = static_cast<size_t>(tip->iItem);
-        if (itemIndex < 0 || itemIndex >= static_cast<int>(m_results.size()))
+        auto              itemIndex = tip->iItem;
+        if (itemIndex < 0 || itemIndex >= m_results.size())
         {
             assert(false);
             return 0;
@@ -1421,7 +1421,7 @@ LRESULT CCmdCommandPalette::DoListNotify(LPNMITEMACTIVATE lpNMItemActivate)
     case NM_RETURN:
     case NM_DBLCLK:
         // execute the selected command
-        if (lpNMItemActivate->iItem >= 0 && lpNMItemActivate->iItem < static_cast<int>(m_results.size()))
+        if (lpNMItemActivate->iItem >= 0 && lpNMItemActivate->iItem < m_results.size())
         {
             SendMessage(*this, WM_COMMAND, MAKEWPARAM(IDOK, 1), 0);
         }
