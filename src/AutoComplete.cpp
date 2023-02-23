@@ -994,7 +994,7 @@ LRESULT CAutoCompleteConfigDlg::DlgFunc(HWND /*hwndDlg*/, UINT uMsg, WPARAM wPar
             break;
         case WM_INITDIALOG:
         {
-            InitDialog(*this, IDI_BOWPAD);
+            InitDialog(*this, 0/*IDI_BOWPAD*/);
             m_scintilla.Init(g_hRes, *this, GetDlgItem(*this, IDC_SCINTILLA));
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
 

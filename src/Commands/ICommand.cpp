@@ -386,3 +386,8 @@ int ICommand::GetStatusBarHeight()
 {
     return m_pMainWindow->m_statusBar.GetHeight();
 }
+
+std::vector<std::wstring> ICommand::GetRecents() const
+{
+    return m_pMainWindow->m_recents;
+}

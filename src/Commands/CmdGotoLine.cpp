@@ -35,7 +35,7 @@ LRESULT CCmdGotoLine::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                 CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
             });
 
-        InitDialog(hwndDlg, IDI_BOWPAD);
+        InitDialog(hwndDlg, 0/*IDI_BOWPAD*/);
         CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
 
         UpdateLineInfo();

@@ -505,7 +505,7 @@ void CFindReplaceDlg::DoInitDialog(HWND hwndDlg)
             SetTheme(CTheme::Instance().IsDarkTheme());
         });
     SetTheme(CTheme::Instance().IsDarkTheme());
-    InitDialog(hwndDlg, IDI_BOWPAD, false);
+    InitDialog(hwndDlg, 0/*IDI_BOWPAD*/, false);
 
     // Position the find dialog in the top right corner.
     // Make sure we don't obscure the scroll bar though.

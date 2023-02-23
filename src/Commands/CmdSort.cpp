@@ -132,7 +132,7 @@ LRESULT CSortDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         case WM_INITDIALOG:
         {
-            InitDialog(hwndDlg, IDI_BOWPAD);
+            InitDialog(hwndDlg, 0);// IDI_BOWPAD);
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
         }
             return FALSE;

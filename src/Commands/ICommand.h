@@ -118,7 +118,7 @@ protected:
     void         ShowFileTree(bool bShow) const;
     bool         IsFileTreeShown() const;
     std::wstring GetFileTreePath() const;
-
+    std::vector<std::wstring> GetRecents() const;
     void AddAutoCompleteWords(const std::string& lang, std::map<std::string, AutoCompleteType>&& words) const;
     void AddAutoCompleteWords(const std::string& lang, const std::map<std::string, AutoCompleteType>& words) const;
     void AddAutoCompleteWords(const DocID& docID, std::map<std::string, AutoCompleteType>&& words) const;

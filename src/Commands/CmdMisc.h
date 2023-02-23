@@ -372,6 +372,29 @@ protected:
     }
 };
 
+class CCmdOpenRecent : public CDialogWithFilterableList
+{
+public:
+    CCmdOpenRecent(void* obj);
+    ~CCmdOpenRecent();
+
+    bool Execute() override;
+    UINT GetCmdId() override { return cmdOpenRecent; }
+
+protected:
+    virtual UINT GetFilterCUE();
+    virtual void OnOK();
+    virtual void DrawItemText(HDC hdc, LPRECT rc, int idx)
+    {
+        COLORREF oldColor = GetTextColor(hdc);
+        std::wstring item = m_results[idx].text1;
+        if (PathIsDirectory(item.c_str()))
+            SetTextColor(hdc, RGB(240, 0, 0));
+        DrawText(hdc, m_results[idx].text1.c_str(), -1, rc, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
+        SetTextColor(hdc,oldColor);
+    }
+};
+
 class CCmdEnableD2D : public ICommand
 {
 public:

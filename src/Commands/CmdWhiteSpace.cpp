@@ -105,7 +105,7 @@ LRESULT CCmdTabSize::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
                     CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
                 });
 
-            InitDialog(hwndDlg, IDI_BOWPAD);
+            InitDialog(hwndDlg, 0);// IDI_BOWPAD);
             CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
             int          val   = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"TabWidth", 4));
             std::wstring sLine = CStringUtils::Format(L"%lld", val);

@@ -973,7 +973,7 @@ LRESULT CDialogWithFilterableList::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wPara
                 CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
             });
 
-        InitDialog(hwndDlg, IDI_BOWPAD, false);
+        InitDialog(hwndDlg, 0/*IDI_BOWPAD*/, false);
         CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
         // initialize the controls
         m_hFilter = GetDlgItem(*this, IDC_FILTER);
@@ -1279,6 +1279,7 @@ LRESULT CALLBACK CDialogWithFilterableList::ListViewSubClassProc(HWND hWnd, UINT
         HBRUSH hbrBack = CreateSolidBrush(back);
         FillRect(memDC, &ps.rcPaint, hbrBack);
         HBRUSH hbrSelBack = CreateSolidBrush(selBack);
+
         for (int i = 0; i < pThis->m_results.size(); i++)
         {
             RECT rc = {};
@@ -1436,4 +1437,51 @@ LRESULT CCmdCommandPalette::DoListNotify(LPNMITEMACTIVATE lpNMItemActivate)
 bool CCmdCommandPalette::IsFiltered(std::wstring sFilterText, CListItem item)
 {
     return sFilterText.empty() || StrStrIW(item.text1.c_str(), sFilterText.c_str()) || StrStrIW(item.text2.c_str(), sFilterText.c_str());
+}
+
+CCmdOpenRecent::~CCmdOpenRecent()
+{
+    PostMessage(*this, WM_CLOSE, 0, 0);
+}
+
+bool CCmdOpenRecent::Execute()
+{
+    ClearFilterText();
+    std::vector<std::wstring> recents = GetRecents();
+
+    auto count = recents.size();
+    m_allResults.clear();
+    for (int i = 0; i < count; i++)
+    {
+        m_allResults.push_back(CListItem(0, false, recents[i]));
+    }
+    CDialogWithFilterableList::Execute();
+    return true;
+}
+
+CCmdOpenRecent::CCmdOpenRecent(void* obj)
+    : CDialogWithFilterableList(obj)
+{
+}
+
+void CCmdOpenRecent::OnOK()
+{
+    auto i = ListView_GetSelectionMark(m_hResults);
+    if (i >= 0)
+    {
+        auto buf = std::make_unique<wchar_t[]>(MAX_PATH + 1);
+        ListView_GetItemText(m_hResults, i, 0, buf.get(), MAX_PATH);
+        auto itemText = buf.get();
+        if (PathIsDirectory(itemText))
+            OpenFolder(itemText);
+        else
+            OpenFile(itemText, OpenFlags::AskToCreateIfMissing);
+
+        m_pCmd = nullptr;
+    }
+}
+
+UINT CCmdOpenRecent::GetFilterCUE()
+{
+    return IDS_OPENRECENT_FILTERCUE;
 }

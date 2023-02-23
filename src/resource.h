@@ -3,7 +3,7 @@
 // Used by n4d.rc
 //
 #define IDCANCEL2                       3
-#define IDI_BOWPAD                      101
+#define IDI_N4D                         101
 #define IDB_EMPTY                       102
 #define IDR_MENU                        103
 #define IDR_LEXSTYLES                   104
@@ -135,9 +135,8 @@
 #define IDS_SELECTLEXER_FILTERCUE       230
 #define IDS_APP_TITLE                   231
 #define IDS_SELECTTAB_FILTERCUE         232
+#define IDS_OPENRECENT_FILTERCUE        233
 #define IDB_QUICKBAR                    270
-#define IDB_FOLDER_LIGHT                272
-#define IDB_FOLDER_DARK                 273
 #define IDB_BITMAP1                     274
 #define IDC_BOWPAD                      300
 #define IDC_FINDBTN                     301

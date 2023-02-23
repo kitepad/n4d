@@ -297,7 +297,7 @@ LRESULT CAboutDlg::DlgFunc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam
     {
     case WM_INITDIALOG:
     {
-        InitDialog(hwndDlg, IDI_BOWPAD);
+        InitDialog(hwndDlg, 0);// IDI_BOWPAD);
         CTheme::Instance().SetThemeForDialog(*this, CTheme::Instance().IsDarkTheme());
         // initialize the controls
         SetDlgItemText(hwndDlg, IDC_VERSIONLABEL, L"N4D (Notepad for Developer) 1.0.0 (64-bit)");
@@ -451,9 +451,9 @@ bool CMainWindow::RegisterAndCreateWindow()
     wcx.hInstance              = hResource;
     const std::wstring clsName = GetWindowClassName();
     wcx.lpszClassName          = clsName.c_str();
-    wcx.hIcon                  = LoadIcon(hResource, MAKEINTRESOURCE(IDI_BOWPAD));
+    wcx.hIcon                  = LoadIcon(hResource, MAKEINTRESOURCE(IDI_N4D));
     wcx.hbrBackground          = reinterpret_cast<HBRUSH>((COLOR_DESKTOP));
-    wcx.hIconSm                = LoadIcon(hResource, MAKEINTRESOURCE(IDI_BOWPAD));
+    wcx.hIconSm                = LoadIcon(hResource, MAKEINTRESOURCE(IDI_N4D));
     wcx.hCursor                = LoadCursor(nullptr, static_cast<LPTSTR>(IDC_ARROW)); // for resizing the tree control
     if (RegisterWindow(&wcx))
     {
@@ -1669,9 +1669,6 @@ LRESULT CMainWindow::DoCommand(WPARAM wParam, LPARAM /*lParam*/)
         case cmdAbout:
             About();
             break;
-        case cmdOpenRecent: // Open popup menu to list recent opened files/folders
-            ShowRecents();
-            break;
             
         default:
         {
@@ -1776,12 +1773,9 @@ bool CMainWindow::Initialize()
     // Declare and initialize local constants.
     const int numButtons = 12;
     const int bitmapSize = 20;
-
     const DWORD buttonStyles = TBSTYLE_BUTTON;
     const DWORD tbStyles = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN;
     
-    //m_shieldImages = ImageList_Create(24, 24, ILC_COLOR32 | ILC_MASK, 4, 0);
-    //ImageList_AddMasked(m_shieldImages, LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_SHIELDS)), RGB(192, 192, 192));
     // Create the toolbar.
     m_quickbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL, tbStyles, 0, 0, 0, 0, m_hwnd, NULL, g_hInst, NULL);
     m_quickbarImages = ImageList_Create(bitmapSize, bitmapSize, ILC_COLOR32 | ILC_MASK, 20, 0);
@@ -1808,8 +1802,6 @@ bool CMainWindow::Initialize()
     SendMessage(m_quickbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
     SendMessage(m_quickbar, TB_ADDBUTTONS, (WPARAM)numButtons, (LPARAM)&tbButtons);
     SendMessage(m_quickbar, TB_CHECKBUTTON, cmdFileTree, m_fileTreeVisible);
-
-    //SendMessage(m_quickbar, TB_CHANGEBITMAP, cmdOpenRecent, 11);
 
     //Load recents from registry
     HKEY hKey = nullptr;
@@ -1946,8 +1938,8 @@ void CMainWindow::ResizeChildWindows()
         
         const int treeWidth   = m_fileTreeVisible ? m_treeWidth : 0;
         const int stHeight = m_statusBar.GetHeight();
-        const int titlebarHeight = HeightOf(m_allRects.text);//GetTitlebarRect());
-        const int tabbarHeight = HeightOf(m_allRects.tabs);//GetTabbarRect());
+        const int titlebarHeight = HeightOf(m_allRects.text);
+        const int tabbarHeight = HeightOf(m_allRects.tabs);
         const int height      = HeightOf(rect) - tabbarHeight - titlebarHeight - stHeight;
         const int topPos         = rect.top + titlebarHeight + tabbarHeight;
         const int width          = rect.right - rect.left;
@@ -4634,68 +4626,50 @@ void CMainWindow::DrawTitlebar(HDC hdc) {
       
     DeleteObject(hoverBrush);
 
-    HPEN pen = CreatePen(PS_SOLID, 2, theme.winFore);
-    HPEN redPen = CreatePen(PS_SOLID, 2, RGB(240,0,0));
-
-    if (SysInfo::Instance().IsUACEnabled() && SysInfo::Instance().IsElevated())
-        SelectObject(hdc, redPen);
-    else
-        SelectObject(hdc, pen);
-    
-    RECT icon_rect = { 0,0,14,14 };
-
-    // Draw system menu icon
-    CenterRectInRect(&icon_rect, &m_allRects.system);
-    OffsetRect(&icon_rect, 0, -1);
-    InflateRect(&icon_rect, 4, 0);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 2, NULL);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 2);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 8, NULL);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 8);
-    MoveToEx(hdc, icon_rect.left - 3, icon_rect.top + 14, NULL);
-    LineTo(hdc, icon_rect.right + 3, icon_rect.top + 14);
-    //int xPos = m_allRects.system.left + (WidthOf(m_allRects.system) - 24) / 2;
-    //int yPos = m_allRects.system.top + (HeightOf(m_allRects.system) - 24) / 2 + 2;
-    //BOOL isDark = CTheme::Instance().IsDarkTheme();
-    //BOOL isAdmin = SysInfo::Instance().IsUACEnabled() && SysInfo::Instance().IsElevated();
-    //int idx = isAdmin ? (isDark ? 2 : 3) : (isDark ? 0 : 1);
-    //ImageList_Draw(m_shieldImages, idx, hdc, xPos, yPos, ILD_TRANSPARENT);
-
-    DeleteObject(redPen);
+    HPEN pen = CreatePen(PS_SOLID, 1, theme.winFore);
     SelectObject(hdc, pen);
+    
+    // Draw system menu icon
+    int left = m_allRects.system.left + 8;
+    int middle = m_allRects.system.top + HeightOf(m_allRects.system) / 2 - 3;
+    Gdiplus::Graphics graphics(hdc);
+    graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+    Gdiplus::SolidBrush brush(ColorFrom(theme.winFore));
+    graphics.FillEllipse(&brush, left + 4, middle, 6,6); left += 10;
+    graphics.FillEllipse(&brush, left + 4, middle, 6,6); left += 10;
+    graphics.FillEllipse(&brush, left + 4, middle, 6,6);
+    
     // Draw close button
-    icon_rect = { 0, 0, 11, 11 };
+    RECT icon_rect = { 0, 0, 12, 12 };
     CenterRectInRect(&icon_rect, &m_allRects.close);
-    MoveToEx(hdc, icon_rect.left, icon_rect.top, NULL);
-    LineTo(hdc, icon_rect.right, icon_rect.bottom + 1);
-    MoveToEx(hdc, icon_rect.left, icon_rect.bottom, NULL);
-    LineTo(hdc, icon_rect.right, icon_rect.top);
-
+    Gdiplus::Pen gpen(ColorFrom(theme.winFore), 1.0f);
+    graphics.DrawLine(&gpen, (INT)icon_rect.left, (INT)icon_rect.top, (INT)icon_rect.right, (INT)icon_rect.bottom);
+    graphics.DrawLine(&gpen, (INT)icon_rect.left, (INT)icon_rect.bottom, (INT)icon_rect.right, (INT)icon_rect.top);
+    
     // Draw maximize button
-    icon_rect = { 0, 0, 12, 12 };
     CenterRectInRect(&icon_rect, &m_allRects.maximize);
-
     SelectObject(hdc, GetStockObject(HOLLOW_BRUSH));
     if (IsMaximized(m_hwnd))
     {
         OffsetRect(&icon_rect, -1, 1);
-        Rectangle(hdc, icon_rect.left + 5, icon_rect.top - 4, icon_rect.right + 5, icon_rect.bottom - 4);
+        Rectangle(hdc, icon_rect.left + 3, icon_rect.top - 3, icon_rect.right + 3, icon_rect.bottom - 3);
         FillRect(hdc, &icon_rect, bg_brush);
     }
-    
     Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
 
     // Draw minimized button
-    icon_rect = { 0, 0, 14, 1 };
+    icon_rect = { 0, 0, 12, 1 };
     CenterRectInRect(&icon_rect, &m_allRects.minimize);
     Rectangle(hdc, icon_rect.left, icon_rect.top, icon_rect.right, icon_rect.bottom);
 
     // Draw title text
     SetBkColor(hdc, theme.winBack);
     SetTextColor(hdc, theme.winFore);
-    RECT rc = m_allRects.text;
-    rc.top += 11;
-    DrawText(hdc, m_titleText.c_str(), -1, &rc, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
+    SIZE size;
+    GetTextExtentPoint32(hdc, m_titleText.c_str(), static_cast<int>(m_titleText.size()), &size);
+    icon_rect = m_allRects.text;
+    icon_rect.top += (HeightOf(icon_rect) - size.cy) / 2;
+    DrawText(hdc, m_titleText.c_str(), -1, &icon_rect, DT_LEFT | DT_VCENTER | DT_END_ELLIPSIS);
 
     DeleteObject(pen);
     DeleteObject(bg_brush);
@@ -4919,42 +4893,42 @@ LRESULT CMainWindow::HandleQuickbarCustomDraw(const LPNMTBCUSTOMDRAW pCustomDraw
     return 0;
 }
 
-void CMainWindow::ShowRecents()
-{
-    auto count = m_recents.size();
-
-    if (count > 0)
-    {
-        auto hMenu = CreatePopupMenu();
-        for (int i = 0; i < count; ++i)
-        {
-            std::wstring folderName = m_recents[i];
-            AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
-            if (PathIsDirectory(folderName.c_str()))
-            {
-                BOOL isDark = CTheme::Instance().IsDarkTheme();
-                HBITMAP bitmap = LoadBitmap(g_hRes, MAKEINTRESOURCE(isDark ? IDB_FOLDER_DARK : IDB_FOLDER_LIGHT));
-
-                SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, bitmap, NULL);
-            }
-        }
-
-        POINT pt = { m_allRects.minimize.left - getQuickbarSize(m_quickbar).cx, m_allRects.minimize.bottom};
-        ClientToScreen(*this, &pt);
-
-        int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
-        if (idx > 0)
-        {
-            if (PathIsDirectory(m_recents[idx - 1].c_str()))
-            {
-                m_fileTree.SetPath(m_recents[idx - 1]);
-                m_titleText = m_recents[idx - 1];
-                SendMessage(*this, WM_SETTEXT, 0, 0);
-                ShowFileTree(true);
-            }
-            else
-                OpenFile(m_recents[idx - 1].c_str(), OpenFlags::AskToCreateIfMissing);
-        }
-        DestroyMenu(hMenu);
-    }
-}
+//void CMainWindow::ShowRecents()
+//{
+//    auto count = m_recents.size();
+//
+//    if (count > 0)
+//    {
+//        auto hMenu = CreatePopupMenu();
+//        for (int i = 0; i < count; ++i)
+//        {
+//            std::wstring folderName = m_recents[i];
+//            AppendMenu(hMenu, MF_STRING, i + 1, folderName.c_str());
+//            if (PathIsDirectory(folderName.c_str()))
+//            {
+//                BOOL isDark = CTheme::Instance().IsDarkTheme();
+//                HBITMAP bitmap = LoadBitmap(g_hRes, MAKEINTRESOURCE(isDark ? IDB_FOLDER_DARK : IDB_FOLDER_LIGHT));
+//
+//                SetMenuItemBitmaps(hMenu, i, MF_BYPOSITION, bitmap, NULL);
+//            }
+//        }
+//
+//        POINT pt = { m_allRects.minimize.left - getQuickbarSize(m_quickbar).cx, m_allRects.minimize.bottom};
+//        ClientToScreen(*this, &pt);
+//
+//        int idx = TrackPopupMenuEx(hMenu, TPM_RETURNCMD | TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, pt.x, pt.y, *this, nullptr);
+//        if (idx > 0)
+//        {
+//            if (PathIsDirectory(m_recents[idx - 1].c_str()))
+//            {
+//                m_fileTree.SetPath(m_recents[idx - 1]);
+//                m_titleText = m_recents[idx - 1];
+//                SendMessage(*this, WM_SETTEXT, 0, 0);
+//                ShowFileTree(true);
+//            }
+//            else
+//                OpenFile(m_recents[idx - 1].c_str(), OpenFlags::AskToCreateIfMissing);
+//        }
+//        DestroyMenu(hMenu);
+//    }
+//}

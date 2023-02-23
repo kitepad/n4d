@@ -247,7 +247,7 @@ private:
     void        ShowAutoComplete();
     void        AddToRecents(std::wstring path);
     void        SaveRecents();
-    void        ShowRecents();
+    //void        ShowRecents();
 
 private:
     CRichStatusBar                                  m_statusBar;
@@ -297,7 +297,5 @@ private:
     int                         m_tipIdx = -1;        
     ULONG_PTR                   m_gdiplusToken;
     HWND       m_quickbar;
-    //HIMAGELIST m_darkImages = nullptr;
-    //HIMAGELIST m_shieldImages = nullptr;
     HIMAGELIST m_quickbarImages = nullptr;
 };
