@@ -390,7 +390,7 @@ LRESULT CALLBACK CScintillaWnd::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wPara
             // mouse cursor moved, ensure it's visible
             // but set a timer to hide it after a while
             if (m_cursorTimeout == -1)
-                m_cursorTimeout = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"HideCursorTimeout", 3000));
+                m_cursorTimeout = GetInt64(DEFAULTS_SECTION, L"HideCursorTimeout", 3000);
             UINT elapse = static_cast<UINT>(m_cursorTimeout);
             if (elapse != 0)
                 SetTimer(*this, TIM_HIDECURSOR, elapse, nullptr);
@@ -825,7 +825,8 @@ void CScintillaWnd::UpdateLineNumberWidth() const
         }
         i = max(i, 3);
         {
-            int pixelWidth = static_cast<int>(CDPIAware::Instance().Scale(*this, 8) + i * m_scintilla.TextWidth(STYLE_LINENUMBER, "8"));
+            //int pixelWidth = static_cast<int>(CDPIAware::Instance().Scale(*this, 8) + i * m_scintilla.TextWidth(STYLE_LINENUMBER, "8"));
+            auto pixelWidth = CDPIAware::Instance().Scale(*this, 8) + i * m_scintilla.TextWidth(STYLE_LINENUMBER, "8");
             m_scintilla.SetMarginWidthN(SC_MARGE_LINENUMBER, pixelWidth);
         }
     }
@@ -892,10 +893,10 @@ void CScintillaWnd::RestoreCurrentPos(const CPosData& pos)
 
         auto headerLine = 0;
         if ((level & Scintilla::FoldLevel::HeaderFlag) != Scintilla::FoldLevel::None)
-            headerLine = static_cast<int>(foldLine);
+            headerLine = foldLine;
         else
         {
-            headerLine = static_cast<int>(m_scintilla.FoldParent(foldLine));
+            headerLine = m_scintilla.FoldParent(foldLine);
             if (headerLine == -1)
                 return;
         }
@@ -959,7 +960,7 @@ void CScintillaWnd::SetupLexerForLang(const std::string& lang) const
     m_scintilla.StyleSetFont(STYLE_DEFAULT, sFontName.c_str());
     bool bBold    = !!GetInt64(DEFAULTS_SECTION, L"FontBold", false);
     bool bItalic  = !!GetInt64(DEFAULTS_SECTION, L"FontItalic", false);
-    int  fontSize = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"FontSize", 11));
+    int  fontSize = GetInt64(DEFAULTS_SECTION, L"FontSize", 11);
     m_scintilla.StyleSetBold(STYLE_DEFAULT, bBold);
     m_scintilla.StyleSetItalic(STYLE_DEFAULT, bItalic);
     m_scintilla.StyleSetSize(STYLE_DEFAULT, fontSize);
@@ -1139,7 +1140,7 @@ void CScintillaWnd::SetupDefaultStyles() const
                        RGB(color_folding_backsel_inactive, color_folding_backsel_inactive, color_folding_backsel_inactive));
 
     bool bBold    = !!GetInt64(DEFAULTS_SECTION, L"FontBold", false);
-    int  fontSize = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"FontSize", 11));
+    int  fontSize = GetInt64(DEFAULTS_SECTION, L"FontSize", 11);
     m_scintilla.StyleSetBold(STYLE_FOLDDISPLAYTEXT, bBold);
     m_scintilla.StyleSetItalic(STYLE_FOLDDISPLAYTEXT, true);
     m_scintilla.StyleSetSize(STYLE_FOLDDISPLAYTEXT, fontSize);
@@ -1674,7 +1675,7 @@ void CScintillaWnd::MatchTags() const
     m_scintilla.SetIndicatorCurrent(INDIC_TAGATTR);
     m_scintilla.IndicatorClearRange(docStart, docEnd - docStart);
 
-    int lexer = static_cast<int>(m_scintilla.Lexer());
+    int lexer = m_scintilla.Lexer();
     if ((lexer != SCLEX_HTML) &&
         (lexer != SCLEX_XML) &&
         (lexer != SCLEX_PHPSCRIPT))
@@ -2059,7 +2060,7 @@ FindResult CScintillaWnd::FindOpenTag(const std::string& tagName, sptr_t start, 
         result = FindText(search.c_str(), searchStart, searchEnd, Scintilla::FindOption::None);
         if (result.success)
         {
-            nextChar = static_cast<int>(m_scintilla.CharAt(result.end));
+            nextChar = m_scintilla.CharAt(result.end);
             styleAt  = m_scintilla.StyleAt(result.start);
             if (styleAt != SCE_H_CDATA && styleAt != SCE_H_DOUBLESTRING && styleAt != SCE_H_SINGLESTRING)
             {
@@ -2125,7 +2126,7 @@ sptr_t CScintillaWnd::FindCloseAngle(sptr_t startPosition, sptr_t endPosition) c
         closeAngle   = FindText(">", startPosition, endPosition, Scintilla::FindOption::None);
         if (closeAngle.success)
         {
-            int style = static_cast<int>(m_scintilla.StyleAt(closeAngle.start));
+            int style = m_scintilla.StyleAt(closeAngle.start);
             // As long as we're not in an attribute (  <TAGNAME attrib="val>ue"> is VALID XML. )
             if (style != SCE_H_DOUBLESTRING && style != SCE_H_SINGLESTRING)
             {
@@ -2162,7 +2163,7 @@ FindResult CScintillaWnd::FindCloseTag(const std::string& tagName, sptr_t start,
         result        = FindText(search.c_str(), searchStart, searchEnd, Scintilla::FindOption::None);
         if (result.success)
         {
-            nextChar = static_cast<int>(m_scintilla.CharAt(result.end));
+            nextChar = m_scintilla.CharAt(result.end);
             styleAt  = m_scintilla.StyleAt(result.start);
 
             // Setup the parameters for the next search, if there is one.
@@ -2191,7 +2192,7 @@ FindResult CScintillaWnd::FindCloseTag(const std::string& tagName, sptr_t start,
                     do
                     {
                         ++whitespacePoint;
-                        nextChar = static_cast<int>(m_scintilla.CharAt(whitespacePoint));
+                        nextChar = m_scintilla.CharAt(whitespacePoint);
 
                     } while (IsXMLWhitespace(nextChar));
 

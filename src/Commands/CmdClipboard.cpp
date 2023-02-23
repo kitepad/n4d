@@ -40,7 +40,7 @@ std::string ClipboardBase::GetHtmlSelection() const
 
     char fontBuf[40] = {0};
     Scintilla().StyleGetFont(0, fontBuf);
-    int      fontSize   = static_cast<int>(Scintilla().StyleGetSize(0));
+    int      fontSize   = Scintilla().StyleGetSize(0);
     bool     bold       = !!Scintilla().StyleGetBold(0);
     bool     italic     = !!Scintilla().StyleGetItalic(0);
     bool     underlined = !!Scintilla().StyleGetUnderline(0);
@@ -69,30 +69,30 @@ std::string ClipboardBase::GetHtmlSelection() const
                                                  GetRValue(back) << 16 | GetGValue(back) << 8 | GetBValue(back));
     sHtmlFragment += styleHtml;
 
-    int  numSelections = static_cast<int>(Scintilla().Selections());
+    int  numSelections = Scintilla().Selections();
     bool spanSet       = false;
     for (int i = 0; i < numSelections; ++i)
     {
-        int selStart = static_cast<int>(Scintilla().SelectionNStart(i));
-        int selEnd   = static_cast<int>(Scintilla().SelectionNEnd(i));
+        auto selStart = Scintilla().SelectionNStart(i);
+        auto selEnd   = Scintilla().SelectionNEnd(i);
 
         if ((selStart == selEnd) && (numSelections == 1))
         {
             auto curLine = GetCurrentLineNumber();
-            selStart     = static_cast<int>(Scintilla().PositionFromLine(curLine));
-            selEnd       = static_cast<int>(Scintilla().LineEndPosition(curLine));
+            selStart     = Scintilla().PositionFromLine(curLine);
+            selEnd       = Scintilla().LineEndPosition(curLine);
         }
-
-        int p = selStart;
+         
+        auto p = selStart;
         do
         {
-            int s = static_cast<int>(Scintilla().StyleAt(p));
+            int s = Scintilla().StyleAt(p);
             if (s != style)
             {
                 if (spanSet)
                     sHtmlFragment += "</span>";
                 Scintilla().StyleGetFont(s, fontBuf);
-                fontSize   = static_cast<int>(Scintilla().StyleGetSize(s));
+                fontSize   = Scintilla().StyleGetSize(s);
                 bold       = !!Scintilla().StyleGetBold(s);
                 italic     = !!Scintilla().StyleGetItalic(s);
                 underlined = !!Scintilla().StyleGetUnderline(s);

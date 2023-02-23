@@ -1130,7 +1130,7 @@ LRESULT CDialogWithFilterableList::DoListNotify(LPNMITEMACTIVATE lpNMItemActivat
     case NM_RETURN:
     case NM_DBLCLK:
         // execute the selected command
-        if (lpNMItemActivate->iItem >= 0 && lpNMItemActivate->iItem < static_cast<int>(m_results.size()))
+        if (lpNMItemActivate->iItem >= 0 && lpNMItemActivate->iItem < m_results.size())
         {
             SendMessage(*this, WM_COMMAND, MAKEWPARAM(IDOK, 1), 0);
         }

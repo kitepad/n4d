@@ -73,7 +73,7 @@ bool CCmdComment::Execute()
             auto pos = Scintilla().PositionFromLine(line);
             if (!commentLineAtStart)
             {
-                int tabsize = static_cast<int>(Scintilla().TabWidth());
+                int tabsize = Scintilla().TabWidth();
                 for (decltype(indent) i = 0; i < indent;)
                 {
                     char c = static_cast<char>(Scintilla().CharAt(pos));

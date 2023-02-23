@@ -28,7 +28,7 @@ CCmdBookmarks::CCmdBookmarks(void* obj)
     : ICommand(obj)
 {
     //auto& settings = CIniSettings::Instance();
-    int maxFiles = static_cast<int>(GetInt64(BOOKMARKS_SECTION, L"BookmarksMaxFiles", 30));
+    auto maxFiles = GetInt64(BOOKMARKS_SECTION, L"BookmarksMaxFiles", 30);
     m_bookmarks.clear();
     for (decltype(maxFiles) fileIndex = 0; fileIndex < maxFiles; ++fileIndex)
     {
@@ -81,7 +81,7 @@ void CCmdBookmarks::OnDocumentClose(DocID id)
     if (bModified)
     {
         // Save the bookmarks to the ini file
-        int maxFiles = static_cast<int>(GetInt64(BOOKMARKS_SECTION, L"BookmarksMaxFiles", 30));
+        auto maxFiles = GetInt64(BOOKMARKS_SECTION, L"BookmarksMaxFiles", 30);
         int fileNum  = 0;
         if (maxFiles == 0)
             return;

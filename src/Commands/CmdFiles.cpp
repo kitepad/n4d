@@ -244,7 +244,7 @@ bool CCmdFileDelete::Execute()
 
 bool CCmdSaveAuto::Execute()
 {
-    int autoSave = static_cast<int>(GetInt64(DEFAULTS_SECTION, L"AutoSave", 0));
+    auto autoSave = GetInt64(DEFAULTS_SECTION, L"AutoSave", 0);
     SetInt64(DEFAULTS_SECTION, L"AutoSave", autoSave ? 0 : 1);
     return true;
 }

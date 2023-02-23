@@ -69,7 +69,7 @@ bool CCmdTrim::Execute()
 bool CCmdTabs2Spaces::Execute()
 {
     // convert the whole file, ignore the selection
-    int  tabSize       = static_cast<int>(Scintilla().TabWidth());
+    int  tabSize       = Scintilla().TabWidth();
     auto docLength     = Scintilla().Length() + 1;
     auto curPos        = Scintilla().CurrentPos();
     bool bIgnoreQuotes = false;
@@ -194,7 +194,7 @@ bool CCmdTabs2Spaces::Execute()
 bool CCmdSpaces2Tabs::Execute()
 {
     // convert the whole file, ignore the selection
-    int  tabSize       = static_cast<int>(Scintilla().TabWidth());
+    int  tabSize       = Scintilla().TabWidth();
     auto docLength     = Scintilla().Length() + 1;
     auto curPos        = Scintilla().CurrentPos();
     bool bIgnoreQuotes = false;

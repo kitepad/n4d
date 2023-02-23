@@ -1137,7 +1137,7 @@ LRESULT CALLBACK CMainWindow::WinMsgHandler(HWND hwnd, UINT uMsg, WPARAM wParam,
                 {
                     KillTimer(*this, TIMER_CHECKLINES);
 
-                    auto activeLexer = static_cast<int>(m_editor.Scintilla().Lexer());
+                    auto activeLexer = m_editor.Scintilla().Lexer();
                     auto lexerData   = CLexStyles::Instance().GetLexerDataForLexer(activeLexer);
                     if (!lexerData.annotations.empty())
                     {
@@ -3193,7 +3193,7 @@ void CMainWindow::AddHotSpots() const
         m_editor.Scintilla().SetTargetStart(fStartPos);
         m_editor.Scintilla().SetTargetEnd(fEndPos);
         m_editor.Scintilla().SetSearchFlags(Scintilla::FindOption::None);
-        posFoundColonSlash = static_cast<int>(m_editor.Scintilla().SearchInTarget(3, "://"));
+        posFoundColonSlash = m_editor.Scintilla().SearchInTarget(3, "://");
     }
 }
 

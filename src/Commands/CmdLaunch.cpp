@@ -57,7 +57,7 @@ bool LaunchBase::Launch(const std::wstring& cmdline) const
     }
 
     SearchReplace(cmd, L"$(LINE)", std::to_wstring(GetCurrentLineNumber()));
-    SearchReplace(cmd, L"$(POS)", std::to_wstring(static_cast<int>(Scintilla().CurrentPos())));
+    SearchReplace(cmd, L"$(POS)", std::to_wstring(Scintilla().CurrentPos()));
     // find selected text or current word
     std::string sSelText = GetSelectedText(SelectionHandling::CurrentWordIfSelectionIsEmpty);
     if (sSelText.empty())

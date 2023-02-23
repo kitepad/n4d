@@ -739,12 +739,12 @@ void CAutoComplete::HandleAutoComplete(const SCNotification* scn)
                         } while (inner && pos2 > 2);
                         std::string tagName;
                         auto        position = pos2 + 1;
-                        int         nextChar = static_cast<int>(m_editor->Scintilla().CharAt(position));
+                        int         nextChar = m_editor->Scintilla().CharAt(position);
                         while (position < pos && !m_editor->IsXMLWhitespace(nextChar) && nextChar != '/' && nextChar != '>' && nextChar != '\"' && nextChar != '\'')
                         {
                             tagName.push_back(static_cast<char>(nextChar));
                             ++position;
-                            nextChar = static_cast<int>(m_editor->Scintilla().CharAt(position));
+                            nextChar = m_editor->Scintilla().CharAt(position);
                         }
                         if (!tagName.empty())
                         {
